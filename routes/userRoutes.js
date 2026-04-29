@@ -6,6 +6,7 @@ const { validateId, validateUserFields } = require('../middleware/validation');
 
 
 router.get('/', userController.getAllUsers);
+router.get('/login', userController.getAllUsers);
 router.get('/:id', validateId, userController.getUserById);
 router.post('/', validateUserFields, userController.createUser);
 //router.post('/', authorize(['admin']), validateUserFields, userController.createUser);
