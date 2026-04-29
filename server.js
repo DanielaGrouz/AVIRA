@@ -1,6 +1,7 @@
 const express = require('express');
 const logger = require('./middleware/logger');
 const userRoutes = require('./routes/userRoutes');
+const eventRoutes = require('./routes/eventRoutes');
 const app = express();
 const port = 3000;
 
@@ -8,6 +9,7 @@ app.use(express.json());
 app.use(logger);
 
 app.use('/users', userRoutes);
+app.use('/events', eventRoutes);
 
 //default
 app.get('/', (req, res) => {
