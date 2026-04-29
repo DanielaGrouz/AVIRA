@@ -32,9 +32,9 @@ const getUserById = (req, res) => {
 const createUser = (req, res) => {
     const { firstName, lastName, userRole } = req.body;
     const newUser = {
-        userId: users.length + 1,
-        firstName,
-        lastName,
+        userId: users.length > 0 ? Math.max(...users.map(u => u.userId)) + 1 : 1,
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
         userRole,
         createDate: new Date().toISOString(),
         updateDate: new Date().toISOString()
