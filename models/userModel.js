@@ -21,7 +21,7 @@ const users = [
         lastName: "Mizrahi",
         createDate: "2026-04-28T09:15:00Z",
         updateDate: "2026-04-28T09:15:00Z",
-        userRole: "manager"
+        userRole: "user"
     },
     {
         userId: 4,
@@ -37,7 +37,7 @@ const users = [
         lastName: "Avraham",
         createDate: "2026-04-29T08:45:00Z",
         updateDate: "2026-04-29T08:45:00Z",
-        userRole: "admin"
+        userRole: "user"
     },
     {
         userId: 6,
