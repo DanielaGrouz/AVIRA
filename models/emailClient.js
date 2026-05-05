@@ -1,14 +1,17 @@
 const nodemailer = require('nodemailer');
 const configClient = require("./configClient");
-const path = require('path');
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
         user: 'appavira@gmail.com',
         pass: configClient.getConfig("GMAIL_PASSWORD")
+    },
+    tls: {
+        rejectUnauthorized: false
     }
 });
+
 
 
 const generateStyledHtml = (subject, content) => {
@@ -58,12 +61,12 @@ const sendMail = async (emailContent, emailSubject, emailToSent) => {
         attachments: [
             {
                 filename: 'logo1.png',
-                path: path.join(__dirname, 'models', 'logo.png'),
+                path: './models/logo.png',
                 cid: 'logo1'
             },
             {
                 filename: 'logo2.png',
-                path: path.join(__dirname, 'models', 'background.png'),
+                path: './models/background.png',
                 cid: 'logo2'
             }
         ]
@@ -78,5 +81,4 @@ const sendMail = async (emailContent, emailSubject, emailToSent) => {
         throw error;
     }
 };
-
 module.exports = { sendMail };

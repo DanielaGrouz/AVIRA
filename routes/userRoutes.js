@@ -13,6 +13,6 @@ router.delete('/:id', validateId, userController.deleteUser);
 router.post('/login', userController.login);
 router.post('/send-verification-code', userController.sendVerificationCode);
 router.post('/verify-email', userController.completeEmailVerification);
-router.put('/reset-password', userController.resetPassword);
+router.post('/reset-password', userController.resetPassword);
 
 module.exports = router;

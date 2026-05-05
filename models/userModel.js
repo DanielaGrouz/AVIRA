@@ -1,114 +1,140 @@
+// const bcrypt = require("bcrypt");
 const users = [
     {
         userId: 1,
-        firstName: "Daniela",
-        lastName: "Levi",
-        createDate: "2026-04-27T10:00:00Z",
-        updateDate: "2026-04-27T10:00:00Z",
-        userRole: "admin",
-        password: "123456",
-        phoneNumber: "0545368889",
-        email: "danielagrouz@gmail.com"
+        firstName: 'Daniela',
+        lastName: 'Levi',
+        createDate: '2026-04-27T10:00:00Z',
+        updateDate: '2026-04-27T10:00:00Z',
+        userRole: 'admin',
+        password: '$2b$10$5h3ulsTQMjik8LbUZVVzU.5ClNVKy9VcFZ34lrHXF4qS4bv2R.mZe',
+        phoneNumber: '0545368889',
+        email: 'danielagrouz@gmail.com',
+        // originalPassword: '123456'
     },
     {
         userId: 2,
-        firstName: "Yosef",
-        lastName: "Cohen",
-        createDate: "2026-04-27T11:00:00Z",
-        updateDate: "2026-04-27T11:30:00Z",
-        userRole: "user",
-        password: "password123",
-        phoneNumber: "0501234567",
-        email: "yosef.cohen@example.com"
+        firstName: 'Yosef',
+        lastName: 'Cohen',
+        createDate: '2026-04-27T11:00:00Z',
+        updateDate: '2026-04-27T11:30:00Z',
+        userRole: 'user',
+        password: '$2b$10$5h3ulsTQMjik8LbUZVVzU.0IpY8PTwbHzHFlOOSCGSQ.2VKowdcAm',
+        phoneNumber: '0501234567',
+        email: 'yosef.cohen@example.com',
+        originalPassword: 'password123'
     },
     {
         userId: 3,
-        firstName: "Rinat",
-        lastName: "Mizrahi",
-        createDate: "2026-04-28T09:15:00Z",
-        updateDate: "2026-04-28T09:15:00Z",
-        userRole: "user",
-        password: "rinatPass!",
-        phoneNumber: "0529876543",
-        email: "rinat.m@example.com"
+        firstName: 'Rinat',
+        lastName: 'Mizrahi',
+        createDate: '2026-04-28T09:15:00Z',
+        updateDate: '2026-04-28T09:15:00Z',
+        userRole: 'user',
+        password: '$2b$10$5h3ulsTQMjik8LbUZVVzU.jZE3NNa.da9bjOcWpDLsrUh1P6DUOHu',
+        phoneNumber: '0529876543',
+        email: 'rinat.m@example.com',
+        originalPassword: 'rinatPass!'
     },
     {
         userId: 4,
-        firstName: "Omer",
-        lastName: "Peretz",
-        createDate: "2026-04-28T14:20:00Z",
-        updateDate: "2026-04-28T15:00:00Z",
-        userRole: "user",
-        password: "omerP2026",
-        phoneNumber: "0533344556",
-        email: "omer.peretz@example.com"
+        firstName: 'Omer',
+        lastName: 'Peretz',
+        createDate: '2026-04-28T14:20:00Z',
+        updateDate: '2026-04-28T15:00:00Z',
+        userRole: 'user',
+        password: '$2b$10$5h3ulsTQMjik8LbUZVVzU.x3thpZkCTa/t6G2PMxjGNgKVWowEy1e',
+        phoneNumber: '0533344556',
+        email: 'omer.peretz@example.com',
+        originalPassword: 'omerP2026'
     },
     {
         userId: 5,
-        firstName: "Noa",
-        lastName: "Avraham",
-        createDate: "2026-04-29T08:45:00Z",
-        updateDate: "2026-04-29T08:45:00Z",
-        userRole: "user",
-        password: "noaSecure!",
-        phoneNumber: "0587766554",
-        email: "noa.av@example.com"
+        firstName: 'Noa',
+        lastName: 'Avraham',
+        createDate: '2026-04-29T08:45:00Z',
+        updateDate: '2026-04-29T08:45:00Z',
+        userRole: 'user',
+        password: '$2b$10$5h3ulsTQMjik8LbUZVVzU.mYYxqISDGD1cabn3SVFw51SZH/TPff2',
+        phoneNumber: '0587766554',
+        email: 'noa.av@example.com',
+        originalPassword: 'noaSecure!'
     },
     {
         userId: 6,
-        firstName: "Itay",
-        lastName: "Golan",
-        createDate: "2026-04-29T10:05:00Z",
-        updateDate: "2026-04-29T12:10:00Z",
-        userRole: "user",
-        password: "itayG123",
-        phoneNumber: "0541122334",
-        email: "itay.golan@example.com"
+        firstName: 'Itay',
+        lastName: 'Golan',
+        createDate: '2026-04-29T10:05:00Z',
+        updateDate: '2026-04-29T12:10:00Z',
+        userRole: 'user',
+        password: '$2b$10$5h3ulsTQMjik8LbUZVVzU.KvdRHRFItbTMt2uL18fGB9Oyh3mqUIS',
+        phoneNumber: '0541122334',
+        email: 'itay.golan@example.com',
+        originalPassword: 'itayG123'
     },
     {
         userId: 7,
-        firstName: "Maya",
-        lastName: "Friedman",
-        createDate: "2026-04-29T11:30:00Z",
-        updateDate: "2026-04-29T11:30:00Z",
-        userRole: "user",
-        password: "mayaPass99",
-        phoneNumber: "0525544332",
-        email: "maya.f@example.com"
+        firstName: 'Maya',
+        lastName: 'Friedman',
+        createDate: '2026-04-29T11:30:00Z',
+        updateDate: '2026-04-29T11:30:00Z',
+        userRole: 'user',
+        password: '$2b$10$5h3ulsTQMjik8LbUZVVzU.nj8Ukl7iX/oMObhGHW6xEi34FcoNZaK',
+        phoneNumber: '0525544332',
+        email: 'maya.f@example.com',
+        originalPassword: 'mayaPass99'
     },
     {
         userId: 8,
-        firstName: "Guy",
-        lastName: "Shapira",
-        createDate: "2026-04-29T12:00:00Z",
-        updateDate: "2026-04-29T13:45:00Z",
-        userRole: "user",
-        password: "guyShapira!",
-        phoneNumber: "0509988776",
-        email: "guy.s@example.com"
+        firstName: 'Guy',
+        lastName: 'Shapira',
+        createDate: '2026-04-29T12:00:00Z',
+        updateDate: '2026-04-29T13:45:00Z',
+        userRole: 'user',
+        password: '$2b$10$5h3ulsTQMjik8LbUZVVzU.F/.zvSFQwuh2HwYbB8Pzc0pVSvp6LcO',
+        phoneNumber: '0509988776',
+        email: 'guy.s@example.com',
+        originalPassword: 'guyShapira!'
     },
     {
         userId: 9,
-        firstName: "Shir",
-        lastName: "Katz",
-        createDate: "2026-04-29T13:15:00Z",
-        updateDate: "2026-04-29T13:15:00Z",
-        userRole: "user",
-        password: "shirKatz1",
-        phoneNumber: "0531237890",
-        email: "shir.katz@example.com"
+        firstName: 'Shir',
+        lastName: 'Katz',
+        createDate: '2026-04-29T13:15:00Z',
+        updateDate: '2026-04-29T13:15:00Z',
+        userRole: 'user',
+        password: '$2b$10$5h3ulsTQMjik8LbUZVVzU.wzT/9zlbDNEJrt7/dyTebsimAiH4xbW',
+        phoneNumber: '0531237890',
+        email: 'shir.katz@example.com',
+        originalPassword: 'shirKatz1'
     },
     {
         userId: 10,
-        firstName: "Amit",
-        lastName: "Bar",
-        createDate: "2026-04-29T13:30:00Z",
-        updateDate: "2026-04-29T13:35:00Z",
-        userRole: "user",
-        password: "amitBar2026",
-        phoneNumber: "0546655443",
-        email: "amit.bar@example.com"
+        firstName: 'Amit',
+        lastName: 'Bar',
+        createDate: '2026-04-29T13:30:00Z',
+        updateDate: '2026-04-29T13:35:00Z',
+        userRole: 'user',
+        password: '$2b$10$5h3ulsTQMjik8LbUZVVzU.CSkKbdS.2rCJStjz31cX9/xjFUx3dOq',
+        phoneNumber: '0546655443',
+        email: 'amit.bar@example.com',
+        originalPassword: 'amitBar2026'
     }
 ];
+
+// const calcHash = async () => {
+//     const salt = await bcrypt.genSalt(10);
+//     return await Promise.all(users.map(async (user) => {
+//         const hashedPassword = await bcrypt.hash(user.password, salt);
+//         return {
+//             ...user,
+//             originalPassword: user.password,
+//             password: hashedPassword
+//         };
+//     }));
+// }
+//
+//
+// calcHash().then(console.log);
 
 module.exports = users;

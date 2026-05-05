@@ -3,8 +3,8 @@
 // const JWT_SECRET = process.env.JWT_SECRET;
 let users = require('../models/userModel');
 const bcrypt = require("bcrypt");
-const emailClient = require('../models/emailClient');
 const verificationCodes = require("../models/authVerification");
+const {sendMail} = require("../models/emailClient");
 
 
 const getAllUsers = (req, res) => {
@@ -228,7 +228,7 @@ const login = async (req, res) => {
     }
 }
 
-const sendVerificationCode = (req, res) => {
+const sendVerificationCode = async (req, res) => {
     const { email } = req.body;
     const user = users.find(u => u.email === email);
     if (!user) {
@@ -244,7 +244,16 @@ const sendVerificationCode = (req, res) => {
     }
     const code = Math.floor(1000 + Math.random() * 9000).toString();
     verificationCodes.push({ email, code, timeStamp: new Date().toISOString() });
-    // TODO: send email to user with this code:
+    try {
+        await sendMail(`your code is: ${code}`, "verify your email", email)
+    }
+    catch (error) {
+      return res.status(500).json({
+          success: false,
+          data: null,
+          error: { code: "SERVER_ERROR", message: error.message }
+      })
+    }
     res.status(200).json({
         success: true,
         data: { message: "Verification code sent to email" },
@@ -255,7 +264,7 @@ const sendVerificationCode = (req, res) => {
 const resetPassword = async (req, res) => {
     const { userId, newPassword } = req.body;
     try {
-        const user = users.find(u => u.id === userId);
+        const user = users.find(u => u.userId === userId);
         if (!user) {
             return res.status(404).json({
                 success: false,
@@ -282,7 +291,6 @@ const resetPassword = async (req, res) => {
         });
     }
 }
-
 
 
 module.exports = { getAllUsers, getUserById, createUser, updateUser, deleteUser, login, sendVerificationCode , resetPassword, completeEmailVerification};
