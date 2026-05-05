@@ -37,7 +37,7 @@ async function generateAvatar(userData) {
 
 // Example Usage
 const userProfile = {
-    role: "cat",
+    role: "dog",
     traits: "grey hair and green eyes, looking friendly but a little aggressive",
     colorTheme: "pastel blue"
 };
@@ -54,5 +54,5 @@ generateAvatar(userProfile).then(buffer => {
 //     event_id: "fjhf",
 //     phones: "054545454"
 // }
-//
+
 // `${FRONT_URL}/event/approve?event_id=${obj.event_id}&phone=${obj.phones}`

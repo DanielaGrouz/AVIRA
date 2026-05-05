@@ -25,17 +25,17 @@ async function getHumanInvite(event) {
 }
 
 
-// async function main(){
-//     // Example for AVIRA
-//     // fetch event metadata from db
-//
-//     const inviteText = await getHumanInvite({
-//         title: "the AVIRA project launch drinks",
-//         location: "the tech hub rooftop",
-//         date: "September 12th",
-//         vibe: "relaxed but proud"
-//     });
-//
-//     console.log(inviteText);
-// }
-// main();
+async function main(){
+    // Example for AVIRA
+    // fetch event metadata from db
+
+    const inviteText = await getHumanInvite({
+        title: "the AVIRA project launch drinks",
+        location: "the tech hub rooftop",
+        date: "September 12th",
+        vibe: "relaxed but proud"
+    });
+
+    console.log(inviteText);
+}
+main();

@@ -10,7 +10,8 @@ const users = [
         password: '$2b$10$5h3ulsTQMjik8LbUZVVzU.5ClNVKy9VcFZ34lrHXF4qS4bv2R.mZe',
         phoneNumber: '0545368889',
         email: 'danielagrouz@gmail.com',
-        // originalPassword: '123456'
+        originalPassword: '123456',
+        picturePath: "./avatar1.png"
     },
     {
         userId: 2,
@@ -22,7 +23,8 @@ const users = [
         password: '$2b$10$5h3ulsTQMjik8LbUZVVzU.0IpY8PTwbHzHFlOOSCGSQ.2VKowdcAm',
         phoneNumber: '0501234567',
         email: 'yosef.cohen@example.com',
-        originalPassword: 'password123'
+        originalPassword: 'password123',
+        picturePath: "./avatar2.png"
     },
     {
         userId: 3,
@@ -34,7 +36,8 @@ const users = [
         password: '$2b$10$5h3ulsTQMjik8LbUZVVzU.jZE3NNa.da9bjOcWpDLsrUh1P6DUOHu',
         phoneNumber: '0529876543',
         email: 'rinat.m@example.com',
-        originalPassword: 'rinatPass!'
+        originalPassword: 'rinatPass!',
+        picturePath: "./avatar3.png"
     },
     {
         userId: 4,
@@ -46,7 +49,8 @@ const users = [
         password: '$2b$10$5h3ulsTQMjik8LbUZVVzU.x3thpZkCTa/t6G2PMxjGNgKVWowEy1e',
         phoneNumber: '0533344556',
         email: 'omer.peretz@example.com',
-        originalPassword: 'omerP2026'
+        originalPassword: 'omerP2026',
+        picturePath: "./avatar4.png"
     },
     {
         userId: 5,
@@ -58,7 +62,8 @@ const users = [
         password: '$2b$10$5h3ulsTQMjik8LbUZVVzU.mYYxqISDGD1cabn3SVFw51SZH/TPff2',
         phoneNumber: '0587766554',
         email: 'noa.av@example.com',
-        originalPassword: 'noaSecure!'
+        originalPassword: 'noaSecure!',
+        picturePath: "./avatar5.png"
     },
     {
         userId: 6,
@@ -70,7 +75,8 @@ const users = [
         password: '$2b$10$5h3ulsTQMjik8LbUZVVzU.KvdRHRFItbTMt2uL18fGB9Oyh3mqUIS',
         phoneNumber: '0541122334',
         email: 'itay.golan@example.com',
-        originalPassword: 'itayG123'
+        originalPassword: 'itayG123',
+        picturePath: "./avatar6.png"
     },
     {
         userId: 7,
@@ -82,7 +88,8 @@ const users = [
         password: '$2b$10$5h3ulsTQMjik8LbUZVVzU.nj8Ukl7iX/oMObhGHW6xEi34FcoNZaK',
         phoneNumber: '0525544332',
         email: 'maya.f@example.com',
-        originalPassword: 'mayaPass99'
+        originalPassword: 'mayaPass99',
+        picturePath: "./avatar7.png"
     },
     {
         userId: 8,
@@ -94,7 +101,8 @@ const users = [
         password: '$2b$10$5h3ulsTQMjik8LbUZVVzU.F/.zvSFQwuh2HwYbB8Pzc0pVSvp6LcO',
         phoneNumber: '0509988776',
         email: 'guy.s@example.com',
-        originalPassword: 'guyShapira!'
+        originalPassword: 'guyShapira!',
+        picturePath: "./avatar8.png"
     },
     {
         userId: 9,
@@ -106,7 +114,8 @@ const users = [
         password: '$2b$10$5h3ulsTQMjik8LbUZVVzU.wzT/9zlbDNEJrt7/dyTebsimAiH4xbW',
         phoneNumber: '0531237890',
         email: 'shir.katz@example.com',
-        originalPassword: 'shirKatz1'
+        originalPassword: 'shirKatz1',
+        picturePath: "./avatar9.png"
     },
     {
         userId: 10,
@@ -118,7 +127,8 @@ const users = [
         password: '$2b$10$5h3ulsTQMjik8LbUZVVzU.CSkKbdS.2rCJStjz31cX9/xjFUx3dOq',
         phoneNumber: '0546655443',
         email: 'amit.bar@example.com',
-        originalPassword: 'amitBar2026'
+        originalPassword: 'amitBar2026',
+        picturePath: "./avatar10.png"
     }
 ];
 
