@@ -4,11 +4,7 @@ const logger = (req, res, next) => {
 
     res.on('finish', () => {
         console.log(`Response Status: ${res.statusCode}`);
-        if (Object.keys(req.body).length > 0) {
-            console.log('Request Body:', JSON.stringify(req.body, null, 2));
-        }
     });
-
     next();
 };
 
