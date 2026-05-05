@@ -5,7 +5,10 @@ const users = [
         lastName: "Levi",
         createDate: "2026-04-27T10:00:00Z",
         updateDate: "2026-04-27T10:00:00Z",
-        userRole: "admin"
+        userRole: "admin",
+        password: "123456",
+        phoneNumber: "0545368889",
+        email: "danielagrouz@gmail.com"
     },
     {
         userId: 2,
