@@ -2,6 +2,7 @@ const express = require('express');
 const logger = require('./middleware/logger');
 const userRoutes = require('./routes/userRoutes');
 const eventRoutes = require('./routes/eventRoutes');
+const taskRoutes = require('./routes/tasksRoutes');
 const app = express();
 const port = 3000;
 
@@ -10,6 +11,7 @@ app.use(logger);
 
 app.use('/users', userRoutes);
 app.use('/events', eventRoutes);
+app.use('/tasks', taskRoutes);
 
 //default
 app.get('/', (req, res) => {
