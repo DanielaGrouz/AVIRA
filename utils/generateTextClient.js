@@ -1,4 +1,4 @@
-const configClient = require("./utils/configClient")
+const configClient = require("./configClient")
 const Groq= require("groq-sdk")
 
 const groq = new Groq({ apiKey: configClient.getConfig("GROQ_API_KEY")});

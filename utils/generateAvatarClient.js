@@ -2,7 +2,7 @@ const { HfInference } = require('@huggingface/inference');
 // require('dotenv').config();
 const fs = require('fs');
 // const hf = new HfInference(process.env.HF_TOKEN);
-const configClient = require("./utils/configClient")
+const configClient = require("./configClient")
 const hf = new HfInference(configClient.getConfig("HF_TOKEN"));
 
 /**
