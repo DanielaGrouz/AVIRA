@@ -1,6 +1,5 @@
 let tasks = require('../models/taskModel');
 
-// Get all tasks (includes pagination and sorting to match other controllers)
 const getAllTasks = (req, res) => {
     const limit = 5;
     const page = parseInt(req.query.page) || 1;
@@ -23,7 +22,6 @@ const getAllTasks = (req, res) => {
     });
 };
 
-// Get a single task by its taskId
 const getTaskById = (req, res) => {
     const id = parseInt(req.params.id);
     const task = tasks.find(t => t.taskId === id);
@@ -47,36 +45,8 @@ const getTaskById = (req, res) => {
     });
 };
 
-// Get all tasks associated with a specific eventId
-const getTasksByEventId = (req, res) => {
-    const eventId = parseInt(req.params.eventId);
-    const eventTasks = tasks.filter(t => t.eventId === eventId);
-
-    res.status(200).json({
-        success: true,
-        data: eventTasks,
-        error: null
-    });
-};
-
-// Create a new task
 const createTask = (req, res) => {
     const { eventId, title, status, priority } = req.body;
-
-    // Basic validation to ensure required fields exist
-    if (!eventId || !title) {
-        return res.status(400).json({
-            success: false,
-            data: null,
-            error: {
-                code: "VALIDATION_ERROR",
-                message: "eventId and title are required to create a task.",
-                details: {}
-            }
-        });
-    }
-
-    // Generate a new sequential taskId based on the highest existing ID
     const newTaskId = tasks.length > 0 ? Math.max(...tasks.map(t => t.taskId)) + 1 : 1;
 
     const newTask = {
@@ -96,7 +66,6 @@ const createTask = (req, res) => {
     });
 };
 
-// Update an existing task
 const updateTask = (req, res) => {
     const id = parseInt(req.params.id);
     const { title, status, priority } = req.body;
@@ -111,7 +80,6 @@ const updateTask = (req, res) => {
         });
     }
 
-    // Update only the provided fields, keep existing data otherwise
     tasks[taskIndex] = {
         ...tasks[taskIndex],
         title: title || tasks[taskIndex].title,
@@ -126,7 +94,6 @@ const updateTask = (req, res) => {
     });
 };
 
-// Delete a task
 const deleteTask = (req, res) => {
     const id = parseInt(req.params.id);
     const taskIndex = tasks.findIndex(t => t.taskId === id);
@@ -139,7 +106,6 @@ const deleteTask = (req, res) => {
         });
     }
 
-    // Remove the task from the mock data array
     tasks.splice(taskIndex, 1);
 
     res.status(200).json({
@@ -149,4 +115,4 @@ const deleteTask = (req, res) => {
     });
 };
 
-module.exports = { getAllTasks, getTaskById, getTasksByEventId, createTask, updateTask, deleteTask };
+module.exports = { getAllTasks, getTaskById, createTask, updateTask, deleteTask };

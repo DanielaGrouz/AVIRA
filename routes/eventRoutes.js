@@ -32,5 +32,9 @@
 // router.post('/event/:eventId/request-approval', validateId, notificationController.sendRSVPRequest);
 //
 //
+// // Get all tasks for a specific event
+// const taskController = require("../controllers/taskController");
+// router.get('/event/:eventId', taskController.getTasksByEventId);
 //
+// //
 // module.exports = router;

@@ -100,4 +100,33 @@ const validateEventId = (req, res, next) => {
     next();
 };
 
-module.exports = {validateId, validateUserFields, validateGuestFields, validateEventId};
+const validateTaskFields = (req, res, next) => {
+    const { title, status, priority } = req.body;
+    let errors = [];
+    if (!title || typeof title !== 'string' || title.trim().length < 2) {
+        errors.push("title must be a string (min 2 chars)");
+    }
+    const VALID_TASK_STATUSES = ['pending', 'in-progress', 'completed', 'cancelled'];
+    if (status && !VALID_TASK_STATUSES.includes(status)) {
+        errors.push(`status must be one of: ${VALID_TASK_STATUSES.join(', ')}`);
+    }
+    const VALID_PRIORITIES = ['low', 'medium', 'high'];
+    if (priority && !VALID_PRIORITIES.includes(priority)) {
+        errors.push(`priority must be one of: ${VALID_PRIORITIES.join(', ')}`);
+    }
+    if (errors.length > 0) {
+        return res.status(400).json({
+            success: false,
+            data: null,
+            error: {
+                code: "VALIDATION_ERROR",
+                message: "Invalid task data",
+                details: { errors }
+            }
+        });
+    }
+
+    next();
+};
+
+module.exports = {validateId, validateUserFields, validateGuestFields, validateEventId, validateTaskFields};

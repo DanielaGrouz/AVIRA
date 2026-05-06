@@ -96,6 +96,18 @@
 //     });
 // }
 //
+// // Get all tasks associated with a specific eventId
+// const getTasksByEventId = (req, res) => {
+//     const eventId = parseInt(req.params.eventId);
+//     const eventTasks = tasks.filter(t => t.eventId === eventId);
+//
+//     res.status(200).json({
+//         success: true,
+//         data: eventTasks,
+//         error: null
+//     });
+// };
+
 //
 // module.exports = { getAllEvents };
 //
