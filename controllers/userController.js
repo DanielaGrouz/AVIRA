@@ -4,7 +4,7 @@
 let users = require('../models/userModel');
 const bcrypt = require("bcrypt");
 const verificationCodes = require("../models/authVerification");
-const {sendMail} = require("../models/emailClient");
+const {sendMail} = require("../utils/emailClient");
 
 
 const getAllUsers = (req, res) => {

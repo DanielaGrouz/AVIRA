@@ -1,6 +1,6 @@
 const { HfInference } = require('@huggingface/inference');
 const fs = require('fs');
-const configClient = require("./models/configClient")
+const configClient = require("./utils/configClient")
 const hf = new HfInference(configClient.getConfig("HF_TOKEN"));
 
 /**
