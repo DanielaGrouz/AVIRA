@@ -3,6 +3,7 @@ const logger = require('./middleware/logger');
 const userRoutes = require('./routes/userRoutes');
 const guestsRoutes = require('./routes/guestsRoutes');
 const eventRoutes = require('./routes/eventRoutes');
+const taskRoutes = require('./routes/tasksRoutes');
 const app = express();
 const port = 3000;
 
@@ -10,6 +11,8 @@ app.use(express.json());
 app.use(logger);
 
 app.use('/users', userRoutes);
+app.use('/events', eventRoutes);
+app.use('/tasks', taskRoutes);
 // app.use('/events', eventRoutes);
 app.use('/guests', guestsRoutes);
 
