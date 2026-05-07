@@ -24,6 +24,12 @@ router.delete('/:id', validateId, eventController.deleteEvent);
 // Changed to /:id/guests to avoid collision with getEventById
 router.get('/:id/guests', validateId, eventController.getAllGuestsByEvent);
 router.post('/:id/guests', validateId, validateGuestFields, eventController.addGuestToEvent);
+router.delete('/:id/guests/:guestId', validateId, eventController.removeGuestFromEvent);
+router.put('/:id/guests/:guestId', validateId, validateGuestFields, eventController.updateGuestInEvent);
+router.patch('/:id/guests/:guestId/rsvp', validateId, eventController.confirmGuestAttendance);
 router.get('/:id/tasks', validateId, eventController.getTasksByEventId);
+router.post('/:id/tasks', validateId, eventController.addTaskToEvent);
+router.put('/:id/tasks/:taskId', validateId, eventController.updateTaskInEvent);
+router.delete('/:id/tasks/:taskId', validateId, eventController.removeTaskFromEvent);
 
 module.exports = router;
