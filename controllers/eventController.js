@@ -163,29 +163,6 @@ const getAllGuestsByEvent = (req, res) => {
     }
 };
 
-// Add a new guest to an event
-const addGuestToEvent = (req, res) => {
-    try {
-        const eventId = parseInt(req.params.id);
-        const newGuest = eventService.addGuestToEventLogic(eventId, req.body);
-
-        res.status(201).json({ success: true, data: newGuest, error: null });
-    } catch (error) {
-        if (error.message === "EVENT_NOT_FOUND") {
-            return res.status(404).json({
-                success: false,
-                data: null,
-                error: { code: "NOT_FOUND", message: `Event with ID ${req.params.id} not found`, details: {} }
-            });
-        }
-        res.status(500).json({
-            success: false,
-            data: null,
-            error: { code: "Internal Server Error", message: "Internal Server Error", details: {} }
-        });
-    }
-};
-
 // Get all tasks linked to a specific event
 const getTasksByEventId = (req, res) => {
     try {
@@ -199,6 +176,74 @@ const getTasksByEventId = (req, res) => {
                 success: false,
                 data: null,
                 error: { code: "NOT_FOUND", message: "Event not found", details: {} }
+            });
+        }
+        res.status(500).json({
+            success: false,
+            data: null,
+            error: { code: "Internal Server Error", message: "Internal Server Error", details: {} }
+        });
+    }
+};
+
+// Add a task to an event
+const addTaskToEvent = (req, res) => {
+    try {
+        const eventId = parseInt(req.params.id);
+        const newTask = eventService.addTaskToEventLogic(eventId, req.body);
+        res.status(201).json({ success: true, data: newTask, error: null });
+    } catch (error) {
+        if (error.message === "EVENT_NOT_FOUND") {
+            return res.status(404).json({
+                success: false,
+                data: null,
+                error: { code: "NOT_FOUND", message: "Event not found", details: {} }
+            });
+        }
+        res.status(500).json({
+            success: false,
+            data: null,
+            error: { code: "Internal Server Error", message: "Internal Server Error", details: {} }
+        });
+    }
+};
+
+// Update task details (status, description, etc.)
+const updateTaskInEvent = (req, res) => {
+    try {
+        const eventId = parseInt(req.params.id);
+        const taskId = parseInt(req.params.taskId);
+        const updatedTask = eventService.updateTaskInEventLogic(eventId, taskId, req.body);
+        res.status(200).json({ success: true, data: updatedTask, error: null });
+    } catch (error) {
+        if (error.message === "EVENT_NOT_FOUND" || error.message === "TASK_NOT_FOUND_IN_EVENT" || error.message === "TASK_NOT_FOUND") {
+            return res.status(404).json({
+                success: false,
+                data: null,
+                error: { code: "NOT_FOUND", message: "Task or Event not found", details: {} }
+            });
+        }
+        res.status(500).json({
+            success: false,
+            data: null,
+            error: { code: "Internal Server Error", message: "Internal Server Error", details: {} }
+        });
+    }
+};
+
+// Remove a task from an event
+const removeTaskFromEvent = (req, res) => {
+    try {
+        const eventId = parseInt(req.params.id);
+        const taskId = parseInt(req.params.taskId);
+        eventService.removeTaskFromEventLogic(eventId, taskId);
+        res.status(200).json({ success: true, data: { eventId, taskId, action: "deleted" }, error: null });
+    } catch (error) {
+        if (error.message === "EVENT_NOT_FOUND" || error.message === "TASK_NOT_FOUND_IN_EVENT" || error.message === "TASK_NOT_FOUND") {
+            return res.status(404).json({
+                success: false,
+                data: null,
+                error: { code: "NOT_FOUND", message: "Task or Event not found", details: {} }
             });
         }
         res.status(500).json({
@@ -263,107 +308,93 @@ const searchEvents = (req, res) => {
     }
 };
 
-const generateInvite = async (req, res) => {
+// Add a new guest to an event
+const addGuestToEvent = (req, res) => {
     try {
-        const inviteImage = await eventService.generatePhotoInviteLogic(parseInt(req.params.id));
-        res.set('Content-Type', 'image/jpeg');
-        res.status(200).send(inviteImage);
+        const eventId = parseInt(req.params.id);
+        const newGuest = eventService.addGuestToEventLogic(eventId, req.body);
+
+        res.status(201).json({ success: true, data: newGuest, error: null });
     } catch (error) {
-        console.error(error);
         if (error.message === "EVENT_NOT_FOUND") {
             return res.status(404).json({
                 success: false,
                 data: null,
-                error: { code: "NOT_FOUND", message: "Event not found", details: {} }
+                error: { code: "NOT_FOUND", message: `Event with ID ${req.params.id} not found`, details: {} }
             });
         }
-        res.status(500).json({ success: false, data: null,
-            error: {
-                code: "Internal Server Error", message: "Internal Server Error", details: {}
-            }});
+        res.status(500).json({
+            success: false,
+            data: null,
+            error: { code: "Internal Server Error", message: "Internal Server Error", details: {} }
+        });
     }
 };
 
-const generateShoppingList = async (req, res) => {
+// Remove a guest from an event
+const removeGuestFromEvent = (req, res) => {
     try {
-        const shoppingList = await eventService.generateShoppingListLogic(req.params.id);
-        res.status(200).json({ success: true, data: shoppingList, error: null });
+        const eventId = parseInt(req.params.id);
+        const guestId = parseInt(req.params.guestId);
+        eventService.removeGuestFromEventLogic(eventId, guestId);
+        res.status(200).json({ success: true, data: { eventId, guestId, action: "deleted" }, error: null });
     } catch (error) {
-        console.error(error);
-        if (error.message === "EVENT_NOT_FOUND") {
-            return res.status(404).json({
-                success: false,
-                data: null,
-                error: { code: "NOT_FOUND", message: "Event not found", details: {} }
-            });
+        if (error.message === "EVENT_NOT_FOUND" || error.message === "GUEST_NOT_FOUND_IN_EVENT" || error.message === "GUEST_NOT_FOUND") {
+            return res.status(404).json({ success: false, data: null, error: { code: "NOT_FOUND", message: error.message, details: {} } });
         }
-        res.status(500).json({ success: false, data: null,
-            error: {
-                code: "Internal Server Error", message: "Internal Server Error", details: {}
-            }});
+        res.status(500).json({ success: false, data: null, error: { code: "Internal Server Error", message: "Internal Server Error", details: {} } });
     }
 };
 
-const generateTaskList = async (req, res) => {
+// Update guest details
+const updateGuestInEvent = (req, res) => {
     try {
-        const taskList = await eventService.generateTaskListLogic(parseInt(req.params.id));
-        res.status(200).json({ success: true, data: taskList, error: null });
+        const eventId = parseInt(req.params.id);
+        const guestId = parseInt(req.params.guestId);
+        const updatedGuest = eventService.updateGuestInEventLogic(eventId, guestId, req.body);
+        res.status(200).json({ success: true, data: updatedGuest, error: null });
     } catch (error) {
-        console.error(error);
-        if (error.message === "EVENT_NOT_FOUND") {
-            return res.status(404).json({
-                success: false,
-                data: null,
-                error: { code: "NOT_FOUND", message: "Event not found", details: {} }
-            });
+        if (error.message === "EVENT_NOT_FOUND" || error.message === "GUEST_NOT_FOUND_IN_EVENT" || error.message === "GUEST_NOT_FOUND") {
+            return res.status(404).json({ success: false, data: null, error: { code: "NOT_FOUND", message: error.message, details: {} } });
         }
-        res.status(500).json({ success: false, data: null,
-            error: {
-                code: "Internal Server Error", message: "Internal Server Error", details: {}
-            }});
+        res.status(500).json({ success: false, data: null, error: { code: "Internal Server Error", message: "Internal Server Error", details: {} } });
     }
 };
 
-const findStores = async (req, res) => {
+// Confirm guest attendance
+const confirmGuestAttendance = (req, res) => {
     try {
-        const storesList = await eventService.findRelevantStores(req.body.location, parseInt(req.params.id));
-        res.status(200).json({ success: true, data: storesList, error: null });
+        const eventId = parseInt(req.params.id);
+        const guestId = parseInt(req.params.guestId);
+        const { status } = req.body;
+        const updatedGuest = eventService.confirmGuestAttendanceLogic(eventId, guestId, status);
+        res.status(200).json({ success: true, data: updatedGuest, error: null });
     } catch (error) {
-        console.error(error);
-        if (error.message === "EVENT_NOT_FOUND") {
-            return res.status(404).json({
-                success: false,
-                data: null,
-                error: { code: "NOT_FOUND", message: "Event not found", details: {} }
-            });
+        if (error.message === "EVENT_NOT_FOUND" || error.message === "GUEST_NOT_FOUND_IN_EVENT" || error.message === "GUEST_NOT_FOUND") {
+            return res.status(404).json({ success: false, data: null, error: { code: "NOT_FOUND", message: error.message, details: {} } });
         }
-        else if (error.message === "TASKS_LIST_NOT_FOUND") {
-            return res.status(400).json({
-                success: false,
-                data: null,
-                error: { code: "BAD_REQUEST", message: "task list was not generated yet", details: {} }
-            });
-        }
-        res.status(500).json({ success: false, data: null,
-            error: {
-                code: "Internal Server Error", message: "Internal Server Error", details: {}
-            }});
+        res.status(500).json({ success: false, data: null, error: { code: "Internal Server Error", message: "Internal Server Error", details: {} } });
     }
 };
 
 module.exports = {
-    generateInvite, generateShoppingList, generateTaskList, findStores,
     getAllEvents,
     getEventById,
     createEvent,
     deleteEvent,
     updateEvent,
     getAllGuestsByEvent,
-    addGuestToEvent,
     getTasksByEventId,
+    addTaskToEvent,
+    updateTaskInEvent,
+    removeTaskFromEvent,
     getEventsByCreator,
     getEventsByGuestName,
     getEventsByPhone,
     browseEvents,
-    searchEvents
+    searchEvents,
+    addGuestToEvent,
+    removeGuestFromEvent,
+    updateGuestInEvent,
+    confirmGuestAttendance
 };

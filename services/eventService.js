@@ -2,8 +2,7 @@ let events = require('../models/eventModel');
 let guests = require('../models/guestModel');
 let tasks = require('../models/taskModel');
 const guestService = require('./guestService');
-const {getSupermarketList, getEventTaskList, getStoresForEvent} = require("../utils/generateTextClient");
-const {generateEventInvite} = require("../utils/generateImageClient");
+const taskService = require('./taskService');
 
 // Get all events with pagination and sorting
 const getAllEventsLogic = (page = 1, limit = 5, sortBy = 'id') => {
@@ -92,20 +91,36 @@ const getAllGuestsByEventLogic = (eventId, page = 1, limit = 5, sortBy = 'id') =
     };
 };
 
-// Add a new guest to an event and update the guest count
-const addGuestToEventLogic = (eventId, guestData) => {
-    const eventIndex = events.findIndex(event => event.eventId === eventId);
-    if (eventIndex === -1) throw new Error("EVENT_NOT_FOUND");
-    const newGuest = guestService.createGuestLogic({ ...guestData, eventId });
-    events[eventIndex].guestsCount = (events[eventIndex].guestsCount || 0) + 1;
-    return newGuest;
-};
-
 // Get all tasks associated with a specific event ID
 const getTasksByEventIdLogic = (eventId) => {
     const eventIndex = events.findIndex(e => e.eventId === eventId);
     if (eventIndex === -1) throw new Error("EVENT_NOT_FOUND");
     return tasks.filter(t => t.eventId === eventId);
+};
+
+// Add a new task to a specific event
+const addTaskToEventLogic = (eventId, taskData) => {
+    const event = events.find(e => e.eventId === eventId);
+    if (!event) throw new Error("EVENT_NOT_FOUND");
+    return taskService.createTaskLogic({ ...taskData, eventId });
+};
+
+// Update an existing task within an event
+const updateTaskInEventLogic = (eventId, taskId, updateData) => {
+    const event = events.find(e => e.eventId === eventId);
+    if (!event) throw new Error("EVENT_NOT_FOUND");
+    const task = taskService.getTaskByIdLogic(taskId);
+    if (!task || task.eventId !== eventId) throw new Error("TASK_NOT_FOUND_IN_EVENT");
+    return taskService.updateTaskLogic(taskId, updateData);
+};
+
+// Remove a task from an event
+const removeTaskFromEventLogic = (eventId, taskId) => {
+    const event = events.find(e => e.eventId === eventId);
+    if (!event) throw new Error("EVENT_NOT_FOUND");
+    const task = taskService.getTaskByIdLogic(taskId);
+    if (!task || task.eventId !== eventId) throw new Error("TASK_NOT_FOUND_IN_EVENT");
+    return taskService.deleteTaskLogic(taskId);
 };
 
 // Get all events created by manager ID
@@ -152,56 +167,69 @@ const searchEventsLogic = (query) => {
     );
 };
 
-const generatePhotoInviteLogic = async (eventId) => {
-    const event = events.find(e => e.eventId === parseInt(eventId));
-    if (!event) throw new Error("EVENT_NOT_FOUND");
-    // TODO: save the image
-    return await generateEventInvite(event);
+// Add a new guest to an event and update the guest count
+const addGuestToEventLogic = (eventId, guestData) => {
+    const eventIndex = events.findIndex(event => event.eventId === eventId);
+    if (eventIndex === -1) throw new Error("EVENT_NOT_FOUND");
+    const newGuest = guestService.createGuestLogic({ ...guestData, eventId });
+    events[eventIndex].guestsCount = (events[eventIndex].guestsCount || 0) + 1;
+    return newGuest;
 };
 
-const generateShoppingListLogic = async (eventId) => {
-    const index = events.findIndex(e => e.eventId === parseInt(eventId));
-    if (index === -1) throw new Error("EVENT_NOT_FOUND");
-    const event = events[index];
-    const superMarketList = await getSupermarketList(event);
-    events[index] = {...event, superMarketList};
-    return superMarketList;
+// Remove a guest from an event and update guests count
+const removeGuestFromEventLogic = (eventId, guestId) => {
+    const eventIndex = events.findIndex(e => e.eventId === eventId);
+    if (eventIndex === -1) throw new Error("EVENT_NOT_FOUND");
+    // Verify the guest actually belongs to this specific event
+    const guest = guestService.getGuestByIdLogic(guestId);
+    if (!guest || guest.eventId !== eventId) throw new Error("GUEST_NOT_FOUND_IN_EVENT");
+    // Call the guest service to perform the actual deletion
+    guestService.deleteGuestLogic(guestId);
+    // Update the event's guest count
+    if (events[eventIndex].guestsCount > 0) {
+        events[eventIndex].guestsCount -= 1;
+    }
+    return true;
 };
 
-const generateTaskListLogic = async (eventId) => {
-    const index = events.findIndex(e => e.eventId === parseInt(eventId));
-    if (index === -1) throw new Error("EVENT_NOT_FOUND");
-    const event = events[index];
-    const tasksList = await getEventTaskList(event);
-    events[index] = {...event, tasksList};
-    return tasksList;
+// Update guest details through the event
+const updateGuestInEventLogic = (eventId, guestId, updateData) => {
+    const eventIndex = events.findIndex(e => e.eventId === eventId);
+    if (eventIndex === -1) throw new Error("EVENT_NOT_FOUND");
+    const guest = guestService.getGuestByIdLogic(guestId);
+    if (!guest || guest.eventId !== eventId) throw new Error("GUEST_NOT_FOUND_IN_EVENT");
+    // Call the guest service to perform the update
+    return guestService.updateGuestLogic(guestId, updateData);
 };
 
-const findRelevantStores = async (currLocation, eventId) => {
-    const event = events.find(e => e.eventId === parseInt(eventId));
-    if (!event) throw new Error("EVENT_NOT_FOUND");
-    if (!event.tasksList) throw new Error("TASKS_LIST_NOT_FOUND");
-    const tasksList = event.tasksList.map(task => task.task);
-    return getStoresForEvent(currLocation, tasksList);
-}
+// Confirm guest attendance
+const confirmGuestAttendanceLogic = (eventId, guestId, rsvpStatus) => {
+    const eventIndex = events.findIndex(e => e.eventId === eventId);
+    if (eventIndex === -1) throw new Error("EVENT_NOT_FOUND");
+    const guest = guestService.getGuestByIdLogic(guestId);
+    if (!guest || guest.eventId !== eventId) throw new Error("GUEST_NOT_FOUND_IN_EVENT");
+    // Update only the status field
+    return guestService.updateGuestLogic(guestId, { status: rsvpStatus });
+};
 
 module.exports = {
-    findRelevantStores,
-    generatePhotoInviteLogic,
-    generateTaskListLogic,
     getAllEventsLogic,
     getEventByIdLogic,
     createEventLogic,
     deleteEventLogic,
     updateEventLogic,
     getAllGuestsByEventLogic,
-    addGuestToEventLogic,
     getTasksByEventIdLogic,
+    addTaskToEventLogic,
+    updateTaskInEventLogic,
+    removeTaskFromEventLogic,
     getEventsByCreatorLogic,
     getEventsByGuestNameLogic,
     getEventsByPhoneLogic,
     browseEventsLogic,
     searchEventsLogic,
-    generateShoppingListLogic,
-
+    addGuestToEventLogic,
+    removeGuestFromEventLogic,
+    updateGuestInEventLogic,
+    confirmGuestAttendanceLogic
 };
