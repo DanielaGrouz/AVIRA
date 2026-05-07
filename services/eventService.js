@@ -3,6 +3,7 @@ let guests = require('../models/guestModel');
 let tasks = require('../models/taskModel');
 const guestService = require('./guestService');
 
+// Get all events with pagination and sorting
 const getAllEventsLogic = (page = 1, limit = 5, sortBy = 'id') => {
     let sortedEvents = [...events].sort((a, b) => {
         if (a[sortBy] < b[sortBy]) return -1;
@@ -18,10 +19,12 @@ const getAllEventsLogic = (page = 1, limit = 5, sortBy = 'id') => {
     };
 };
 
+// Get a specific event using its unique ID
 const getEventByIdLogic = (id) => {
     return events.find(e => e.eventId === id) || null;
 };
 
+// Create a new event and add it to the database
 const createEventLogic = (eventData) => {
     const { creatorId, title, date, time, location, eventType, guestsCount } = eventData;
     const newEvent = {
@@ -38,6 +41,7 @@ const createEventLogic = (eventData) => {
     return newEvent;
 };
 
+// Remove an existing event from the system by ID
 const deleteEventLogic = (id) => {
     const eventIndex = events.findIndex(e => e.eventId === id);
     if (eventIndex === -1) throw new Error("EVENT_NOT_FOUND");
@@ -45,6 +49,7 @@ const deleteEventLogic = (id) => {
     return true;
 };
 
+// Modify details of an existing event based on user input
 const updateEventLogic = (id, updateData) => {
     const eventIndex = events.findIndex(e => e.eventId === id);
     if (eventIndex === -1) throw new Error("EVENT_NOT_FOUND");
@@ -63,6 +68,7 @@ const updateEventLogic = (id, updateData) => {
     return events[eventIndex];
 };
 
+// Get a list of all guests invited to a specific event
 const getAllGuestsByEventLogic = (eventId, page = 1, limit = 5, sortBy = 'id') => {
     const eventIndex = events.findIndex(e => e.eventId === eventId);
     if (eventIndex === -1) throw new Error("EVENT_NOT_FOUND");
@@ -84,6 +90,7 @@ const getAllGuestsByEventLogic = (eventId, page = 1, limit = 5, sortBy = 'id') =
     };
 };
 
+// Add a new guest to an event and update the guest count
 const addGuestToEventLogic = (eventId, guestData) => {
     const eventIndex = events.findIndex(event => event.eventId === eventId);
     if (eventIndex === -1) throw new Error("EVENT_NOT_FOUND");
@@ -92,10 +99,55 @@ const addGuestToEventLogic = (eventId, guestData) => {
     return newGuest;
 };
 
+// Get all tasks associated with a specific event ID
 const getTasksByEventIdLogic = (eventId) => {
     const eventIndex = events.findIndex(e => e.eventId === eventId);
     if (eventIndex === -1) throw new Error("EVENT_NOT_FOUND");
     return tasks.filter(t => t.eventId === eventId);
+};
+
+// Get all events created by manager ID
+const getEventsByCreatorLogic = (creatorId) => {
+    return events.filter(e => e.creatorId === parseInt(creatorId));
+};
+
+// Get events where a specific person is invited (by name)
+const getEventsByGuestNameLogic = (name) => {
+    const guestMatches = guests.filter(g => g.name.toLowerCase().includes(name.toLowerCase()));
+    const eventIds = [...new Set(guestMatches.map(g => g.eventId))];
+    return events.filter(e => eventIds.includes(e.eventId));
+};
+
+// Get events where a specific person is invited (by phone number)
+const getEventsByPhoneLogic = (phone) => {
+    const guestMatches = guests.filter(g => g.phone === phone);
+    const eventIds = [...new Set(guestMatches.map(g => g.eventId))];
+    return events.filter(e => eventIds.includes(e.eventId));
+};
+
+// Browse events by any field provided in filters
+const browseEventsLogic = (filters) => {
+    let filteredEvents = [...events];
+    Object.keys(filters).forEach(key => {
+        if (filters[key]) {
+            // Match values as strings for flexibility (e.g., eventType, location, creatorId)
+            filteredEvents = filteredEvents.filter(e =>
+                String(e[key]).toLowerCase() === String(filters[key]).toLowerCase()
+            );
+        }
+    });
+    return filteredEvents;
+};
+
+// Search for a text string across all fields in the event object
+const searchEventsLogic = (query) => {
+    if (!query) return [];
+    const lowerQuery = query.toLowerCase();
+    return events.filter(e =>
+        Object.values(e).some(val =>
+            String(val).toLowerCase().includes(lowerQuery)
+        )
+    );
 };
 
 module.exports = {
@@ -106,5 +158,11 @@ module.exports = {
     updateEventLogic,
     getAllGuestsByEventLogic,
     addGuestToEventLogic,
-    getTasksByEventIdLogic
+    getTasksByEventIdLogic,
+    getEventsByCreatorLogic,
+    getEventsByGuestNameLogic,
+    getEventsByPhoneLogic,
+    browseEventsLogic,
+    searchEventsLogic
+
 };
