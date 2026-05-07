@@ -90,7 +90,7 @@ const createUserLogic = async (userData) => {
 const updateUserLogic = (id, updateData) => {
     const userIndex = users.findIndex(u => u.userId === id);
     if (userIndex === -1) throw new Error("USER_NOT_FOUND");
-    const { firstName, lastName, userRole, phoneNumber, email } = updateData;
+    const { firstName, lastName, userRole, phoneNumber, email, picture } = updateData;
     users[userIndex] = {
         ...users[userIndex],
         firstName: firstName || users[userIndex].firstName,
@@ -98,7 +98,8 @@ const updateUserLogic = (id, updateData) => {
         userRole: userRole || users[userIndex].userRole,
         updateDate: new Date().toISOString(),
         phoneNumber: phoneNumber || users[userIndex].phoneNumber,
-        email: email || users[userIndex].email
+        email: email || users[userIndex].email,
+        picturePath: picture || users[userIndex].picturePath
     };
     return users[userIndex];
 };

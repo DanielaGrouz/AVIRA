@@ -82,39 +82,52 @@ const validateUserFields = (req, res, next) => {
 };
 
 const validateOptionalUserFields = (req, res, next) => {
-    const { firstName, lastName, userRole, password, email, phoneNumber } = req.body;
+    const { firstName, lastName, userRole, password, email, phoneNumber, picture } = req.body;
     let errors = [];
+
     const isProvided = (value) => value !== undefined && value !== null && value !== "";
+
     if (isProvided(firstName)) {
         if (typeof firstName !== 'string' || firstName.trim().length < 2) {
             errors.push("firstName must be a string (min 2 chars)");
         }
     }
+
     if (isProvided(lastName)) {
         if (typeof lastName !== 'string' || lastName.trim().length < 2) {
             errors.push("lastName must be a string (min 2 chars)");
         }
     }
+
     if (isProvided(password)) {
         if (typeof password !== 'string' || password.length < 6) {
             errors.push("password must be at least 6 characters long");
         }
     }
+
     if (isProvided(email)) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
             errors.push("A valid email address is required");
         }
     }
+
     if (isProvided(phoneNumber)) {
         const phoneRegex = /^05\d-?\d{7}$/;
         if (!phoneRegex.test(phoneNumber)) {
             errors.push("A valid Israeli phone number is required (e.g., 0545368889)");
         }
     }
+
     if (isProvided(userRole)) {
         if (!VALID_ROLES.includes(userRole)) {
             errors.push(`userRole must be one of: ${VALID_ROLES.join(', ')}`);
+        }
+    }
+
+    if (isProvided(picture)) {
+        if (typeof picture !== 'string') {
+            errors.push("picture must be a string");
         }
     }
     if (errors.length > 0) {
