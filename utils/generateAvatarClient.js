@@ -1,7 +1,5 @@
 const { HfInference } = require('@huggingface/inference');
-// require('dotenv').config();
 const fs = require('fs');
-// const hf = new HfInference(process.env.HF_TOKEN);
 const configClient = require("./configClient")
 const hf = new HfInference(configClient.getConfig("HF_TOKEN"));
 
@@ -38,9 +36,3 @@ async function generateAvatar(userData) {
 }
 
 exports.generateAvatar = generateAvatar;
-// const obj = {
-//     event_id: "fjhf",
-//     phones: "054545454"
-// }
-
-// `${FRONT_URL}/event/approve?event_id=${obj.event_id}&phone=${obj.phones}`

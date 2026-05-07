@@ -32,4 +32,9 @@ router.post('/:id/tasks', validateId, eventController.addTaskToEvent);
 router.put('/:id/tasks/:taskId', validateId, eventController.updateTaskInEvent);
 router.delete('/:id/tasks/:taskId', validateId, eventController.removeTaskFromEvent);
 
+router.get('/:id/generate-invite', validateId, eventController.generateInvite);
+router.get('/:id/shopping-list', validateId, eventController.generateShoppingList);
+router.get('/:id/task-list', validateId, eventController.generateTaskList);
+router.get('/:id/find-stores', validateId, eventController.findStores);
+
 module.exports = router;
