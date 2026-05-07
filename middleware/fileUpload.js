@@ -1,6 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
+
+// Define the absolute path for the uploads directory
 const uploadDir = path.join(__dirname, '../uploads');
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir);
@@ -8,37 +10,36 @@ if (!fs.existsSync(uploadDir)) {
 
 const fileFilter = (req, file, cb) => {
     const allowedTypes = /jpeg|jpg|png|gif|webp/;
+    // Check extension
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    // Check MIME type (e.g., image/jpeg)
     const mimetype = allowedTypes.test(file.mimetype);
 
     if (extname && mimetype) {
-        return cb(null, true);
+        return cb(null, true); // Accept file
     } else {
+        // Reject file with an error message
         cb(new Error('Only image files are allowed!'), false);
     }
 };
 
 const storage = multer.diskStorage({
-    // Define the specific folder to save the image
+    // Sets the destination folder
     destination: function (req, file, cb) {
         cb(null, uploadDir);
     },
-    // Define the filename (preventing naming conflicts)
     filename: function (req, file, cb) {
-        // Example: image-1634567890123.jpg
+        // Generates a string like: image-1715000000000-123456789.jpg
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
         const ext = path.extname(file.originalname);
         cb(null, file.fieldname + '-' + uniqueSuffix + ext);
     }
 })
 
-// 4. Initialize Multer with the storage and filter configurations
 const upload = multer({
     storage: storage,
     fileFilter: fileFilter,
-    limits: { fileSize: 5 * 1024 * 1024 } // Limit file size to 5MB
+    limits: { fileSize: 5 * 1024 * 1024 } // 5MB Limit
 });
-
-
 
 module.exports = {upload, uploadDir};
