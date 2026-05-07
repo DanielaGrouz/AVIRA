@@ -45,7 +45,7 @@ const validateEventExists = (req, res, next) => {
 
 
 const validateUserFields = (req, res, next) => {
-    const { firstName, lastName, userRole, email, phoneNumber, picturePath } = req.body;
+    const { firstName, lastName, userRole, password, email, phoneNumber } = req.body;
     let errors = [];
     if (!firstName || typeof firstName !== 'string' || firstName.trim().length < 2) {
         errors.push("firstName must be a string (min 2 chars)");
@@ -53,8 +53,8 @@ const validateUserFields = (req, res, next) => {
     if (!lastName || typeof lastName !== 'string' || lastName.trim().length < 2) {
         errors.push("lastName must be a string (min 2 chars)");
     }
-    if (!userRole || !VALID_ROLES.includes(userRole)) {
-        errors.push(`userRole must be one of: ${VALID_ROLES.join(', ')}`);
+    if (!password || typeof password !== 'string' || password.length < 6) {
+        errors.push("password is required and must be at least 6 characters long");
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email || !emailRegex.test(email)) {
@@ -64,8 +64,8 @@ const validateUserFields = (req, res, next) => {
     if (!phoneNumber || !phoneRegex.test(phoneNumber)) {
         errors.push("A valid Israeli phone number is required (e.g., 0545368889)");
     }
-    if (!picturePath || typeof picturePath !== 'string' || picturePath.trim().length === 0) {
-        errors.push("picturePath must be a non-empty string");
+    if (userRole !== undefined && !VALID_ROLES.includes(userRole)) {
+        errors.push(`userRole must be one of: ${VALID_ROLES.join(', ')}`);
     }
     if (errors.length > 0) {
         return res.status(400).json({

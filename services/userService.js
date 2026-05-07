@@ -2,6 +2,9 @@ let users = require('../models/userModel');
 const bcrypt = require("bcrypt");
 const verificationCodes = require("../models/authVerification");
 const { sendMail } = require("../utils/emailClient");
+const {generateAvatar} = require("../utils/generateAvatarClient");
+const fs = require('fs/promises');
+const path = require('path');
 
 const getAllUsersLogic = (page = 1, limit = 5, sortBy = 'id') => {
     let sortedUsers = [...users].sort((a, b) => {
@@ -23,14 +26,51 @@ const getUserByIdLogic = (id) => {
     return users.find(u => u.userId === id) || null;
 };
 
+const generateAvatarPicture = async (firstName, lastName) => {
+    const roles = ["cat", "dog", "fox", "robot", "astronaut", "wizard", "ninja", "panda", "owl", "dragon"];
+    const traitsList = [
+        "wearing stylish glasses",
+        "with a big happy smile",
+        "in a futuristic cyber suit",
+        "wearing a cozy winter scarf",
+        "with a cool leather jacket",
+        "drinking a cup of coffee",
+        "with a cyberpunk aesthetic"
+    ];
+    const colorThemes = [
+        "pastel blue", "mint green", "sunset orange", "lavender purple",
+        "neon pink", "warm gold", "monochrome slate", "cherry blossom pink"
+    ];
+
+    const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
+    const randomRole = getRandom(roles);
+    const randomTrait = getRandom(traitsList);
+    const randomColor = getRandom(colorThemes);
+
+    const userProfile = {
+        role: randomRole,
+        traits: `${randomTrait}, looking friendly, representing the vibe of a person named ${firstName} ${lastName}`,
+        colorTheme: randomColor
+    };
+    const buffer = await generateAvatar(userProfile);
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    let finalPicture = path.join(__dirname, '../uploads', `avatar_ai_${uniqueSuffix}.jpg`);
+    await fs.writeFile(finalPicture, buffer, 'utf8');
+    return finalPicture;
+}
+
 const createUserLogic = async (userData) => {
-    const { firstName, lastName, password, phoneNumber, email } = userData;
+    const { firstName, lastName, userRole, password, phoneNumber, email, picturePath} = userData;
     const existingUser = users.find(u => u.email === email);
     if (existingUser) {
         throw new Error("EMAIL_EXISTS");
     }
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
+    let finalPicture = picturePath;
+    if (!picturePath) {
+        finalPicture = generateAvatarPicture(firstName, lastName);
+    }
     const newUser = {
         userId: users.length > 0 ? Math.max(...users.map(u => u.userId)) + 1 : 1,
         firstName,
@@ -38,9 +78,10 @@ const createUserLogic = async (userData) => {
         email,
         password: hashedPassword,
         phoneNumber,
-        userRole: "user",
+        userRole: userRole || "user",
         createDate: new Date().toISOString(),
-        updateDate: new Date().toISOString()
+        updateDate: new Date().toISOString(),
+        picturePath: finalPicture
     };
     users.push(newUser);
     return newUser;

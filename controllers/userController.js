@@ -297,6 +297,8 @@
 
 const userService = require('../services/userService');
 
+
+
 const getAllUsers = (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
@@ -341,7 +343,12 @@ const getUserById = (req, res) => {
 
 const createUser = async (req, res) => {
     try {
-        const newUser = await userService.createUserLogic(req.body);
+        let picturePath = null;
+        if (req.file){
+            picturePath = `/uploads/${req.file.filename}`
+        }
+        const data = {...req.body, picturePath};
+        const newUser = await userService.createUserLogic(data);
 
         res.status(201).json({
             success: true,

@@ -3,11 +3,12 @@ const router = express.Router();
 const userController = require('../controllers/userController'); // import user logic
 const authorize = require('../middleware/auth');
 const { validateId, validateUserFields } = require('../middleware/validation');
+const {upload} = require("../middleware/fileUpload");
 
 
 router.get('/',authorize(['admin']), userController.getAllUsers);
 router.get('/:id', validateId, userController.getUserById);
-router.post('/', validateUserFields, userController.createUser);
+router.post('/', upload.single('picture'), validateUserFields, userController.createUser);
 router.put('/:id', validateId, validateUserFields, userController.updateUser);
 router.delete('/:id', validateId, userController.deleteUser);
 router.post('/login', userController.login);

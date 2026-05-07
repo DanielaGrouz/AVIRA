@@ -4,9 +4,12 @@ const userRoutes = require('./routes/userRoutes');
 const guestsRoutes = require('./routes/guestsRoutes');
 // const eventRoutes = require('./routes/eventRoutes');
 const taskRoutes = require('./routes/tasksRoutes');
+const {uploadDir} = require("./middleware/fileUpload");
 const app = express();
 const port = 3000;
 
+
+app.use('/uploads', express.static(uploadDir));
 app.use(express.json());
 app.use(logger);
 

@@ -37,21 +37,7 @@ async function generateAvatar(userData) {
     }
 }
 
-// Example Usage
-const userProfile = {
-    role: "dog",
-    traits: "grey hair and green eyes, looking friendly but a little aggressive",
-    colorTheme: "pastel blue"
-};
-
-generateAvatar(userProfile).then(buffer => {
-    if(buffer) {
-        fs.writeFileSync('avatar.png', buffer);
-        console.log("Success! Avatar saved as avatar.png");
-    }
-});
-
-
+exports.generateAvatar = generateAvatar;
 // const obj = {
 //     event_id: "fjhf",
 //     phones: "054545454"
