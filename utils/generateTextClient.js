@@ -25,17 +25,89 @@ async function getHumanInvite(event) {
 }
 
 
-async function main(){
-    // Example for AVIRA
-    // fetch event metadata from db
+async function getSupermarketList(event) {
+    const { title, date, time, location, eventType, guestsCount } = event;
 
-    const inviteText = await getHumanInvite({
-        title: "the AVIRA project launch drinks",
-        location: "the tech hub rooftop",
-        date: "September 12th",
-        vibe: "relaxed but proud"
+    const chatCompletion = await groq.chat.completions.create({
+        "messages": [
+            {
+                "role": "system",
+                "content": `You are a precision logistics assistant for events. 
+                Return a JSON object containing a "shopping_list" array. 
+                
+                Rules for items:
+                1. BE SPECIFIC: Never use broad terms like "Fresh fruits" or "Snacks". Instead, list "Strawberries", "Blueberries", "Salted Pretzels", etc.
+                2. SCHEMA: Each element must have:
+                   - "item": Specific product name.
+                   - "quantity": The numeric value.
+                   - "unit": The measurement unit (e.g., "kg", "ml", "grams", "bottles", "packs").
+                
+                Base quantities logically on ${guestsCount} guests for a ${eventType}. 
+                Only return valid JSON.`
+            },
+            {
+                "role": "user",
+                "content": `Event: ${title}
+                Guests: ${guestsCount}
+                Location: ${location}
+                Event Type: ${eventType}
+                Timing: ${date} at ${time}`
+            }
+        ],
+        "model": "llama-3.3-70b-versatile",
+        "response_format": { "type": "json_object" },
+        "temperature": 0.3
     });
 
-    console.log(inviteText);
+    try {
+        const response = JSON.parse(chatCompletion.choices[0].message.content);
+        return response.shopping_list;
+    } catch (error) {
+        console.error("Error parsing Groq response:", error);
+        return [];
+    }
 }
-main();
+
+async function getEventTaskList(event) {
+    const { title, date, time, eventType, guestsCount } = event;
+
+    const chatCompletion = await groq.chat.completions.create({
+        "messages": [
+            {
+                "role": "system",
+                "content": `You are a high-end event manager. Return a JSON object containing a "task_list" array.
+                
+                Rules for tasks:
+                1. NO CATEGORIES: Just provide specific, actionable tasks.
+                2. HYPER-SPECIFIC: Instead of "Order food," use tasks like "Call catering to finalize finger food menu" or "Place order for 15 pizzas."
+                3. SCHEMA: Each element must have:
+                   - "task": The highly specific action.
+                   - "daysBefore": Numeric value representing how many days before the event this should be completed.
+                
+                Base the logic on a ${eventType} for ${guestsCount} people. 
+                Only return valid JSON.`
+            },
+            {
+                "role": "user",
+                "content": `Event: ${title}
+                Date: ${date}
+                Time: ${time}`
+            }
+        ],
+        "model": "llama-3.3-70b-versatile",
+        "response_format": { "type": "json_object" },
+        "temperature": 0.4
+    });
+
+    try {
+        const response = JSON.parse(chatCompletion.choices[0].message.content);
+        return response.task_list;
+    } catch (error) {
+        console.error("Error parsing task list:", error);
+        return [];
+    }
+}
+
+
+
+module.exports = { getHumanInvite, getSupermarketList, getEventTaskList };

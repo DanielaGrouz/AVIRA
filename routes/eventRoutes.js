@@ -26,4 +26,9 @@ router.get('/:id/guests', validateId, eventController.getAllGuestsByEvent);
 router.post('/:id/guests', validateId, validateGuestFields, eventController.addGuestToEvent);
 router.get('/:id/tasks', validateId, eventController.getTasksByEventId);
 
+router.get('/:id/generate-invite', validateId, eventController.generateInvite);
+router.get('/:id/shopping-list', validateId, eventController.generateShoppingList);
+router.get('/:id/task-list', validateId, eventController.generateTaskList);
+router.get('/:id/find-stores', validateId, eventController.findStores);
+
 module.exports = router;

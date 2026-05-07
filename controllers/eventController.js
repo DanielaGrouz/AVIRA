@@ -263,7 +263,89 @@ const searchEvents = (req, res) => {
     }
 };
 
+const generateInvite = async (req, res) => {
+    try {
+        const inviteImage = await eventService.generatePhotoInviteLogic(parseInt(req.params.id));
+        res.set('Content-Type', 'image/jpeg');
+        res.status(200).send(inviteImage);
+    } catch (error) {
+        console.error(error);
+        if (error.message === "EVENT_NOT_FOUND") {
+            return res.status(404).json({
+                success: false,
+                data: null,
+                error: { code: "NOT_FOUND", message: "Event not found", details: {} }
+            });
+        }
+        res.status(500).json({ success: false, data: null,
+            error: {
+                code: "Internal Server Error", message: "Internal Server Error", details: {}
+            }});
+    }
+};
+
+const generateShoppingList = async (req, res) => {
+    try {
+        const shoppingList = await eventService.generateShoppingListLogic(req.params.id);
+        res.status(200).json({ success: true, data: shoppingList, error: null });
+    } catch (error) {
+        console.error(error);
+        if (error.message === "EVENT_NOT_FOUND") {
+            return res.status(404).json({
+                success: false,
+                data: null,
+                error: { code: "NOT_FOUND", message: "Event not found", details: {} }
+            });
+        }
+        res.status(500).json({ success: false, data: null,
+            error: {
+                code: "Internal Server Error", message: "Internal Server Error", details: {}
+            }});
+    }
+};
+
+const generateTaskList = async (req, res) => {
+    try {
+        const taskList = await eventService.generateTaskListLogic(parseInt(req.params.id));
+        res.status(200).json({ success: true, data: taskList, error: null });
+    } catch (error) {
+        console.error(error);
+        if (error.message === "EVENT_NOT_FOUND") {
+            return res.status(404).json({
+                success: false,
+                data: null,
+                error: { code: "NOT_FOUND", message: "Event not found", details: {} }
+            });
+        }
+        res.status(500).json({ success: false, data: null,
+            error: {
+                code: "Internal Server Error", message: "Internal Server Error", details: {}
+            }});
+    }
+};
+
+const findStores = async (req, res) => {
+    try {
+        const storesList = await eventService.findRelevantStores(parseInt(req.params.id));
+        res.status(200).json({ success: true, data: storesList, error: null });
+    } catch (error) {
+        console.error(error);
+        if (error.message === "EVENT_NOT_FOUND") {
+            return res.status(404).json({
+                success: false,
+                data: null,
+                error: { code: "NOT_FOUND", message: "Event not found", details: {} }
+            });
+        }
+        res.status(500).json({ success: false, data: null,
+            error: {
+                code: "Internal Server Error", message: "Internal Server Error", details: {}
+            }});
+    }
+};
+
 module.exports = {
+    generateInvite, generateShoppingList, generateTaskList, findStores,
     getAllEvents,
     getEventById,
     createEvent,
