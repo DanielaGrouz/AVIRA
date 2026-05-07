@@ -1,20 +1,18 @@
-// const express = require('express');
-// const router = express.Router();
-// const eventController = require('../controllers/eventController');
-// const { validateId } = require('../middleware/validation');
-// const authorize = require("../middleware/auth");
-// const userController = require("../controllers/userController");
-// const {validateUserFields} = require("../middleware/validation");
-// const guestController = require("../controllers/guestController");
-//
-// router.get('/', authorize(['admin']), eventController.getAllEvents);
-// router.get('/:id', validateId, userController.getEventById);
-// router.post('/', validateUserFields, userController.createEvent);
-// router.put('/:id', validateId, validateUserFields, userController.updateEvent);
-// router.delete('/:id', validateId, userController.deleteEvent);
-// router.get('/:eventId', validateId, eventController.getAllGuestsByEvent);
-//
-// router.post('/event/:eventId', validateId, validateGuestFields, guestController.addGuestToEvent);
+const express = require('express');
+const router = express.Router();
+const eventController = require('../controllers/eventController');
+const { validateId, validateEventId, validateGuestFields} = require('../middleware/validation');
+const authorize = require("../middleware/auth");
+const {validateEventFields, validateUserExists} = require("../middleware/validation");
+
+router.get('/', authorize(['admin']), eventController.getAllEvents);
+router.get('/:id', validateId, eventController.getEventById);
+router.post('/', validateUserExists, validateEventFields, eventController.createEvent);
+router.put('/:id', validateId, validateEventFields, eventController.updateEvent);
+router.delete('/:id', validateId, eventController.deleteEvent);
+router.get('/:id', validateId, eventController.getAllGuestsByEvent);
+router.post('/:id', validateId, validateGuestFields, eventController.addGuestToEvent);
+
 //
 // // עדכון פרטי אירוע (שם, מיקום, תאריך וכו')
 // router.patch('/event/:eventId', validateId, eventController.updateEventDetails);
