@@ -9,7 +9,7 @@ let events = [
     { eventId: 107, creatorId: 3, title: "Product Launch Party", date: "2026-10-01", time: "20:00", location: "Expo Tel Aviv", eventType: "Launch", guestsCount: 2 },
     { eventId: 108, creatorId: 1, title: "Friday Night Family Dinner", date: "2026-05-01", time: "19:30", location: "Home", eventType: "Dinner", guestsCount: 1 },
     { eventId: 109, creatorId: 2, title: "Summer Cocktail Night", date: "2026-07-15", time: "21:00", location: "Rooftop Bar", eventType: "Cocktail", guestsCount: 1 },
-    { eventId: 110, creatorId: 1, title: "Wedding Anniversary", date: "2026-11-20", time: "20:00", location: "Sheraton", eventType: "Anniversary", guestsCount: 1 }
+    { eventId: 110, creatorId: 1, title: "Wedding Anniversary", date: "2026-11-20", time: "20:00", location: "Sheraton", eventType: "Anniversary", guestsCount: 1, superMarketList: null, tasksList: null }
 ];
 
 module.exports = events;

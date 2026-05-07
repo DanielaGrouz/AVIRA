@@ -2,9 +2,8 @@ let events = require('../models/eventModel');
 let guests = require('../models/guestModel');
 let tasks = require('../models/taskModel');
 const guestService = require('./guestService');
-const {getSupermarketList, getEventTaskList} = require("../utils/generateTextClient");
+const {getSupermarketList, getEventTaskList, getStoresForEvent} = require("../utils/generateTextClient");
 const {generateEventInvite} = require("../utils/generateImageClient");
-const {getStoresForEvent} = require("../utils/geminaiClient");
 
 // Get all events with pagination and sorting
 const getAllEventsLogic = (page = 1, limit = 5, sortBy = 'id') => {
@@ -156,26 +155,34 @@ const searchEventsLogic = (query) => {
 const generatePhotoInviteLogic = async (eventId) => {
     const event = events.find(e => e.eventId === parseInt(eventId));
     if (!event) throw new Error("EVENT_NOT_FOUND");
+    // TODO: save the image
     return await generateEventInvite(event);
 };
 
 const generateShoppingListLogic = async (eventId) => {
-    const event = events.find(e => e.eventId === parseInt(eventId));
-    if (!event) throw new Error("EVENT_NOT_FOUND");
-    return await getSupermarketList(event);
+    const index = events.findIndex(e => e.eventId === parseInt(eventId));
+    if (index === -1) throw new Error("EVENT_NOT_FOUND");
+    const event = events[index];
+    const superMarketList = await getSupermarketList(event);
+    events[index] = {...event, superMarketList};
+    return superMarketList;
 };
 
 const generateTaskListLogic = async (eventId) => {
-    const event = events.find(e => e.eventId === parseInt(eventId));
-    if (!event) throw new Error("EVENT_NOT_FOUND");
+    const index = events.findIndex(e => e.eventId === parseInt(eventId));
+    if (index === -1) throw new Error("EVENT_NOT_FOUND");
+    const event = events[index];
     const tasksList = await getEventTaskList(event);
-    events.find
+    events[index] = {...event, tasksList};
+    return tasksList;
 };
 
-const findRelevantStores = async (eventId) => {
+const findRelevantStores = async (currLocation, eventId) => {
     const event = events.find(e => e.eventId === parseInt(eventId));
     if (!event) throw new Error("EVENT_NOT_FOUND");
-    return getStoresForEvent(event);
+    if (!event.tasksList) throw new Error("TASKS_LIST_NOT_FOUND");
+    const tasksList = event.tasksList.map(task => task.task);
+    return getStoresForEvent(currLocation, tasksList);
 }
 
 module.exports = {

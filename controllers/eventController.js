@@ -326,7 +326,7 @@ const generateTaskList = async (req, res) => {
 
 const findStores = async (req, res) => {
     try {
-        const storesList = await eventService.findRelevantStores(parseInt(req.params.id));
+        const storesList = await eventService.findRelevantStores(req.body.location, parseInt(req.params.id));
         res.status(200).json({ success: true, data: storesList, error: null });
     } catch (error) {
         console.error(error);
@@ -335,6 +335,13 @@ const findStores = async (req, res) => {
                 success: false,
                 data: null,
                 error: { code: "NOT_FOUND", message: "Event not found", details: {} }
+            });
+        }
+        else if (error.message === "TASKS_LIST_NOT_FOUND") {
+            return res.status(400).json({
+                success: false,
+                data: null,
+                error: { code: "BAD_REQUEST", message: "task list was not generated yet", details: {} }
             });
         }
         res.status(500).json({ success: false, data: null,
