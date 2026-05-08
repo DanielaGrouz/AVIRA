@@ -2,6 +2,8 @@ let events = require('../models/eventModel');
 let guests = require('../models/guestModel');
 let tasks = require('../models/taskModel');
 const guestService = require('./guestService');
+const {getSupermarketList, getEventTaskList, getStoresForEvent} = require("../utils/generateTextClient");
+const {generateEventInvite} = require("../utils/generateImageClient");
 const taskService = require('./taskService');
 
 // Get all events with pagination and sorting
@@ -212,7 +214,44 @@ const confirmGuestAttendanceLogic = (eventId, guestId, rsvpStatus) => {
     return guestService.updateGuestLogic(guestId, { status: rsvpStatus });
 };
 
+const generatePhotoInviteLogic = async (eventId) => {
+    const event = events.find(e => e.eventId === parseInt(eventId));
+    if (!event) throw new Error("EVENT_NOT_FOUND");
+    // TODO: save the image
+    return await generateEventInvite(event);
+};
+
+const generateShoppingListLogic = async (eventId) => {
+    const index = events.findIndex(e => e.eventId === parseInt(eventId));
+    if (index === -1) throw new Error("EVENT_NOT_FOUND");
+    const event = events[index];
+    const superMarketList = await getSupermarketList(event);
+    events[index] = {...event, superMarketList};
+    return superMarketList;
+};
+
+const generateTaskListLogic = async (eventId) => {
+    const index = events.findIndex(e => e.eventId === parseInt(eventId));
+    if (index === -1) throw new Error("EVENT_NOT_FOUND");
+    const event = events[index];
+    const tasksList = await getEventTaskList(event);
+    events[index] = {...event, tasksList};
+    return tasksList;
+};
+
+const findRelevantStores = async (currLocation, eventId) => {
+    const event = events.find(e => e.eventId === parseInt(eventId));
+    if (!event) throw new Error("EVENT_NOT_FOUND");
+    if (!event.tasksList) throw new Error("TASKS_LIST_NOT_FOUND");
+    const tasksList = event.tasksList.map(task => task.task);
+    return getStoresForEvent(currLocation, tasksList);
+}
+
 module.exports = {
+    generateShoppingListLogic,
+    findRelevantStores,
+    generatePhotoInviteLogic,
+    generateTaskListLogic,
     getAllEventsLogic,
     getEventByIdLogic,
     createEventLogic,

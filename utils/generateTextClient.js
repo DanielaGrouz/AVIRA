@@ -123,9 +123,6 @@ async function getStoresForEvent(currLocation, tasksList) {
     const radius = 2500; // Search within a 2.5km radius
 
     try {
-        // ---------------------------------------------------------
-        // STEP 1: LLM extracts required OSM tags from the task list
-        // ---------------------------------------------------------
         const extractionPrompt = `
       You are an event management routing assistant.
       Given this list of tasks: ${JSON.stringify(tasksList)}
@@ -136,26 +133,20 @@ async function getStoresForEvent(currLocation, tasksList) {
 
         const groqResponse1 = await groq.chat.completions.create({
             messages: [{ role: 'user', content: extractionPrompt }],
-            model: 'llama-3.3-70b-versatile', // <-- UPDATED MODEL
+            model: 'llama-3.3-70b-versatile',
             temperature: 0.1,
         });
 
         const storeTypes = parseLLMJSON(groqResponse1.choices[0]?.message?.content);
 
         if (!storeTypes || storeTypes.length === 0) return [];
-
-        // ---------------------------------------------------------
-        // STEP 2: Overpass API fetches real locations (WITH RETRIES)
-        // ---------------------------------------------------------
         let overpassQuery = `[out:json][timeout:25];\n(\n`;
-
         storeTypes.forEach(type => {
             overpassQuery += `  nwr["shop"="${type}"](around:${radius},${lat},${lon});\n`;
             overpassQuery += `  nwr["amenity"="${type}"](around:${radius},${lat},${lon});\n`;
         });
         overpassQuery += `);\nout center;`;
 
-        // List of public Overpass mirrors
         const overpassEndpoints = [
             'https://overpass-api.de/api/interpreter',       // Main server
             'https://overpass.kumi.systems/api/interpreter', // Kumi Systems (Often very fast)
@@ -165,7 +156,6 @@ async function getStoresForEvent(currLocation, tasksList) {
         let osmResponse = null;
         let serverSuccess = false;
 
-        // Try each server one by one until one works
         for (const url of overpassEndpoints) {
             try {
                 console.log(`Querying Overpass server: ${url}`);
@@ -178,24 +168,21 @@ async function getStoresForEvent(currLocation, tasksList) {
                             'Accept': 'application/json',
                             'User-Agent': 'Event-Management-Backend/1.0'
                         },
-                        timeout: 25000 // Tell Axios to give up after 25 seconds
+                        timeout: 25000
                     }
                 );
 
-                // If we get here, the request succeeded! Break out of the loop.
                 serverSuccess = true;
                 break;
 
             } catch (error) {
                 console.warn(`Server ${url} failed or timed out. Trying the next one...`);
-                // The loop will automatically continue to the next URL
             }
         }
 
-        // If ALL servers failed, we have to abort gracefully
         if (!serverSuccess || !osmResponse) {
             console.error("All Overpass servers are currently overloaded.");
-            return []; // Return empty so your frontend doesn't crash
+            return [];
         }
 
         // Clean up the OSM data
@@ -209,12 +196,8 @@ async function getStoresForEvent(currLocation, tasksList) {
                 address: el.tags['addr:street'] ? `${el.tags['addr:street']} ${el.tags['addr:housenumber'] || ''}`.trim() : 'Address not listed'
             }));
 
-        // Fail gracefully if no real stores match the coordinates
         if (candidatePlaces.length === 0) return [];
 
-        // ---------------------------------------------------------
-        // STEP 3: LLM maps the real stores to the original tasks
-        // ---------------------------------------------------------
         const filteringPrompt = `
       Event tasks: ${JSON.stringify(tasksList)}
       Nearby stores found: ${JSON.stringify(candidatePlaces)}
@@ -226,7 +209,7 @@ async function getStoresForEvent(currLocation, tasksList) {
 
         const groqResponse2 = await groq.chat.completions.create({
             messages: [{ role: 'user', content: filteringPrompt }],
-            model: 'llama-3.3-70b-versatile', // <-- UPDATED MODEL
+            model: 'llama-3.3-70b-versatile',
             temperature: 0.2,
         });
 
