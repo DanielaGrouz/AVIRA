@@ -23,20 +23,26 @@ To start the development server, run:
 ```bash
 node server.js
 ```
-The API will be accessible at: `http://localhost:3000`
 
+The API will be accessible at:
+
+- Port: `3000`
+- Base URL: `http://localhost:3000`
+- API Base Path: `/` (All endpoints branch directly from the base URL)
 ---
 
 ## 🛠 Project Structure & Logic
 
 The project follows a modular structure to ensure maintainability and separation of concerns:
 
-- **`server.js`**: Application entry point and global middleware configuration.
-- **`routes/`**: Route definitions using Express Router.
-- **`controllers/`**: Request handlers and business logic.
-- **`models/`**: Mock data modules and system constants.
-- **`middleware/`**: Reusable logic for Logging, Authorization, and Validation.
-- **`docs/`**: API documentation and Postman collections.
+- server.js – Entry point and  global middleware configuration.
+- routes/ – Express route definitions.
+- controllers/ – HTTP request handlers and response management.
+- services/ – Core business logic and service-layer operations.
+- models/ – Mock data modules and system constants.
+- middleware/ – Reusable logic for Logging, Authorization, and Validation.
+- utils/ – Helper utilities for AI, email, and external integrations.
+- docs/ –API documentation and Postman collections.
 
 ### Key Assumptions
 - **In-Memory Storage**: Data is stored in RAM and resets whenever the server restarts.
@@ -45,17 +51,56 @@ The project follows a modular structure to ensure maintainability and separation
 
 ---
 
-## 📑 API Reference (Users Resource)
+## 📑 API Reference
 
-| Method | Endpoint | Description | Auth Required |
-|:--- |:--- |:--- |:--- |
-| **GET** | `/users` | Get all registered users | No |
-| **GET** | `/users/:id` | Get a specific user by ID | No |
-| **POST** | `/users` | Create a new user | Admin/Manager |
-| **PUT** | `/users/:id` | Update an existing user | Admin/Manager |
-| **DELETE** | `/users/:id` | Remove a user from the system | Admin |
+### 1. Users Resource
 
-### Request Example (Create User)
+| Method | Endpoint    | Description                  | Auth Required |
+|--------|------------|------------------------------|--------------|
+| GET    | /users     | Get all users                | No           |
+| GET    | /users/:id | Get user by ID              | No           |
+| POST   | /users     | Create user                 | Admin/Manager|
+| PUT    | /users/:id | Update user                 | Admin/Manager|
+| DELETE | /users/:id | Delete user                 | Admin        |
+
+
+### 2. Events Resource
+
+| Method | Endpoint             | Description               | Query Params                     |
+|--------|---------------------|---------------------------|----------------------------------|
+| GET    | /events/search      | Search events             | ?q=text                          |
+| GET    | /events/browse      | Filter events             | eventType, location              |
+| GET    | /events/creator/:id | Events by manager         | None                             |
+| GET    | /events             | Get all (paginated)       | page, limit, sortBy              |
+| GET    | /events/:id         | Get event by ID           | None                             |
+| POST   | /events             | Create event              | Manager                          |
+| PUT    | /events/:id         | Update event              | Manager                          |
+| DELETE | /events/:id         | Delete event              | Admin/Manager                    |
+
+
+### 3. Guests (Event Sub-resources)
+
+| Method | Endpoint                         | Description        | Body             |
+|--------|----------------------------------|--------------------|------------------|
+| GET    | /events/:id/guests              | Get guests         | None             |
+| POST   | /events/:id/guests              | Add guest          | name, phone, role|
+| DELETE | /events/:id/guests/:gId         | Delete guest       | None             |
+| PATCH  | /events/:id/guests/:gId/rsvp    | Update RSVP        | status           |
+
+
+### 4. Tasks (Event Sub-resources)
+
+| Method | Endpoint                         | Description        | Body             |
+|--------|----------------------------------|--------------------|------------------|
+| GET    | /events/:id/tasks               | Get tasks          | None             |
+| POST   | /events/:id/tasks               | Add task           | title, priority  |
+| PUT    | /events/:id/tasks/:tId          | Update task        | status, title    |
+
+---
+
+
+### Example Requests & Responses
+
 **Endpoint:** `POST /users`  
 **Headers:** `x-user-role: admin`  
 **Body (JSON):**
@@ -69,35 +114,76 @@ The project follows a modular structure to ensure maintainability and separation
 
 ---
 
+## 💡 Example Requests & Responses
+
+### 🟢 Example Success Response (Create Event)
+
+**Request:** `POST /events`
+
+**Body:**
+```json
+{
+  "creatorId": 1,
+  "title": "Summer Rooftop Party",
+  "date": "2026-08-15",
+  "time": "21:00",
+  "location": "Tel Aviv",
+  "eventType": "Party",
+  "guestsCount": 0
+}
+```
+
+**Response (201 Created):**
+```json
+{
+  "success": true,
+  "data": {
+    "eventId": 111,
+    "creatorId": 1,
+    "title": "Summer Rooftop Party",
+    "date": "2026-08-15",
+    "time": "21:00",
+    "location": "Tel Aviv",
+    "eventType": "Party",
+    "guestsCount": 0
+  },
+  "error": null
+}
+```
+
+### 🔴 Example Error Response (Not Found)
+
+**Request:** `GET /events/999`
+
+**Response (404 Not Found):**
+```json
+{
+  "success": false,
+  "data": null,
+  "error": {
+    "code": "NOT_FOUND",
+    "message": "Event with ID 999 was not found.",
+    "details": {}
+  }
+}
+```
+---
+
 ## 🧪 Testing with Postman
 
 To test the API effectively:
 1. Open **Postman**.
 2. Import the collection file located in `/docs/AVIRA_API_Collection.json`.
-3. Set the request headers for protected routes:
-   - Key: `x-user-role`
-   - Value: `admin` (or `manager` / `user`)
+3. The collection is organized by folders for each resource.
+4. Set the request headers for protected routes where necessary:
+    - Key: `x-user-role`
+    - Value: `admin` (or `manager` / `user`)
 
-### Example Responses
-- **Success (201 Created):**
-  ```json
-  { "success": true, "data": { "userId": 3 }, "error": null }
-  ```
-- **Error (403 Forbidden):**
-  ```json
-  { "success": false, "data": null, "error": { "code": "FORBIDDEN", "message": "..." } }
-  ```
 
 ---
-
 ## ✒️ Author
-**Daniela** *Information Systems Engineering Student - Ben-Gurion University*
-```
 
-### למה הקובץ הזה מצוין ל-GitHub?
-1. **טבלאות:** השתמשתי בטבלה עבור ה-API Reference, מה שהופך את זה לקריא מאוד.
-2. **סימון קוד:** קטעי הקוד צבועים (Syntax Highlighting) לפי שפת Javascript/JSON.
-3. **Emojis:** האיקונים מוסיפים צבע וסדר ויזואלי.
-4. **מבנה היררכי:** שימוש ב-`#` ו-`##` יוצר תוכן עניינים אוטומטי ב-GitHub וב-PyCharm.
+**Daniela Grouz & Rinat Hadad**
 
-**טיפ קטן:** כשאת פותחת את הקובץ ב-PyCharm, תראי בצד ימין למעלה כפתור קטן של **Preview** (סמל של דף עם זכוכית מגדלת). לחיצה עליו תראה לך בדיוק איך זה יוצג ב-GitHub!
+3rd Year Information Systems and Software Engineering Students  
+Ben-Gurion University
