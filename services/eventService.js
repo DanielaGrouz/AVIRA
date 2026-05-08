@@ -217,9 +217,15 @@ const confirmGuestAttendanceLogic = (eventId, guestId, rsvpStatus) => {
 const generatePhotoInviteLogic = async (eventId) => {
     const event = events.find(e => e.eventId === parseInt(eventId));
     if (!event) throw new Error("EVENT_NOT_FOUND");
-    // TODO: save the image
     return await generateEventInvite(event);
 };
+
+const saveInvitationLogic = async (eventId, invitePath) => {
+    const index = events.findIndex(e => e.eventId === parseInt(eventId));
+    if (index === -1) throw new Error("EVENT_NOT_FOUND");
+    const event = events[index];
+    events[index] = {...event, invitationPath: invitePath};
+}
 
 const generateShoppingListLogic = async (eventId) => {
     const index = events.findIndex(e => e.eventId === parseInt(eventId));
@@ -248,6 +254,7 @@ const findRelevantStores = async (currLocation, eventId) => {
 }
 
 module.exports = {
+    saveInvitationLogic,
     generateShoppingListLogic,
     findRelevantStores,
     generatePhotoInviteLogic,

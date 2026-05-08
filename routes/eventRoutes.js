@@ -3,6 +3,7 @@ const router = express.Router();
 const eventController = require('../controllers/eventController');
 const { validateId, validateEventFields, validateUserExists, validateGuestFields } = require('../middleware/validation');
 const authorize = require("../middleware/auth");
+const {upload} = require("../middleware/fileUpload");
 
 // Search and Browse (Placed first to avoid conflicts with /:id)
 router.get('/search', eventController.searchEvents);
@@ -36,5 +37,6 @@ router.get('/:id/generate-invite', validateId, eventController.generateInvite);
 router.get('/:id/shopping-list', validateId, eventController.generateShoppingList);
 router.get('/:id/task-list', validateId, eventController.generateTaskList);
 router.get('/:id/find-stores', validateId, eventController.findStores);
+router.put('/:id/save-invitation', upload.single('picture'), validateId, eventController.saveInvitation);
 
 module.exports = router;

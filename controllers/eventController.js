@@ -467,8 +467,29 @@ const findStores = async (req, res) => {
     }
 };
 
+const saveInvitation = async (req, res) => {
+    try {
+        const picturePath = `/uploads/${req.file.filename}`;
+        await eventService.saveInvitationLogic(parseInt(req.params.id), picturePath);
+        res.status(200).json({ success: true, data: {path: picturePath}, error: null });
+    } catch (error) {
+        console.error(error);
+        if (error.message === "EVENT_NOT_FOUND") {
+            return res.status(404).json({
+                success: false,
+                data: null,
+                error: { code: "NOT_FOUND", message: "Event not found", details: {} }
+            });
+        }
+        res.status(500).json({ success: false, data: null,
+            error: {
+                code: "Internal Server Error", message: "Internal Server Error", details: {}
+            }});
+    }
+}
 
 module.exports = {
+    saveInvitation,
     findStores,
     generateInvite,
     generateShoppingList,
