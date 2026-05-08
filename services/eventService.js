@@ -231,25 +231,25 @@ const generateShoppingListLogic = async (eventId) => {
     const index = events.findIndex(e => e.eventId === parseInt(eventId));
     if (index === -1) throw new Error("EVENT_NOT_FOUND");
     const event = events[index];
-    const superMarketList = await getSupermarketList(event);
-    events[index] = {...event, superMarketList};
-    return superMarketList;
+    return getSupermarketList(event);
+    // events[index] = {...event, superMarketList};
+    // return superMarketList;
 };
 
 const generateTaskListLogic = async (eventId) => {
     const index = events.findIndex(e => e.eventId === parseInt(eventId));
     if (index === -1) throw new Error("EVENT_NOT_FOUND");
     const event = events[index];
-    const tasksList = await getEventTaskList(event);
-    events[index] = {...event, tasksList};
-    return tasksList;
+    // events[index] = {...event, tasksList};
+    return getEventTaskList(event);
 };
 
 const findRelevantStores = async (currLocation, eventId) => {
     const event = events.find(e => e.eventId === parseInt(eventId));
     if (!event) throw new Error("EVENT_NOT_FOUND");
-    if (!event.tasksList) throw new Error("TASKS_LIST_NOT_FOUND");
-    const tasksList = event.tasksList.map(task => task.task);
+    let tasksList = tasks.filter(task => task.eventId === eventId);
+    if (tasksList.length === 0) throw new Error("TASKS_LIST_IS_EMPTY");
+    tasksList = tasksList.map(task => task.title);
     return getStoresForEvent(currLocation, tasksList);
 }
 

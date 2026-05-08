@@ -453,7 +453,7 @@ const findStores = async (req, res) => {
                 error: { code: "NOT_FOUND", message: "Event not found", details: {} }
             });
         }
-        else if (error.message === "TASKS_LIST_NOT_FOUND") {
+        else if (error.message === "TASKS_LIST_IS_EMPTY") {
             return res.status(400).json({
                 success: false,
                 data: null,
