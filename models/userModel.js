@@ -1,0 +1,150 @@
+// const bcrypt = require("bcrypt");
+const users = [
+    {
+        userId: 1,
+        firstName: 'Daniela',
+        lastName: 'Levi',
+        createDate: '2026-04-27T10:00:00Z',
+        updateDate: '2026-04-27T10:00:00Z',
+        userRole: 'admin',
+        password: '$2b$10$5h3ulsTQMjik8LbUZVVzU.5ClNVKy9VcFZ34lrHXF4qS4bv2R.mZe',
+        phoneNumber: '0545368889',
+        email: 'danielagrouz@gmail.com',
+        originalPassword: '123456',
+        picturePath: "../sources/avatar1.png"
+    },
+    {
+        userId: 2,
+        firstName: 'Yosef',
+        lastName: 'Cohen',
+        createDate: '2026-04-27T11:00:00Z',
+        updateDate: '2026-04-27T11:30:00Z',
+        userRole: 'user',
+        password: '$2b$10$5h3ulsTQMjik8LbUZVVzU.0IpY8PTwbHzHFlOOSCGSQ.2VKowdcAm',
+        phoneNumber: '0501234567',
+        email: 'yosef.cohen@example.com',
+        originalPassword: 'password123',
+        picturePath: "../sources/avatar2.png"
+    },
+    {
+        userId: 3,
+        firstName: 'Rinat',
+        lastName: 'Mizrahi',
+        createDate: '2026-04-28T09:15:00Z',
+        updateDate: '2026-04-28T09:15:00Z',
+        userRole: 'user',
+        password: '$2b$10$5h3ulsTQMjik8LbUZVVzU.jZE3NNa.da9bjOcWpDLsrUh1P6DUOHu',
+        phoneNumber: '0529876543',
+        email: 'rinat.m@example.com',
+        originalPassword: 'rinatPass!',
+        picturePath: "../sources/avatar3.png"
+    },
+    {
+        userId: 4,
+        firstName: 'Omer',
+        lastName: 'Peretz',
+        createDate: '2026-04-28T14:20:00Z',
+        updateDate: '2026-04-28T15:00:00Z',
+        userRole: 'user',
+        password: '$2b$10$5h3ulsTQMjik8LbUZVVzU.x3thpZkCTa/t6G2PMxjGNgKVWowEy1e',
+        phoneNumber: '0533344556',
+        email: 'omer.peretz@example.com',
+        originalPassword: 'omerP2026',
+        picturePath: "../sources/avatar4.png"
+    },
+    {
+        userId: 5,
+        firstName: 'Noa',
+        lastName: 'Avraham',
+        createDate: '2026-04-29T08:45:00Z',
+        updateDate: '2026-04-29T08:45:00Z',
+        userRole: 'user',
+        password: '$2b$10$5h3ulsTQMjik8LbUZVVzU.mYYxqISDGD1cabn3SVFw51SZH/TPff2',
+        phoneNumber: '0587766554',
+        email: 'noa.av@example.com',
+        originalPassword: 'noaSecure!',
+        picturePath: "../sources/avatar5.png"
+    },
+    {
+        userId: 6,
+        firstName: 'Itay',
+        lastName: 'Golan',
+        createDate: '2026-04-29T10:05:00Z',
+        updateDate: '2026-04-29T12:10:00Z',
+        userRole: 'user',
+        password: '$2b$10$5h3ulsTQMjik8LbUZVVzU.KvdRHRFItbTMt2uL18fGB9Oyh3mqUIS',
+        phoneNumber: '0541122334',
+        email: 'itay.golan@example.com',
+        originalPassword: 'itayG123',
+        picturePath: "../sources/avatar6.png"
+    },
+    {
+        userId: 7,
+        firstName: 'Maya',
+        lastName: 'Friedman',
+        createDate: '2026-04-29T11:30:00Z',
+        updateDate: '2026-04-29T11:30:00Z',
+        userRole: 'user',
+        password: '$2b$10$5h3ulsTQMjik8LbUZVVzU.nj8Ukl7iX/oMObhGHW6xEi34FcoNZaK',
+        phoneNumber: '0525544332',
+        email: 'maya.f@example.com',
+        originalPassword: 'mayaPass99',
+        picturePath: "../sources/avatar7.png"
+    },
+    {
+        userId: 8,
+        firstName: 'Guy',
+        lastName: 'Shapira',
+        createDate: '2026-04-29T12:00:00Z',
+        updateDate: '2026-04-29T13:45:00Z',
+        userRole: 'user',
+        password: '$2b$10$5h3ulsTQMjik8LbUZVVzU.F/.zvSFQwuh2HwYbB8Pzc0pVSvp6LcO',
+        phoneNumber: '0509988776',
+        email: 'guy.s@example.com',
+        originalPassword: 'guyShapira!',
+        picturePath: "../sources/avatar8.png"
+    },
+    {
+        userId: 9,
+        firstName: 'Shir',
+        lastName: 'Katz',
+        createDate: '2026-04-29T13:15:00Z',
+        updateDate: '2026-04-29T13:15:00Z',
+        userRole: 'user',
+        password: '$2b$10$5h3ulsTQMjik8LbUZVVzU.wzT/9zlbDNEJrt7/dyTebsimAiH4xbW',
+        phoneNumber: '0531237890',
+        email: 'shir.katz@example.com',
+        originalPassword: 'shirKatz1',
+        picturePath: "../sources/avatar9.png"
+    },
+    {
+        userId: 10,
+        firstName: 'Amit',
+        lastName: 'Bar',
+        createDate: '2026-04-29T13:30:00Z',
+        updateDate: '2026-04-29T13:35:00Z',
+        userRole: 'user',
+        password: '$2b$10$5h3ulsTQMjik8LbUZVVzU.CSkKbdS.2rCJStjz31cX9/xjFUx3dOq',
+        phoneNumber: '0546655443',
+        email: 'amit.bar@example.com',
+        originalPassword: 'amitBar2026',
+        picturePath: "../sources/avatar10.png"
+    }
+];
+
+// const calcHash = async () => {
+//     const salt = await bcrypt.genSalt(10);
+//     return await Promise.all(users.map(async (user) => {
+//         const hashedPassword = await bcrypt.hash(user.password, salt);
+//         return {
+//             ...user,
+//             originalPassword: user.password,
+//             password: hashedPassword
+//         };
+//     }));
+// }
+//
+//
+// calcHash().then(console.log);
+
+module.exports = users;
