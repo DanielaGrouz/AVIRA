@@ -13,7 +13,7 @@
 ### Installation
 1. Clone the repository or extract the project files.
 2. Navigate to the project root directory in your terminal.
-3. Install dependencies:
+3. Install dependencies (as defined in `package.json`):
    ```bash
    npm install
    ```
@@ -47,7 +47,10 @@ The project follows a modular structure to ensure maintainability and separation
 ### Key Assumptions
 - **In-Memory Storage**: Data is stored in RAM and resets whenever the server restarts.
 - **ID Generation**: Numeric IDs are auto-incremented based on the data array length.
+- **Password Hashing**: We utilize bcrypt for password hashing.
 - **Role-Based Access**: Security is simulated using the `x-user-role` request header.
+- **File Uploads**: Handled via multer (e.g., uploading user profile pictures or saving event invitations). 
+- **External Integrations**: Includes AI features via @huggingface/inference / groq-sdk and email functionalities via nodemailer.
 
 ---
 
