@@ -189,7 +189,7 @@ async function getStoresForEvent(currLocation, tasksList) {
         const candidatePlaces = osmResponse.data.elements
             .filter(el => el.tags && el.tags.name)
             .map(el => ({
-                name: el.tags['name:en'] || el.tags.name,
+                name: el.tags.name,
                 category: el.tags.shop || el.tags.amenity,
                 lat: el.lat || el.center?.lat,
                 lon: el.lon || el.center?.lon,

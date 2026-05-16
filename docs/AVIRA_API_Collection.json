@@ -2785,7 +2785,7 @@
                   "variable": [
                     {
                       "key": "id",
-                      "value": "105"
+                      "value": "104"
                     }
                   ]
                 }
@@ -2820,7 +2820,7 @@
                       "variable": [
                         {
                           "key": "id",
-                          "value": "105"
+                          "value": "104"
                         }
                       ]
                     }
@@ -2839,15 +2839,15 @@
                     },
                     {
                       "key": "Content-Length",
-                      "value": "432"
+                      "value": "670"
                     },
                     {
                       "key": "ETag",
-                      "value": "W/\"1b0-lmcys4nW6D2sr9ZnedUZ309Y38U\""
+                      "value": "W/\"29e-IzeDI0yjiKgA+g6ZsbzXK/czc10\""
                     },
                     {
                       "key": "Date",
-                      "value": "Sat, 16 May 2026 12:41:20 GMT"
+                      "value": "Sat, 16 May 2026 14:37:46 GMT"
                     },
                     {
                       "key": "Connection",
@@ -2859,7 +2859,7 @@
                     }
                   ],
                   "cookie": [],
-                  "body": "{\n    \"success\": true,\n    \"data\": [\n        {\n            \"task\": \"Rent Yoga Mats\",\n            \"storeName\": \"Adidas\",\n            \"lat\": 32.0976756,\n            \"lon\": 34.7736423,\n            \"address\": \"Address not listed\",\n            \"reason\": \"Matches the sports category requirement, potentially carrying yoga mats\"\n        },\n        {\n            \"task\": \"Rent Yoga Mats\",\n            \"storeName\": \"Wertheimer\",\n            \"lat\": 32.0754844,\n            \"lon\": 34.7753488,\n            \"address\": \"Address not listed\",\n            \"reason\": \"Matches the sports category requirement, potentially carrying yoga mats\"\n        }\n    ],\n    \"error\": null\n}"
+                  "body": "{\n    \"success\": true,\n    \"data\": [\n        {\n            \"task\": \"Coordinate with Chef\",\n            \"storeName\": \"Basar Neto\",\n            \"lat\": \"32.0941933\",\n            \"lon\": \"34.7837639\",\n            \"address\": \"יהודה המכבי 1א\",\n            \"reason\": \"Butcher store that can provide high-quality ingredients for the chef\"\n        },\n        {\n            \"task\": \"Coordinate with Chef\",\n            \"storeName\": \"Katsavia Sheinkin\",\n            \"lat\": \"32.0685301\",\n            \"lon\": \"34.7764194\",\n            \"address\": \"שינקין 56\",\n            \"reason\": \"Butcher store that can provide high-quality ingredients for the chef\"\n        },\n        {\n            \"task\": \"Coordinate with Chef\",\n            \"storeName\": \"Marinado\",\n            \"lat\": \"32.0869417\",\n            \"lon\": \"34.7881347\",\n            \"address\": \"ז'בוטינסקי 120\",\n            \"reason\": \"Butcher store that can provide high-quality ingredients for the chef\"\n        }\n    ],\n    \"error\": null\n}"
                 }
               ]
             },

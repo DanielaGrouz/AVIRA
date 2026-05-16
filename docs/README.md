@@ -220,7 +220,7 @@ This project utilizes environment variables to securely manage sensitive informa
 Normally, the `.env` file is excluded from version control (via `.gitignore`) for security purposes and will not appear in the GitHub repository. However, **we have explicitly included the `.env` file in our submitted project folder** so that you can run, test, and evaluate the system immediately without needing to set up your own API keys or configurations.
 
 ### Testing the Email Verification Flow
-Please note that the email verification endpoints (`/users/send-verification-code` and `/users/verify-email`) rely on a live email integration using `nodemailer`.
+Please note that the email verification endpoints (`/users/send-verification-code`) rely on a live email integration using `nodemailer`.
 Because the system sends a real, dynamically generated code to the provided address, **this flow cannot be tested using mock or fake email addresses**. To successfully test the verification process, you must use a real, accessible email address in the request body to receive the code and complete the verification.
 
 ---
