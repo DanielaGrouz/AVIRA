@@ -31,7 +31,7 @@ async function generateAvatar(userData) {
         return Buffer.from(await blob.arrayBuffer());
     } catch (error) {
         console.error("HF Error:", error.message);
-        return null;
+        throw error;
     }
 }
 

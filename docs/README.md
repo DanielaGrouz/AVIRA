@@ -59,17 +59,16 @@ The project follows a modular structure to ensure maintainability and separation
 ### 1. Users Resource (`/users`)
 User management, authorization, and authentication processes.
 
-| Method | Endpoint | Params | Request Body Format (JSON/Form) | Description | Auth Required |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **GET** | `/users` | None | None | Get all users in the system | Admin |
-| **GET** | `/users/:id` | `:id` | None | Get a specific user by ID | No |
-| **POST** | `/users` | None | `multipart/form-data`: `firstName`, `lastName`, `email`, `password`, `role`, `picture` | Create a new user and upload a profile picture | No |
-| **PUT** | `/users/:id` | `:id` | `JSON`: `{ "firstName", "lastName"... }` | Update existing user details | No |
-| **DELETE** | `/users/:id` | `:id` | None | Delete a user from the system | No |
-| **POST** | `/users/login` | None | `JSON`: `{ "email", "password" }` | User login to receive an authentication token | No |
-| **POST** | `/users/send-verification-code` | None | `JSON`: `{ "email" }` | Send an email verification code | No |
-| **POST** | `/users/verify-email` | None | `JSON`: `{ "email", "code" }` | Verify email using the provided code | No |
-| **POST** | `/users/reset-password` | None | `JSON`: `{ "email", "newPassword" }` | Reset a user's password | No |
+| Method | Endpoint | Params | Request Body Format (JSON/Form)                                                             | Description | Auth Required |
+| :--- | :--- | :--- |:--------------------------------------------------------------------------------------------| :--- | :--- |
+| **GET** | `/users` | None | None                                                                                        | Get all users in the system | Admin |
+| **GET** | `/users/:id` | `:id` | None                                                                                        | Get a specific user by ID | No |
+| **POST** | `/users` | None | `multipart/form-data`: `firstName`, `lastName`, `email`, `password`, `userRole`, `phoneNumber`, `picture` | Create a new user and upload a profile picture | No |
+| **PUT** | `/users/:id` | `:id` | `JSON`: `{ "firstName", "lastName"... }`                                                    | Update existing user details | No |
+| **DELETE** | `/users/:id` | `:id` | None                                                                                        | Delete a user from the system | No |
+| **POST** | `/users/login` | None | `JSON`: `{ "email", "password" }`                                                           | User login to receive an authentication token | No |
+| **POST** | `/users/send-verification-code` | None | `JSON`: `{ "email" }`                                                                       | Send an email verification code | No |
+| **POST** | `/users/reset-password` | None | `JSON`: `{ "userId", "newPassword" }`                                                        | Reset a user's password | No |
 
 ---
 

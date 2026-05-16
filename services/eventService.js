@@ -7,7 +7,7 @@ const {generateEventInvite} = require("../utils/generateImageClient");
 const taskService = require('./taskService');
 
 // Get all events with pagination and sorting
-const getAllEventsLogic = (page = 1, limit = 5, sortBy = 'id') => {
+const getAllEventsLogic = (page = 1, limit = 5, sortBy = 'eventId') => {
     let sortedEvents = [...events].sort((a, b) => {
         if (a[sortBy] < b[sortBy]) return -1;
         if (a[sortBy] > b[sortBy]) return 1;

@@ -1,0 +1,4422 @@
+{
+  "info": {
+    "_postman_id": "2a40cf64-9c8e-45af-8d83-eecffe952ce5",
+    "name": "AVIRA API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "54036203",
+    "_collection_link": "https://go.postman.co/collection/54036203-2a40cf64-9c8e-45af-8d83-eecffe952ce5?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "tasks",
+      "item": [
+        {
+          "name": "create new task",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"eventId\": 101,\r\n    \"title\": \"Order Catering\",\r\n    \"status\": \"pending\",\r\n    \"priority\": \"high\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/tasks",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "tasks"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"eventId\": 101,\r\n    \"title\": \"Order Catering\",\r\n    \"status\": \"pending\",\r\n    \"priority\": \"high\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/tasks",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "tasks"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "89"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"59-FHVMzAMIjcGC/ED1i+dyX3t46U4\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 16 May 2026 08:48:42 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"data\": {\n        \"taskId\": 11,\n        \"message\": \"Task created successfully.\"\n    },\n    \"error\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "update task",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"title\": \"Order Catering\",\r\n    \"status\": \"pending\",\r\n    \"priority\": \"high\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/tasks/:id",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "tasks",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"title\": \"Order Catering\",\r\n    \"status\": \"pending\",\r\n    \"priority\": \"high\"\r\n}\r\n",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/tasks/:id",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "tasks",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "88"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"58-49heo0gxnGwcfUbeEXL6/pbW98k\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 16 May 2026 09:04:37 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"data\": {\n        \"taskId\": 1,\n        \"message\": \"Task updated successfully.\"\n    },\n    \"error\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "delete task",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/tasks/:id",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "tasks",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:3000/tasks/:id",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "tasks",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "88"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"58-JFM9B9ERP3NZYz618u6Qy4tYrXs\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 16 May 2026 09:06:29 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"data\": {\n        \"taskId\": 1,\n        \"message\": \"Task deleted successfully.\"\n    },\n    \"error\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "get task by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/tasks/:id",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "tasks",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "3"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:3000/tasks/:id",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "tasks",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "3"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "125"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"7d-8PfmAOCiS3B+x7y9pGIwEOmol+U\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 16 May 2026 09:16:22 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"data\": {\n        \"taskId\": 3,\n        \"eventId\": 102,\n        \"title\": \"Book Jazz Band\",\n        \"status\": \"pending\",\n        \"priority\": \"high\"\n    },\n    \"error\": null\n}"
+            },
+            {
+              "name": "404 Not Found",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:3000/tasks/:id",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "tasks",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "100"
+                    }
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "115"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"73-Wz5A1QuEEt36Kcvf3ZipRHjOg/c\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 16 May 2026 09:27:15 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": false,\n    \"data\": null,\n    \"error\": {\n        \"code\": \"NOT_FOUND\",\n        \"message\": \"Task with ID 100 was not found.\",\n        \"details\": {}\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "get all tasks",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-role",
+                "value": "admin",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/tasks?page=1&sortBy=taskId",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "tasks"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "taskId"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "x-user-role",
+                    "value": "admin",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:3000/tasks?page=1&sortBy=taskId",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "tasks"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "sortBy",
+                      "value": "taskId"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "533"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"215-GEYWrIK21ocU7wqdxT915ZMhUh8\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 16 May 2026 09:08:15 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"data\": {\n        \"page\": 1,\n        \"totalPages\": 2,\n        \"data\": [\n            {\n                \"taskId\": 2,\n                \"eventId\": 101,\n                \"title\": \"Buy Pink Balloons\",\n                \"status\": \"completed\",\n                \"priority\": \"medium\"\n            },\n            {\n                \"taskId\": 3,\n                \"eventId\": 102,\n                \"title\": \"Book Jazz Band\",\n                \"status\": \"pending\",\n                \"priority\": \"high\"\n            },\n            {\n                \"taskId\": 4,\n                \"eventId\": 103,\n                \"title\": \"Print Name Tags\",\n                \"status\": \"pending\",\n                \"priority\": \"low\"\n            },\n            {\n                \"taskId\": 5,\n                \"eventId\": 104,\n                \"title\": \"Coordinate with Chef\",\n                \"status\": \"completed\",\n                \"priority\": \"high\"\n            },\n            {\n                \"taskId\": 6,\n                \"eventId\": 105,\n                \"title\": \"Rent Yoga Mats\",\n                \"status\": \"pending\",\n                \"priority\": \"medium\"\n            }\n        ]\n    },\n    \"error\": null\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "users",
+      "item": [
+        {
+          "name": "create new user",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-user-role",
+                "value": "admin",
+                "type": "text",
+                "disabled": true
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "picture",
+                  "type": "file",
+                  "uuid": "789499bf-1dc3-44d5-8aea-c29fe80bf09c",
+                  "value": null
+                },
+                {
+                  "key": "firstName",
+                  "value": "yosef",
+                  "type": "text",
+                  "uuid": "1a16c440-1fa5-453b-88d8-4acc91c7e5d0"
+                },
+                {
+                  "key": "lastName",
+                  "value": "danan",
+                  "type": "text",
+                  "uuid": "f9d40cfd-e2e3-488e-b0ef-cd9f13325cd8"
+                },
+                {
+                  "key": "userRole",
+                  "value": "user",
+                  "type": "text",
+                  "uuid": "57959ee5-e3a3-4c45-b347-fd59aae7565d"
+                },
+                {
+                  "key": "email",
+                  "value": "hkbshcbddcddfcf@gmail.com",
+                  "type": "text",
+                  "uuid": "4b7af325-835c-44f3-b569-f7d7bf61e440"
+                },
+                {
+                  "key": "phoneNumber",
+                  "value": "0545368887",
+                  "type": "text",
+                  "uuid": "0f8d75f2-cefe-421a-aa0c-741fea091682"
+                },
+                {
+                  "key": "password",
+                  "value": "ddddddd",
+                  "type": "text",
+                  "uuid": "9efb5826-43d5-4dad-9df4-f2490a5010fb"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:3000/users",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "users"
+              ]
+            },
+            "description": "Adds a new user to the mock database. It validates that `firstName`, `lastName`, and `userRole` are provided and that the role is valid\n\n**Success Response:** `201 Created` returning the new `userId`."
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "x-user-role",
+                    "value": "admin",
+                    "type": "text",
+                    "disabled": true
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "picture",
+                      "type": "file",
+                      "uuid": "789499bf-1dc3-44d5-8aea-c29fe80bf09c",
+                      "value": null
+                    },
+                    {
+                      "key": "firstName",
+                      "value": "yosef",
+                      "type": "text",
+                      "uuid": "1a16c440-1fa5-453b-88d8-4acc91c7e5d0"
+                    },
+                    {
+                      "key": "lastName",
+                      "value": "danan",
+                      "type": "text",
+                      "uuid": "f9d40cfd-e2e3-488e-b0ef-cd9f13325cd8"
+                    },
+                    {
+                      "key": "userRole",
+                      "value": "user",
+                      "type": "text",
+                      "uuid": "57959ee5-e3a3-4c45-b347-fd59aae7565d"
+                    },
+                    {
+                      "key": "email",
+                      "value": "hkbshcbddcddfcf@gmail.com",
+                      "type": "text",
+                      "uuid": "4b7af325-835c-44f3-b569-f7d7bf61e440"
+                    },
+                    {
+                      "key": "phoneNumber",
+                      "value": "0545368887",
+                      "type": "text",
+                      "uuid": "0f8d75f2-cefe-421a-aa0c-741fea091682"
+                    },
+                    {
+                      "key": "password",
+                      "value": "ddddddd",
+                      "type": "text",
+                      "uuid": "9efb5826-43d5-4dad-9df4-f2490a5010fb"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "http://localhost:3000/users",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "users"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "165"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"a5-0VICHlvntLnGlnvQS11mPt+N2hQ\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 16 May 2026 09:38:38 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"data\": {\n        \"message\": \"User registered successfully. Please verify user's email.\",\n        \"user\": {\n            \"userId\": 11,\n            \"email\": \"hkbshcbddcddfcf@gmail.com\"\n        }\n    },\n    \"error\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "update user",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"firstName\": \"Yosef\",\r\n    \"lastName\": \"Cohen\",\r\n    \"userRole\": \"user\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/users/:id",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "users",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Updates the information of an existing user. The `updateDate` field is automatically refreshed to the current timestamp.  \n**Success Response:** `200 OK.`"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"firstName\": \"Yosef\",\r\n    \"lastName\": \"Cohen\",\r\n    \"userRole\": \"user\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/users/:id",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "users",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "49"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"31-Fn+wbPnztZQPDaL/Ip0MO2XOtd8\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 16 May 2026 09:54:08 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"data\": {\n        \"userId\": 1\n    },\n    \"error\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "delete user",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/users/:id",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "users",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "3",
+                  "description": "success"
+                }
+              ]
+            },
+            "description": "Removes a user record from the in-memory array based on the provided ID. Access is restricted to `admin` users only.  \n**Success Response:** `200 OK`."
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:3000/users/:id",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "users",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "3",
+                      "description": "success"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "49"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"31-u3Q90q6vHFzQ8LTzQ9h3C1FktYI\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 16 May 2026 09:54:58 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"data\": {\n        \"userId\": 3\n    },\n    \"error\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "get user by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/users/:id",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "users",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "success"
+                }
+              ]
+            },
+            "description": "Fetches the details of a single user based on their unique numeric ID.\n\n**Error Handling:** Returns `400 Bad Request` if the ID is invalid and `404 Not Found` if the user does not exist."
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:3000/users/:id",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "users",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "success"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "383"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"17f-i36n+AlgZiffnNVqDpPCz/tArng\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 16 May 2026 09:55:46 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"data\": {\n        \"userId\": 1,\n        \"firstName\": \"Yosef\",\n        \"lastName\": \"Cohen\",\n        \"createDate\": \"2026-04-27T10:00:00Z\",\n        \"updateDate\": \"2026-05-16T09:54:08.918Z\",\n        \"userRole\": \"user\",\n        \"password\": \"$2b$10$5h3ulsTQMjik8LbUZVVzU.5ClNVKy9VcFZ34lrHXF4qS4bv2R.mZe\",\n        \"phoneNumber\": \"0545368889\",\n        \"email\": \"danielagrouz@gmail.com\",\n        \"originalPassword\": \"123456\",\n        \"picturePath\": \"../sources/avatar1.png\"\n    },\n    \"error\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "get all users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-role",
+                "value": "admin",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/users?page=1&sortBy=userId",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "users"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "userId"
+                }
+              ]
+            },
+            "description": "Retrieves an array of all user objects currently stored in the system memory. It is used to view the complete list of registered users in the AVIRA system.\n\n**Success Response:** `200 OK` with the `users` array."
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "x-user-role",
+                    "value": "admin",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:3000/users?page=1&sortBy=userId",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "users"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "sortBy",
+                      "value": "userId"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "1801"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"709-KffwMGYlB707REVHK31NHPforD0\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 16 May 2026 09:56:50 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"data\": {\n        \"page\": 1,\n        \"totalPages\": 2,\n        \"data\": [\n            {\n                \"userId\": 1,\n                \"firstName\": \"Yosef\",\n                \"lastName\": \"Cohen\",\n                \"createDate\": \"2026-04-27T10:00:00Z\",\n                \"updateDate\": \"2026-05-16T09:54:08.918Z\",\n                \"userRole\": \"user\",\n                \"password\": \"$2b$10$5h3ulsTQMjik8LbUZVVzU.5ClNVKy9VcFZ34lrHXF4qS4bv2R.mZe\",\n                \"phoneNumber\": \"0545368889\",\n                \"email\": \"danielagrouz@gmail.com\",\n                \"originalPassword\": \"123456\",\n                \"picturePath\": \"../sources/avatar1.png\"\n            },\n            {\n                \"userId\": 2,\n                \"firstName\": \"Yosef\",\n                \"lastName\": \"Cohen\",\n                \"createDate\": \"2026-04-27T11:00:00Z\",\n                \"updateDate\": \"2026-04-27T11:30:00Z\",\n                \"userRole\": \"user\",\n                \"password\": \"$2b$10$5h3ulsTQMjik8LbUZVVzU.0IpY8PTwbHzHFlOOSCGSQ.2VKowdcAm\",\n                \"phoneNumber\": \"0501234567\",\n                \"email\": \"yosef.cohen@example.com\",\n                \"originalPassword\": \"password123\",\n                \"picturePath\": \"../sources/avatar2.png\"\n            },\n            {\n                \"userId\": 4,\n                \"firstName\": \"Omer\",\n                \"lastName\": \"Peretz\",\n                \"createDate\": \"2026-04-28T14:20:00Z\",\n                \"updateDate\": \"2026-04-28T15:00:00Z\",\n                \"userRole\": \"user\",\n                \"password\": \"$2b$10$5h3ulsTQMjik8LbUZVVzU.x3thpZkCTa/t6G2PMxjGNgKVWowEy1e\",\n                \"phoneNumber\": \"0533344556\",\n                \"email\": \"omer.peretz@example.com\",\n                \"originalPassword\": \"omerP2026\",\n                \"picturePath\": \"../sources/avatar4.png\"\n            },\n            {\n                \"userId\": 5,\n                \"firstName\": \"Noa\",\n                \"lastName\": \"Avraham\",\n                \"createDate\": \"2026-04-29T08:45:00Z\",\n                \"updateDate\": \"2026-04-29T08:45:00Z\",\n                \"userRole\": \"user\",\n                \"password\": \"$2b$10$5h3ulsTQMjik8LbUZVVzU.mYYxqISDGD1cabn3SVFw51SZH/TPff2\",\n                \"phoneNumber\": \"0587766554\",\n                \"email\": \"noa.av@example.com\",\n                \"originalPassword\": \"noaSecure!\",\n                \"picturePath\": \"../sources/avatar5.png\"\n            },\n            {\n                \"userId\": 6,\n                \"firstName\": \"Itay\",\n                \"lastName\": \"Golan\",\n                \"createDate\": \"2026-04-29T10:05:00Z\",\n                \"updateDate\": \"2026-04-29T12:10:00Z\",\n                \"userRole\": \"user\",\n                \"password\": \"$2b$10$5h3ulsTQMjik8LbUZVVzU.KvdRHRFItbTMt2uL18fGB9Oyh3mqUIS\",\n                \"phoneNumber\": \"0541122334\",\n                \"email\": \"itay.golan@example.com\",\n                \"originalPassword\": \"itayG123\",\n                \"picturePath\": \"../sources/avatar6.png\"\n            }\n        ]\n    },\n    \"error\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "login",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n        \"password\": \"123456\",\r\n        \"email\": \"danielagrouz@gmail.com\"\r\n\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/users/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "users",
+                "login"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n        \"password\": \"123456\",\r\n        \"email\": \"danielagrouz@gmail.com\"\r\n\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/users/login",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "users",
+                    "login"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "58"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"3a-1R1qslaShN6/A7daXaD3YiKV3eQ\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 16 May 2026 10:19:13 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"data\": {\n        \"user\": {\n            \"userId\": 1\n        }\n    },\n    \"error\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "send verification code",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n\r\n\"email\": \"danielagrouz@gmail.com\"\r\n\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/users/send-verification-code",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "users",
+                "send-verification-code"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n\r\n\"email\": \"danielagrouz@gmail.com\"\r\n\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/users/send-verification-code",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "users",
+                    "send-verification-code"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "82"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"52-QJLiXDc2MXbxwsHVhbCt15dDX5k\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 16 May 2026 10:42:31 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"data\": {\n        \"message\": \"Verification code sent to email\"\n    },\n    \"error\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "reset password",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"userId\" : 1,\r\n    \"newPassword\" : \"1234\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/users/reset-password",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "users",
+                "reset-password"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"userId\" : 1,\r\n    \"newPassword\" : \"1234\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/users/reset-password",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "users",
+                    "reset-password"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "80"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"50-ZZ1sirQhus7/zNUc+14/Mv62G3Q\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 16 May 2026 10:21:03 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"data\": {\n        \"message\": \"Password updated successfully\"\n    },\n    \"error\": null\n}"
+            },
+            {
+              "name": "404 Not Found",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"userId\" : 200,\r\n    \"newPassword\" : \"1234\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/users/reset-password",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "users",
+                    "reset-password"
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "112"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"70-9iERDfr6lLg2wHIOA5jXqZ/CGTk\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 16 May 2026 10:23:05 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": false,\n    \"data\": null,\n    \"error\": {\n        \"code\": \"NOT_FOUND\",\n        \"message\": \"User with id: 200 not found.\",\n        \"details\": {}\n    }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "guests",
+      "item": [
+        {
+          "name": "create new guest",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"eventId\": 101,\r\n    \"name\": \"Daniela Levi\",\r\n    \"phone\": \"050-0000001\",\r\n    \"status\": \"confirmed\",\r\n    \"role\": \"manager\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/guests",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "guests"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"eventId\": 101,\r\n    \"name\": \"Daniela Levi\",\r\n    \"phone\": \"050-0000001\",\r\n    \"status\": \"confirmed\",\r\n    \"role\": \"manager\"\r\n}\r\n",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/guests",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "guests"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "147"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"93-KD6kO9L8qwM6wCdTIAlbSHMkHJc\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 16 May 2026 10:46:09 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"data\": {\n        \"guestId\": 16,\n        \"eventId\": 101,\n        \"name\": \"Daniela Levi\",\n        \"phone\": \"050-0000001\",\n        \"status\": \"confirmed\",\n        \"role\": \"manager\"\n    },\n    \"error\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "update guest",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"Daniela Levi\",\r\n    \"phone\": \"050-0000001\",\r\n    \"role\": \"manager\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/guests/:id",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "guests",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "4"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"name\": \"Daniela Levi\",\r\n    \"phone\": \"050-0000001\",\r\n    \"role\": \"manager\"\r\n}\r\n",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/guests/:id",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "guests",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "4"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "175"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"af-WZuOcRd+t9r1HuV4Uqb07MB4rgw\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 16 May 2026 10:46:40 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"data\": {\n        \"guestId\": 4,\n        \"updatedGuest\": {\n            \"guestId\": 4,\n            \"eventId\": 104,\n            \"name\": \"Daniela Levi\",\n            \"phone\": \"050-0000001\",\n            \"status\": \"confirmed\",\n            \"role\": \"manager\"\n        }\n    },\n    \"error\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "delete guest",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/guests/:id",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "guests",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "2"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "404 Not Found",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:3000/guests/:id",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "guests",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "300"
+                    }
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "116"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"74-2cHtR4mUnRcfdaCfT9BSJvcLI40\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 16 May 2026 10:50:10 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": false,\n    \"data\": null,\n    \"error\": {\n        \"code\": \"NOT_FOUND\",\n        \"message\": \"Guest with ID 300 was not found.\",\n        \"details\": {}\n    }\n}"
+            },
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:3000/guests/:id",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "guests",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "2"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "50"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"32-zBxuBZyyi2BkaWfZ9kP9Zb4LcMk\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 16 May 2026 10:51:10 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"data\": {\n        \"guestId\": 2\n    },\n    \"error\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "get guest by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/guests/:id",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "guests",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:3000/guests/:id",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "guests",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "146"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"92-RE3INWvqH838Kp2qSu+5TKzrfrc\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 16 May 2026 10:51:40 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"data\": {\n        \"guestId\": 1,\n        \"eventId\": 101,\n        \"name\": \"Daniela Levi\",\n        \"phone\": \"050-0000001\",\n        \"status\": \"confirmed\",\n        \"role\": \"manager\"\n    },\n    \"error\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "get All guests",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-role",
+                "value": "admin",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/guests?page=1&sortBy=guestId",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "guests"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "guestId"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "x-user-role",
+                    "value": "admin",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:3000/guests?page=1&sortBy=guestId",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "guests"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "sortBy",
+                      "value": "guestId"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "635"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"27b-T/8ovQgJTCPpphAudUsM/sC6dYI\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 16 May 2026 10:52:17 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"data\": {\n        \"page\": 1,\n        \"totalPages\": 3,\n        \"totalItems\": 14,\n        \"data\": [\n            {\n                \"guestId\": 1,\n                \"eventId\": 101,\n                \"name\": \"Daniela Levi\",\n                \"phone\": \"050-0000001\",\n                \"status\": \"confirmed\",\n                \"role\": \"manager\"\n            },\n            {\n                \"guestId\": 3,\n                \"eventId\": 103,\n                \"name\": \"Yosef Cohen\",\n                \"phone\": \"050-0000002\",\n                \"status\": \"confirmed\",\n                \"role\": \"manager\"\n            },\n            {\n                \"guestId\": 4,\n                \"eventId\": 104,\n                \"name\": \"Daniela Levi\",\n                \"phone\": \"050-0000001\",\n                \"status\": \"confirmed\",\n                \"role\": \"manager\"\n            },\n            {\n                \"guestId\": 5,\n                \"eventId\": 105,\n                \"name\": \"Yosef Cohen\",\n                \"phone\": \"050-0000002\",\n                \"status\": \"confirmed\",\n                \"role\": \"manager\"\n            },\n            {\n                \"guestId\": 6,\n                \"eventId\": 106,\n                \"name\": \"Daniela Levi\",\n                \"phone\": \"050-0000001\",\n                \"status\": \"confirmed\",\n                \"role\": \"manager\"\n            }\n        ]\n    },\n    \"error\": null\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "events",
+      "item": [
+        {
+          "name": "Core CRUD",
+          "item": [
+            {
+              "name": "create new event",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"creatorId\": 1,\r\n  \"title\": \"Rinat's Birthday  Party\",\r\n  \"date\": \"2026-09-10\",\r\n  \"time\": \"20:00\",\r\n  \"location\": \"Haifa\",\r\n  \"eventType\": \"Party\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/events",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "events"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "201 Created",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n  \"creatorId\": 1,\r\n  \"title\": \"Rinat's Birthday  Party\",\r\n  \"date\": \"2026-09-10\",\r\n  \"time\": \"20:00\",\r\n  \"location\": \"Haifa\",\r\n  \"eventType\": \"Party\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "http://localhost:3000/events",
+                      "protocol": "http",
+                      "host": [
+                        "localhost"
+                      ],
+                      "port": "3000",
+                      "path": [
+                        "events"
+                      ]
+                    }
+                  },
+                  "status": "Created",
+                  "code": 201,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "190"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"be-5LguWgc5OFm2+Qmjj6ATEBogzMQ\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sat, 16 May 2026 12:08:42 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"success\": true,\n    \"data\": {\n        \"eventId\": 111,\n        \"creatorId\": 1,\n        \"title\": \"Rinat's Birthday  Party\",\n        \"date\": \"2026-09-10\",\n        \"time\": \"20:00\",\n        \"location\": \"Haifa\",\n        \"eventType\": \"Party\",\n        \"guestsCount\": 0\n    },\n    \"error\": null\n}"
+                }
+              ]
+            },
+            {
+              "name": "update event",
+              "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"location\": \"Updated Location\",\r\n  \"title\": \"Updated Title\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/events/:id",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "events",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "101"
+                    }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK",
+                  "originalRequest": {
+                    "method": "PUT",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n  \"location\": \"Updated Location\",\r\n  \"title\": \"Updated Title\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "http://localhost:3000/events/:id",
+                      "protocol": "http",
+                      "host": [
+                        "localhost"
+                      ],
+                      "port": "3000",
+                      "path": [
+                        "events",
+                        ":id"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": "101"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "52"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"34-+WDwWdoxTzrXc61RamEiFwGR0R8\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sat, 16 May 2026 12:17:36 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"success\": true,\n    \"data\": {\n        \"eventId\": 101\n    },\n    \"error\": null\n}"
+                }
+              ]
+            },
+            {
+              "name": "delete event",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:3000/events/:id",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "events",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "110"
+                    }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [],
+                    "url": {
+                      "raw": "http://localhost:3000/events/:id",
+                      "protocol": "http",
+                      "host": [
+                        "localhost"
+                      ],
+                      "port": "3000",
+                      "path": [
+                        "events",
+                        ":id"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": "110"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "52"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"34-bveWNJZ2ZI45voSwQfaFa5vLYcA\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sat, 16 May 2026 12:18:45 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"success\": true,\n    \"data\": {\n        \"eventId\": 110\n    },\n    \"error\": null\n}"
+                }
+              ]
+            },
+            {
+              "name": "get event by id",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:3000/events/:id",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "events",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "101"
+                    }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "http://localhost:3000/events/:id",
+                      "protocol": "http",
+                      "host": [
+                        "localhost"
+                      ],
+                      "port": "3000",
+                      "path": [
+                        "events",
+                        ":id"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": "101"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "220"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"dc-Sz2sG1qllqyPBkv95SW72hmRf8o\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sat, 16 May 2026 12:21:48 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"success\": true,\n    \"data\": {\n        \"eventId\": 101,\n        \"creatorId\": 1,\n        \"title\": \"Updated Title\",\n        \"date\": \"2026-06-15\",\n        \"time\": \"19:00\",\n        \"location\": \"Updated Location\",\n        \"eventType\": \"Bachelorette\",\n        \"guestsCount\": 3,\n        \"invitationPath\": null\n    },\n    \"error\": null\n}"
+                }
+              ]
+            },
+            {
+              "name": "get all events",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "x-user-role",
+                    "value": "admin",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:3000/events?page=1&limit=5&sortBy=eventId",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "events"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "5"
+                    },
+                    {
+                      "key": "sortBy",
+                      "value": "eventId"
+                    }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "x-user-role",
+                        "value": "admin",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "http://localhost:3000/events?page=1&limit=5&sortBy=eventId",
+                      "protocol": "http",
+                      "host": [
+                        "localhost"
+                      ],
+                      "port": "3000",
+                      "path": [
+                        "events"
+                      ],
+                      "query": [
+                        {
+                          "key": "page",
+                          "value": "1"
+                        },
+                        {
+                          "key": "limit",
+                          "value": "5"
+                        },
+                        {
+                          "key": "sortBy",
+                          "value": "eventId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "1029"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"405-IThxbGede3TQ2WkCkE0sMK4EKWY\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sat, 16 May 2026 11:53:07 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"success\": true,\n    \"data\": {\n        \"page\": 1,\n        \"totalPages\": 2,\n        \"data\": [\n            {\n                \"eventId\": 101,\n                \"creatorId\": 1,\n                \"title\": \"Shir's Bachelorette Party\",\n                \"date\": \"2026-06-15\",\n                \"time\": \"19:00\",\n                \"location\": \"Villa Caesarea\",\n                \"eventType\": \"Bachelorette\",\n                \"guestsCount\": 3,\n                \"invitationPath\": null\n            },\n            {\n                \"eventId\": 102,\n                \"creatorId\": 1,\n                \"title\": \"Grandma's 80th Birthday\",\n                \"date\": \"2026-07-20\",\n                \"time\": \"12:30\",\n                \"location\": \"King David Hotel\",\n                \"eventType\": \"Birthday\",\n                \"guestsCount\": 2,\n                \"invitationPath\": null\n            },\n            {\n                \"eventId\": 103,\n                \"creatorId\": 2,\n                \"title\": \"Tech Networking Brunch\",\n                \"date\": \"2026-05-10\",\n                \"time\": \"10:00\",\n                \"location\": \"Mindspace Tel Aviv\",\n                \"eventType\": \"Networking\",\n                \"guestsCount\": 2,\n                \"invitationPath\": null\n            },\n            {\n                \"eventId\": 104,\n                \"creatorId\": 1,\n                \"title\": \"Engagement Dinner - Noa & Dan\",\n                \"date\": \"2026-08-05\",\n                \"time\": \"20:30\",\n                \"location\": \"Pastel Restaurant\",\n                \"eventType\": \"Dinner\",\n                \"guestsCount\": 1,\n                \"invitationPath\": null\n            },\n            {\n                \"eventId\": 105,\n                \"creatorId\": 2,\n                \"title\": \"Annual Yoga Retreat\",\n                \"date\": \"2026-09-12\",\n                \"time\": \"08:00\",\n                \"location\": \"Desert Days Arava\",\n                \"eventType\": \"Retreat\",\n                \"guestsCount\": 1,\n                \"invitationPath\": null\n            }\n        ]\n    },\n    \"error\": null\n}"
+                },
+                {
+                  "name": "403 Forbidden",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "x-user-role",
+                        "value": "user",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "http://localhost:3000/events?page=1&limit=5&sortBy=eventId",
+                      "protocol": "http",
+                      "host": [
+                        "localhost"
+                      ],
+                      "port": "3000",
+                      "path": [
+                        "events"
+                      ],
+                      "query": [
+                        {
+                          "key": "page",
+                          "value": "1"
+                        },
+                        {
+                          "key": "limit",
+                          "value": "5"
+                        },
+                        {
+                          "key": "sortBy",
+                          "value": "eventId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Forbidden",
+                  "code": 403,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "181"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"b5-dzuUO2qlxz79zCjsBdlId7VB4QE\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sat, 16 May 2026 12:27:24 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"success\": false,\n    \"data\": null,\n    \"error\": {\n        \"code\": \"FORBIDDEN\",\n        \"message\": \"You do not have permission to perform this action.\",\n        \"details\": {\n            \"requiredRoles\": [\n                \"admin\"\n            ],\n            \"providedRole\": \"user\"\n        }\n    }\n}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "AI Features",
+          "item": [
+            {
+              "name": "generate shopping list",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:3000/events/:id/shopping-list",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "events",
+                    ":id",
+                    "shopping-list"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "105"
+                    }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "http://localhost:3000/events/:id/shopping-list",
+                      "protocol": "http",
+                      "host": [
+                        "localhost"
+                      ],
+                      "port": "3000",
+                      "path": [
+                        "events",
+                        ":id",
+                        "shopping-list"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": "105"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "578"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"242-u65ceTbUhXVDZAnzz4Og325M8Jc\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sat, 16 May 2026 12:30:06 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"success\": true,\n    \"data\": [\n        {\n            \"item\": \"Bottled Water\",\n            \"quantity\": 2,\n            \"unit\": \"liters\"\n        },\n        {\n            \"item\": \"Fresh Strawberries\",\n            \"quantity\": 250,\n            \"unit\": \"grams\"\n        },\n        {\n            \"item\": \"Almond Milk\",\n            \"quantity\": 1,\n            \"unit\": \"liter\"\n        },\n        {\n            \"item\": \"Whole Wheat Bread\",\n            \"quantity\": 1,\n            \"unit\": \"loaf\"\n        },\n        {\n            \"item\": \"Avocados\",\n            \"quantity\": 2,\n            \"unit\": \"pieces\"\n        },\n        {\n            \"item\": \"Quinoa\",\n            \"quantity\": 200,\n            \"unit\": \"grams\"\n        },\n        {\n            \"item\": \"Dark Chocolate Chips\",\n            \"quantity\": 100,\n            \"unit\": \"grams\"\n        },\n        {\n            \"item\": \"Green Tea\",\n            \"quantity\": 20,\n            \"unit\": \"tea bags\"\n        },\n        {\n            \"item\": \"Fresh Mint Leaves\",\n            \"quantity\": 1,\n            \"unit\": \"bunch\"\n        },\n        {\n            \"item\": \"Lemon Juice\",\n            \"quantity\": 100,\n            \"unit\": \"ml\"\n        }\n    ],\n    \"error\": null\n}"
+                }
+              ]
+            },
+            {
+              "name": "generate tasks list",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:3000/events/:id/task-list",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "events",
+                    ":id",
+                    "task-list"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "105"
+                    }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "http://localhost:3000/events/:id/task-list",
+                      "protocol": "http",
+                      "host": [
+                        "localhost"
+                      ],
+                      "port": "3000",
+                      "path": [
+                        "events",
+                        ":id",
+                        "task-list"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": "105"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "686"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"2ae-XXAqe+5ym3br6gVnBtyvLCEPawc\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sat, 16 May 2026 12:44:13 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"success\": true,\n    \"data\": [\n        {\n            \"task\": \"Book a private yoga instructor for the retreat\",\n            \"daysBefore\": 30\n        },\n        {\n            \"task\": \"Reserve a single occupancy room at the retreat venue\",\n            \"daysBefore\": 30\n        },\n        {\n            \"task\": \"Order a welcome gift basket with yoga-themed items\",\n            \"daysBefore\": 14\n        },\n        {\n            \"task\": \"Schedule a private meditation session for the attendee\",\n            \"daysBefore\": 14\n        },\n        {\n            \"task\": \"Arrange for a healthy meal plan with a private chef\",\n            \"daysBefore\": 10\n        },\n        {\n            \"task\": \"Confirm the retreat schedule and itinerary with the attendee\",\n            \"daysBefore\": 7\n        },\n        {\n            \"task\": \"Prepare a personalized yoga mat and water bottle for the attendee\",\n            \"daysBefore\": 3\n        },\n        {\n            \"task\": \"Conduct a final walk-through of the retreat venue\",\n            \"daysBefore\": 1\n        }\n    ],\n    \"error\": null\n}"
+                }
+              ]
+            },
+            {
+              "name": "find stores",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"location\": {\r\n        \"lat\": 32.08162174335813,\r\n        \"lon\": 34.767296251366496\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/events/:id/find-stores",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "events",
+                    ":id",
+                    "find-stores"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "105"
+                    }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"location\": {\r\n        \"lat\": 32.08162174335813,\r\n        \"lon\": 34.767296251366496\r\n    }\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "http://localhost:3000/events/:id/find-stores",
+                      "protocol": "http",
+                      "host": [
+                        "localhost"
+                      ],
+                      "port": "3000",
+                      "path": [
+                        "events",
+                        ":id",
+                        "find-stores"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": "105"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "432"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"1b0-lmcys4nW6D2sr9ZnedUZ309Y38U\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sat, 16 May 2026 12:41:20 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"success\": true,\n    \"data\": [\n        {\n            \"task\": \"Rent Yoga Mats\",\n            \"storeName\": \"Adidas\",\n            \"lat\": 32.0976756,\n            \"lon\": 34.7736423,\n            \"address\": \"Address not listed\",\n            \"reason\": \"Matches the sports category requirement, potentially carrying yoga mats\"\n        },\n        {\n            \"task\": \"Rent Yoga Mats\",\n            \"storeName\": \"Wertheimer\",\n            \"lat\": 32.0754844,\n            \"lon\": 34.7753488,\n            \"address\": \"Address not listed\",\n            \"reason\": \"Matches the sports category requirement, potentially carrying yoga mats\"\n        }\n    ],\n    \"error\": null\n}"
+                }
+              ]
+            },
+            {
+              "name": "generate invite",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:3000/events/:id/generate-invite",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "events",
+                    ":id",
+                    "generate-invite"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "105"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "save invitation",
+              "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "picture",
+                      "type": "file",
+                      "uuid": "c19fe2a3-b628-4c4b-95a7-dc8fca2e123d",
+                      "src": "/C:/Users/97254/OneDrive - post.bgu.ac.il/שולחן העבודה/לימודים/שנה ג/סמסטר ב/סביבות פיתוח באינטרנט/AVIRA/sources/invite.png"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "http://localhost:3000/events/:id/save-invitation",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "events",
+                    ":id",
+                    "save-invitation"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "105"
+                    }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK",
+                  "originalRequest": {
+                    "method": "PUT",
+                    "header": [],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "picture",
+                          "type": "file",
+                          "uuid": "c19fe2a3-b628-4c4b-95a7-dc8fca2e123d",
+                          "src": "/C:/Users/97254/OneDrive - post.bgu.ac.il/שולחן העבודה/לימודים/שנה ג/סמסטר ב/סביבות פיתוח באינטרנט/AVIRA/sources/invite.png"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "http://localhost:3000/events/:id/save-invitation",
+                      "protocol": "http",
+                      "host": [
+                        "localhost"
+                      ],
+                      "port": "3000",
+                      "path": [
+                        "events",
+                        ":id",
+                        "save-invitation"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": "105"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "92"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"5c-kjcdPp1MPQysFAtk0BC4p/7VPjQ\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sat, 16 May 2026 12:59:20 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"success\": true,\n    \"data\": {\n        \"path\": \"/uploads/picture-1778936360047-184217891.png\"\n    },\n    \"error\": null\n}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Search and Filter",
+          "item": [
+            {
+              "name": "search events (free text)",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:3000/events/search?q=desert",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "events",
+                    "search"
+                  ],
+                  "query": [
+                    {
+                      "key": "q",
+                      "value": "desert"
+                    }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "http://localhost:3000/events/search?q=desert",
+                      "protocol": "http",
+                      "host": [
+                        "localhost"
+                      ],
+                      "port": "3000",
+                      "path": [
+                        "events",
+                        "search"
+                      ],
+                      "query": [
+                        {
+                          "key": "q",
+                          "value": "desert"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "224"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"e0-c8cWLczvKX217dyRrFfzkzyiQeE\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sat, 16 May 2026 13:26:13 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"success\": true,\n    \"data\": [\n        {\n            \"eventId\": 105,\n            \"creatorId\": 2,\n            \"title\": \"Annual Yoga Retreat\",\n            \"date\": \"2026-09-12\",\n            \"time\": \"08:00\",\n            \"location\": \"Desert Days Arava\",\n            \"eventType\": \"Retreat\",\n            \"guestsCount\": 1,\n            \"invitationPath\": null\n        }\n    ],\n    \"error\": null\n}"
+                }
+              ]
+            },
+            {
+              "name": "browse events (filters)",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:3000/events/browse?eventType=Dinner&location=Home",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "events",
+                    "browse"
+                  ],
+                  "query": [
+                    {
+                      "key": "eventType",
+                      "value": "Dinner",
+                      "type": "text"
+                    },
+                    {
+                      "key": "location",
+                      "value": "Home",
+                      "type": "text"
+                    }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "http://localhost:3000/events/browse?eventType=Dinner&location=Home",
+                      "protocol": "http",
+                      "host": [
+                        "localhost"
+                      ],
+                      "port": "3000",
+                      "path": [
+                        "events",
+                        "browse"
+                      ],
+                      "query": [
+                        {
+                          "key": "eventType",
+                          "value": "Dinner"
+                        },
+                        {
+                          "key": "location",
+                          "value": "Home"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "217"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"d9-tVwwoR/ljFmxFvg9hhGH1CtYnv4\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sat, 16 May 2026 13:26:57 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"success\": true,\n    \"data\": [\n        {\n            \"eventId\": 108,\n            \"creatorId\": 1,\n            \"title\": \"Friday Night Family Dinner\",\n            \"date\": \"2026-05-01\",\n            \"time\": \"19:30\",\n            \"location\": \"Home\",\n            \"eventType\": \"Dinner\",\n            \"guestsCount\": 1,\n            \"invitationPath\": null\n        }\n    ],\n    \"error\": null\n}"
+                }
+              ]
+            },
+            {
+              "name": "get events by creator",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:3000/events/creator/:creatorId",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "events",
+                    "creator",
+                    ":creatorId"
+                  ],
+                  "variable": [
+                    {
+                      "key": "creatorId",
+                      "value": "3"
+                    }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "http://localhost:3000/events/creator/:creatorId",
+                      "protocol": "http",
+                      "host": [
+                        "localhost"
+                      ],
+                      "port": "3000",
+                      "path": [
+                        "events",
+                        "creator",
+                        ":creatorId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "creatorId",
+                          "value": "3"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "220"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"dc-4Cglcdy31cwXkRG3ZZAQlNrT5qk\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sat, 16 May 2026 13:28:22 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"success\": true,\n    \"data\": [\n        {\n            \"eventId\": 107,\n            \"creatorId\": 3,\n            \"title\": \"Product Launch Party\",\n            \"date\": \"2026-10-01\",\n            \"time\": \"20:00\",\n            \"location\": \"Expo Tel Aviv\",\n            \"eventType\": \"Launch\",\n            \"guestsCount\": 2,\n            \"invitationPath\": null\n        }\n    ],\n    \"error\": null\n}"
+                }
+              ]
+            },
+            {
+              "name": "get events by guest name",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:3000/events/guest/name/:name",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "events",
+                    "guest",
+                    "name",
+                    ":name"
+                  ],
+                  "variable": [
+                    {
+                      "key": "name",
+                      "value": "Noa Arad"
+                    }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "http://localhost:3000/events/guest/name/:name",
+                      "protocol": "http",
+                      "host": [
+                        "localhost"
+                      ],
+                      "port": "3000",
+                      "path": [
+                        "events",
+                        "guest",
+                        "name",
+                        ":name"
+                      ],
+                      "variable": [
+                        {
+                          "key": "name",
+                          "value": "Noa Arad"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "232"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"e8-sITFjq02XT5w4O6gnunpgIvPoys\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sat, 16 May 2026 13:30:25 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"success\": true,\n    \"data\": [\n        {\n            \"eventId\": 101,\n            \"creatorId\": 1,\n            \"title\": \"Shir's Bachelorette Party\",\n            \"date\": \"2026-06-15\",\n            \"time\": \"19:00\",\n            \"location\": \"Villa Caesarea\",\n            \"eventType\": \"Bachelorette\",\n            \"guestsCount\": 3,\n            \"invitationPath\": null\n        }\n    ],\n    \"error\": null\n}"
+                }
+              ]
+            },
+            {
+              "name": "get events by guest phone",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:3000/events/guest/phone/:phone",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "events",
+                    "guest",
+                    "phone",
+                    ":phone"
+                  ],
+                  "variable": [
+                    {
+                      "key": "phone",
+                      "value": "050-0000002"
+                    }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "http://localhost:3000/events/guest/phone/:phone",
+                      "protocol": "http",
+                      "host": [
+                        "localhost"
+                      ],
+                      "port": "3000",
+                      "path": [
+                        "events",
+                        "guest",
+                        "phone",
+                        ":phone"
+                      ],
+                      "variable": [
+                        {
+                          "key": "phone",
+                          "value": "050-0000002"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "794"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"31a-THGfa3FPbn+i789WEEOVN92eYKQ\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sat, 16 May 2026 14:07:11 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"success\": true,\n    \"data\": [\n        {\n            \"eventId\": 101,\n            \"creatorId\": 1,\n            \"title\": \"Shir's Bachelorette Party\",\n            \"date\": \"2026-06-15\",\n            \"time\": \"19:00\",\n            \"location\": \"Villa Caesarea\",\n            \"eventType\": \"Bachelorette\",\n            \"guestsCount\": 3,\n            \"invitationPath\": null\n        },\n        {\n            \"eventId\": 103,\n            \"creatorId\": 2,\n            \"title\": \"Tech Networking Brunch\",\n            \"date\": \"2026-05-10\",\n            \"time\": \"10:00\",\n            \"location\": \"Mindspace Tel Aviv\",\n            \"eventType\": \"Networking\",\n            \"guestsCount\": 2,\n            \"invitationPath\": null\n        },\n        {\n            \"eventId\": 105,\n            \"creatorId\": 2,\n            \"title\": \"Annual Yoga Retreat\",\n            \"date\": \"2026-09-12\",\n            \"time\": \"08:00\",\n            \"location\": \"Desert Days Arava\",\n            \"eventType\": \"Retreat\",\n            \"guestsCount\": 1,\n            \"invitationPath\": null\n        },\n        {\n            \"eventId\": 109,\n            \"creatorId\": 2,\n            \"title\": \"Summer Cocktail Night\",\n            \"date\": \"2026-07-15\",\n            \"time\": \"21:00\",\n            \"location\": \"Rooftop Bar\",\n            \"eventType\": \"Cocktail\",\n            \"guestsCount\": 1,\n            \"invitationPath\": null\n        }\n    ],\n    \"error\": null\n}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "sub-resources: guests",
+          "item": [
+            {
+              "name": "add guest to event",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"name\": \"Rinat Hadad\",\r\n  \"phone\": \"0545368889\",\r\n  \"role\": \"guest\",\r\n  \"status\": \"pending\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/events/:id/guests",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "events",
+                    ":id",
+                    "guests"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "105"
+                    }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "201 Created",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n  \"name\": \"Rinat Hadad\",\r\n  \"phone\": \"0545368889\",\r\n  \"role\": \"guest\",\r\n  \"status\": \"pending\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "http://localhost:3000/events/:id/guests",
+                      "protocol": "http",
+                      "host": [
+                        "localhost"
+                      ],
+                      "port": "3000",
+                      "path": [
+                        "events",
+                        ":id",
+                        "guests"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": "105"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Created",
+                  "code": 201,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "141"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"8d-jlToLOL6r243K5gSu9N+7Rap7c0\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sat, 16 May 2026 13:32:53 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"success\": true,\n    \"data\": {\n        \"guestId\": 16,\n        \"eventId\": 105,\n        \"name\": \"Rinat Hadad\",\n        \"phone\": \"0545368889\",\n        \"status\": \"pending\",\n        \"role\": \"guest\"\n    },\n    \"error\": null\n}"
+                }
+              ]
+            },
+            {
+              "name": "update guest RSVP status",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"status\": \"confirmed\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/events/:id/guests/:guestId/rsvp",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "events",
+                    ":id",
+                    "guests",
+                    ":guestId",
+                    "rsvp"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "105"
+                    },
+                    {
+                      "key": "guestId",
+                      "value": "16"
+                    }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK",
+                  "originalRequest": {
+                    "method": "PATCH",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n  \"status\": \"confirmed\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "http://localhost:3000/events/:id/guests/:guestId/rsvp",
+                      "protocol": "http",
+                      "host": [
+                        "localhost"
+                      ],
+                      "port": "3000",
+                      "path": [
+                        "events",
+                        ":id",
+                        "guests",
+                        ":guestId",
+                        "rsvp"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": "105"
+                        },
+                        {
+                          "key": "guestId",
+                          "value": "16"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "143"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"8f-a37SpxHrhXYCzJI/s6OENckj6Gs\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sat, 16 May 2026 13:36:05 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"success\": true,\n    \"data\": {\n        \"guestId\": 16,\n        \"eventId\": 105,\n        \"name\": \"Rinat Hadad\",\n        \"phone\": \"0545368889\",\n        \"status\": \"confirmed\",\n        \"role\": \"guest\"\n    },\n    \"error\": null\n}"
+                }
+              ]
+            },
+            {
+              "name": "delete guest from event",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:3000/events/:id/guests/:guestId",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "events",
+                    ":id",
+                    "guests",
+                    ":guestId"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "105"
+                    },
+                    {
+                      "key": "guestId",
+                      "value": "16"
+                    }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [],
+                    "url": {
+                      "raw": "http://localhost:3000/events/:id/guests/:guestId",
+                      "protocol": "http",
+                      "host": [
+                        "localhost"
+                      ],
+                      "port": "3000",
+                      "path": [
+                        "events",
+                        ":id",
+                        "guests",
+                        ":guestId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": "105"
+                        },
+                        {
+                          "key": "guestId",
+                          "value": "16"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "84"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"54-BPgksuZUCJe+kc63/pUXxWo1ruw\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sat, 16 May 2026 13:37:24 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"success\": true,\n    \"data\": {\n        \"eventId\": 105,\n        \"guestId\": 16,\n        \"action\": \"deleted\"\n    },\n    \"error\": null\n}"
+                }
+              ]
+            },
+            {
+              "name": "get all event guests",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:3000/events/:id/guests",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "events",
+                    ":id",
+                    "guests"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "105"
+                    }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "http://localhost:3000/events/:id/guests",
+                      "protocol": "http",
+                      "host": [
+                        "localhost"
+                      ],
+                      "port": "3000",
+                      "path": [
+                        "events",
+                        ":id",
+                        "guests"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": "105"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "158"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"9e-afUNZyl6ZxB8Yn467IskPjAoYds\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sat, 16 May 2026 13:38:10 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"success\": true,\n    \"data\": {\n        \"guests\": [\n            {\n                \"guestId\": 5,\n                \"eventId\": 105,\n                \"name\": \"Yosef Cohen\",\n                \"phone\": \"050-0000002\",\n                \"status\": \"confirmed\",\n                \"role\": \"manager\"\n            }\n        ]\n    },\n    \"error\": null\n}"
+                }
+              ]
+            },
+            {
+              "name": "update guest details",
+              "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"name\": \"Daniela Updated\",\r\n  \"phone\": \"0541234567\",\r\n  \"role\": \"manager\",\r\n  \"status\": \"pending\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/events/:id/guests/:guestId",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "events",
+                    ":id",
+                    "guests",
+                    ":guestId"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "105"
+                    },
+                    {
+                      "key": "guestId",
+                      "value": "5"
+                    }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK",
+                  "originalRequest": {
+                    "method": "PUT",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n  \"name\": \"Daniela Updated\",\r\n  \"phone\": \"0541234567\",\r\n  \"role\": \"manager\",\r\n  \"status\": \"pending\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "http://localhost:3000/events/:id/guests/:guestId",
+                      "protocol": "http",
+                      "host": [
+                        "localhost"
+                      ],
+                      "port": "3000",
+                      "path": [
+                        "events",
+                        ":id",
+                        "guests",
+                        ":guestId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": "105"
+                        },
+                        {
+                          "key": "guestId",
+                          "value": "5"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "146"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"92-0pEOeOSQ2vPYQT++3estLJErvQ0\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sat, 16 May 2026 13:42:23 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"success\": true,\n    \"data\": {\n        \"guestId\": 5,\n        \"eventId\": 105,\n        \"name\": \"Daniela Updated\",\n        \"phone\": \"0541234567\",\n        \"status\": \"pending\",\n        \"role\": \"manager\"\n    },\n    \"error\": null\n}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "sub-resources: tasks",
+          "item": [
+            {
+              "name": "add task to event",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"title\": \"Book a private yoga instructor\",\r\n  \"status\": \"pending\",\r\n  \"priority\": \"high\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/events/:id/tasks",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "events",
+                    ":id",
+                    "tasks"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "105"
+                    }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "201 Created",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n  \"title\": \"Book a private yoga instructor\",\r\n  \"status\": \"pending\",\r\n  \"priority\": \"high\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "http://localhost:3000/events/:id/tasks",
+                      "protocol": "http",
+                      "host": [
+                        "localhost"
+                      ],
+                      "port": "3000",
+                      "path": [
+                        "events",
+                        ":id",
+                        "tasks"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": "105"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Created",
+                  "code": 201,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "142"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"8e-szaT5j9SRt/RiXkelggXc5t5Dpo\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sat, 16 May 2026 13:45:28 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"success\": true,\n    \"data\": {\n        \"taskId\": 11,\n        \"eventId\": 105,\n        \"title\": \"Book a private yoga instructor\",\n        \"status\": \"pending\",\n        \"priority\": \"high\"\n    },\n    \"error\": null\n}"
+                }
+              ]
+            },
+            {
+              "name": "update task details",
+              "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"title\": \"Book a private yoga instructor\",\r\n  \"status\": \"completed\",\r\n  \"priority\": \"high\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/events/:id/tasks/:taskId",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "events",
+                    ":id",
+                    "tasks",
+                    ":taskId"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "105"
+                    },
+                    {
+                      "key": "taskId",
+                      "value": "11"
+                    }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK",
+                  "originalRequest": {
+                    "method": "PUT",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n  \"title\": \"Book a private yoga instructor\",\r\n  \"status\": \"completed\",\r\n  \"priority\": \"high\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "http://localhost:3000/events/:id/tasks/:taskId",
+                      "protocol": "http",
+                      "host": [
+                        "localhost"
+                      ],
+                      "port": "3000",
+                      "path": [
+                        "events",
+                        ":id",
+                        "tasks",
+                        ":taskId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": "105"
+                        },
+                        {
+                          "key": "taskId",
+                          "value": "11"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "144"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"90-cuGqCDKZGOqtevzBPuY3P2IIR70\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sat, 16 May 2026 13:46:42 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"success\": true,\n    \"data\": {\n        \"taskId\": 11,\n        \"eventId\": 105,\n        \"title\": \"Book a private yoga instructor\",\n        \"status\": \"completed\",\n        \"priority\": \"high\"\n    },\n    \"error\": null\n}"
+                }
+              ]
+            },
+            {
+              "name": "delete task from event",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:3000/events/:id/tasks/:taskId",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "events",
+                    ":id",
+                    "tasks",
+                    ":taskId"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "105"
+                    },
+                    {
+                      "key": "taskId",
+                      "value": "11"
+                    }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [],
+                    "url": {
+                      "raw": "http://localhost:3000/events/:id/tasks/:taskId",
+                      "protocol": "http",
+                      "host": [
+                        "localhost"
+                      ],
+                      "port": "3000",
+                      "path": [
+                        "events",
+                        ":id",
+                        "tasks",
+                        ":taskId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": "105"
+                        },
+                        {
+                          "key": "taskId",
+                          "value": "11"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "83"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"53-WdDx839A32za8todwoDIKkeHcv8\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sat, 16 May 2026 13:49:54 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"success\": true,\n    \"data\": {\n        \"eventId\": 105,\n        \"taskId\": 11,\n        \"action\": \"deleted\"\n    },\n    \"error\": null\n}"
+                }
+              ]
+            },
+            {
+              "name": "get all event tasks",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:3000/events/:id/tasks",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "events",
+                    ":id",
+                    "tasks"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "105"
+                    }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "http://localhost:3000/events/:id/tasks",
+                      "protocol": "http",
+                      "host": [
+                        "localhost"
+                      ],
+                      "port": "3000",
+                      "path": [
+                        "events",
+                        ":id",
+                        "tasks"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": "105"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "129"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"81-23y12zjbQCi1lnIO3XIRZ508JCE\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sat, 16 May 2026 13:44:06 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"success\": true,\n    \"data\": [\n        {\n            \"taskId\": 6,\n            \"eventId\": 105,\n            \"title\": \"Rent Yoga Mats\",\n            \"status\": \"pending\",\n            \"priority\": \"medium\"\n        }\n    ],\n    \"error\": null\n}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
