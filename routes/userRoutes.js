@@ -10,7 +10,7 @@ router.get('/',authorize(['admin']), userController.getAllUsers);
 router.get('/:id', validateId, userController.getUserById);
 router.post('/', upload.single('picture'), validateUserFields, userController.createUser);
 router.put('/:id', validateId, validateOptionalUserFields, userController.updateUser);
-router.delete('/:id', validateId, userController.deleteUser);
+router.delete('/:id', authorize(['admin']), validateId, userController.deleteUser);
 router.post('/login', userController.login);
 router.post('/send-verification-code', userController.sendVerificationCode);
 router.post('/verify-email', userController.completeEmailVerification);
