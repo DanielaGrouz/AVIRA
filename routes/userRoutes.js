@@ -7,9 +7,9 @@ const {upload} = require("../middleware/fileUpload");
 
 
 router.get('/',authorize(['admin']), userController.getAllUsers);
-router.get('/:id', validateId, userController.getUserById);
+router.get('/:id', authorize(['admin', 'user']), validateId, userController.getUserById);
 router.post('/', upload.single('picture'), validateUserFields, userController.createUser);
-router.put('/:id', validateId, validateOptionalUserFields, userController.updateUser);
+router.put('/:id', authorize(['admin', 'user']), validateId, validateOptionalUserFields, userController.updateUser);
 router.delete('/:id', authorize(['admin']), validateId, userController.deleteUser);
 router.post('/login', userController.login);
 router.post('/send-verification-code', userController.sendVerificationCode);
