@@ -27,8 +27,8 @@ const getAllUsers = (req, res) => {
  * Finds a single user by their numeric ID.
  */
 const getUserById = (req, res) => {
+    const id = parseInt(req.params.id);
     try {
-        const id = parseInt(req.params.id);
         const user = userService.getUserByIdLogic(id);
         if (!user) {
             return res.status(404).json({
@@ -89,8 +89,8 @@ const createUser = async (req, res) => {
  * Updates user profile details.
  */
 const updateUser = (req, res) => {
+    const id = parseInt(req.params.id);
     try {
-        const id = parseInt(req.params.id);
         userService.updateUserLogic(id, req.body);
 
         res.status(200).json({ success: true, data: { userId: id }, error: null });
@@ -114,8 +114,8 @@ const updateUser = (req, res) => {
  * Permanently removes a user record.
  */
 const deleteUser = (req, res) => {
+    const id = parseInt(req.params.id);
     try {
-        const id = parseInt(req.params.id);
         userService.deleteUserLogic(id);
 
         res.status(200).json({ success: true, data: { userId: id }, error: null });
@@ -209,8 +209,8 @@ const sendVerificationCode = async (req, res) => {
  * Updates the user's password, typically used after a successful "Forgot Password" flow.
  */
 const resetPassword = async (req, res) => {
+    const { userId, newPassword } = req.body;
     try {
-        const { userId, newPassword } = req.body;
         await userService.resetPasswordLogic(userId, newPassword);
 
         res.status(200).json({ success: true, data: { message: "Password updated successfully" }, error: null });

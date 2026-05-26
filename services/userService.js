@@ -66,6 +66,12 @@ const generateAvatarPicture = async (firstName, lastName) => {
 
     // Call the external AI generation client
     const buffer = await generateAvatar(userProfile);
+
+    // Safety Check: Prevent crash if the external AI service returns null/fails
+    if (!buffer) {
+        throw new Error("AVATAR_GENERATION_FAILED");
+    }
+
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     let finalPicture = path.join(__dirname, '../uploads', `avatar_ai_${uniqueSuffix}.jpg`);
 
@@ -94,7 +100,13 @@ const createUserLogic = async (userData) => {
     // Dynamic Avatar: Generate AI picture if no picture was uploaded
     let finalPicture = picturePath;
     if (!picturePath) {
-        finalPicture = generateAvatarPicture(firstName, lastName);
+        try {
+            // Try to generate the cool AI avatar
+            finalPicture = await generateAvatarPicture(firstName, lastName);
+        } catch (error) {
+            // If AI fails, use a default placeholder instead of crashing the registration
+            finalPicture = path.join(__dirname, '../uploads', 'default_avatar.jpg');
+        }
     }
 
     const newUser = {

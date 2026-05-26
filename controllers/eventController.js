@@ -469,6 +469,19 @@ const findStores = async (req, res) => {
 
 const saveInvitation = async (req, res) => {
     try {
+        // Enforcement Check: Ensure a file was actually uploaded via Multer
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                data: null,
+                error: {
+                    code: "VALIDATION_ERROR",
+                    message: "No invitation file uploaded. Please upload an image using form-data.",
+                    details: {}
+                }
+            });
+        }
+
         const picturePath = `/uploads/${req.file.filename}`;
         await eventService.saveInvitationLogic(parseInt(req.params.id), picturePath);
         res.status(200).json({ success: true, data: {path: picturePath}, error: null });

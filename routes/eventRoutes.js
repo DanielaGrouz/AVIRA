@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const eventController = require('../controllers/eventController');
-const { validateId, validateEventFields, validateUserExists, validateGuestFields } = require('../middleware/validation');
+const { validateId, validateEventFields, validateOptionalEventFields, validateUserExists, validateGuestFields } = require('../middleware/validation');
 const authorize = require("../middleware/auth");
 const {upload} = require("../middleware/fileUpload");
 
@@ -18,7 +18,7 @@ router.get('/guest/phone/:phone', eventController.getEventsByPhone);
 router.get('/', authorize(['admin']), eventController.getAllEvents);
 router.get('/:id', validateId, eventController.getEventById);
 router.post('/', validateUserExists, validateEventFields, eventController.createEvent);
-router.put('/:id', validateId, validateEventFields, eventController.updateEvent);
+router.put('/:id', validateId, validateOptionalEventFields, eventController.updateEvent);
 router.delete('/:id', validateId, eventController.deleteEvent);
 
 // Sub-resources (Guests and Tasks for a specific event)

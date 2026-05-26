@@ -13,7 +13,7 @@
 ### Installation
 1. Clone the repository or extract the project files.
 2. Navigate to the project root directory in your terminal.
-3. Install dependencies:
+3. Install dependencies (as defined in `package.json`):
    ```bash
    npm install
    ```
@@ -47,72 +47,104 @@ The project follows a modular structure to ensure maintainability and separation
 ### Key Assumptions
 - **In-Memory Storage**: Data is stored in RAM and resets whenever the server restarts.
 - **ID Generation**: Numeric IDs are auto-incremented based on the data array length.
+- **Password Hashing**: We utilize bcrypt for password hashing.
 - **Role-Based Access**: Security is simulated using the `x-user-role` request header.
+- **File Uploads**: Handled via multer (e.g., uploading user profile pictures or saving event invitations). 
+- **External Integrations**: Includes AI features via @huggingface/inference / groq-sdk and email functionalities via nodemailer.
 
 ---
 
 ## 📑 API Reference
 
-### 1. Users Resource
+### 1. Users Resource (`/users`)
+User management, authorization, and authentication processes.
 
-| Method | Endpoint    | Description                  | Auth Required |
-|--------|------------|------------------------------|--------------|
-| GET    | /users     | Get all users                | No           |
-| GET    | /users/:id | Get user by ID              | No           |
-| POST   | /users     | Create user                 | Admin/Manager|
-| PUT    | /users/:id | Update user                 | Admin/Manager|
-| DELETE | /users/:id | Delete user                 | Admin        |
-
-
-### 2. Events Resource
-
-| Method | Endpoint             | Description               | Query Params                     |
-|--------|---------------------|---------------------------|----------------------------------|
-| GET    | /events/search      | Search events             | ?q=text                          |
-| GET    | /events/browse      | Filter events             | eventType, location              |
-| GET    | /events/creator/:id | Events by manager         | None                             |
-| GET    | /events             | Get all (paginated)       | page, limit, sortBy              |
-| GET    | /events/:id         | Get event by ID           | None                             |
-| POST   | /events             | Create event              | Manager                          |
-| PUT    | /events/:id         | Update event              | Manager                          |
-| DELETE | /events/:id         | Delete event              | Admin/Manager                    |
-
-
-### 3. Guests (Event Sub-resources)
-
-| Method | Endpoint                         | Description        | Body             |
-|--------|----------------------------------|--------------------|------------------|
-| GET    | /events/:id/guests              | Get guests         | None             |
-| POST   | /events/:id/guests              | Add guest          | name, phone, role|
-| DELETE | /events/:id/guests/:gId         | Delete guest       | None             |
-| PATCH  | /events/:id/guests/:gId/rsvp    | Update RSVP        | status           |
-
-
-### 4. Tasks (Event Sub-resources)
-
-| Method | Endpoint                         | Description        | Body             |
-|--------|----------------------------------|--------------------|------------------|
-| GET    | /events/:id/tasks               | Get tasks          | None             |
-| POST   | /events/:id/tasks               | Add task           | title, priority  |
-| PUT    | /events/:id/tasks/:tId          | Update task        | status, title    |
+| Method | Endpoint | Params | Request Body Format (JSON/Form)                                                             | Description | Auth Required |
+| :--- | :--- | :--- |:--------------------------------------------------------------------------------------------| :--- | :--- |
+| **GET** | `/users` | None | None                                                                                        | Get all users in the system | Admin |
+| **GET** | `/users/:id` | `:id` | None                                                                                        | Get a specific user by ID | No |
+| **POST** | `/users` | None | `multipart/form-data`: `firstName`, `lastName`, `email`, `password`, `userRole`, `phoneNumber`, `picture` | Create a new user and upload a profile picture | No |
+| **PUT** | `/users/:id` | `:id` | `JSON`: `{ "firstName", "lastName"... }`                                                    | Update existing user details | No |
+| **DELETE** | `/users/:id` | `:id` | None                                                                                        | Delete a user from the system | No |
+| **POST** | `/users/login` | None | `JSON`: `{ "email", "password" }`                                                           | User login to receive an authentication token | No |
+| **POST** | `/users/send-verification-code` | None | `JSON`: `{ "email" }`                                                                       | Send an email verification code | No |
+| **POST** | `/users/reset-password` | None | `JSON`: `{ "userId", "newPassword" }`                                                        | Reset a user's password | No |
 
 ---
 
+### 2. Events Resource (`/events`)
+Event management, advanced search, and AI capabilities.
 
-### Example Requests & Responses
-
-**Endpoint:** `POST /users`  
-**Headers:** `x-user-role: admin`  
-**Body (JSON):**
-```json
-{
-  "firstName": "Yosef",
-  "lastName": "Cohen",
-  "userRole": "manager"
-}
-```
+| Method | Endpoint | Params | Request Body Format (JSON) | Description | Auth Required |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **GET** | `/events` | None | None | Get all events in the system | Admin |
+| **GET** | `/events/:id` | `:id` | None | Get details of a specific event | No |
+| **GET** | `/events/search` | `?q=text` | None | Search for events using a free text query | No |
+| **GET** | `/events/browse` | `?eventType`, `?location` | None | Filter events by type and location | No |
+| **GET** | `/events/creator/:creatorId` | `:creatorId` | None | Get all events created by a specific manager | No |
+| **GET** | `/events/guest/name/:name` | `:name` | None | Find events by guest's name | No |
+| **GET** | `/events/guest/phone/:phone` | `:phone` | None | Find events by guest's phone number | No |
+| **POST** | `/events` | None | `JSON`: `{ "creatorId", "title", "date", "location"... }` | Create a new event | No |
+| **PUT** | `/events/:id` | `:id` | `JSON`: `{ "title", "date", "location"... }` | Update an existing event's details | No |
+| **DELETE** | `/events/:id` | `:id` | None | Delete an event from the system | No |
+| **GET** | `/events/:id/generate-invite` | `:id` | None | Generate an AI-based event invitation | No |
+| **GET** | `/events/:id/shopping-list` | `:id` | None | Generate an AI-based shopping list | No |
+| **GET** | `/events/:id/task-list` | `:id` | None | Generate an AI-based task list | No |
+| **GET** | `/events/:id/find-stores` | `:id` | None | Find relevant stores for the event needs | No |
+| **PUT** | `/events/:id/save-invitation` | `:id` | `multipart/form-data`: `picture` | Save the generated event invitation image | No |
 
 ---
+### 3. Guests Sub-Resource (`/events/:id/guests`)
+Manage guests specifically within the context of an event.
+
+| Method | Endpoint | Params | Request Body Format (JSON) | Description | Auth Required |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **GET** | `/events/:id/guests` | `:id` | None | Get all guests for a specific event | No |
+| **POST** | `/events/:id/guests` | `:id` | `JSON`: `{ "name", "phone", "role" }` | Add a new guest to an event | No |
+| **PUT** | `/events/:id/guests/:guestId` | `:id`, `:guestId` | `JSON`: `{ "name", "phone", "role" }` | Update guest details within an event | No |
+| **PATCH** | `/events/:id/guests/:guestId/rsvp` | `:id`, `:guestId` | `JSON`: `{ "status" }` | Update guest's RSVP status | No |
+| **DELETE** | `/events/:id/guests/:guestId` | `:id`, `:guestId` | None | Remove a guest from a specific event | No |
+
+---
+
+### 4. Tasks Sub-Resource (`/events/:id/tasks`)
+Manage tasks specifically within the context of an event.
+
+| Method | Endpoint | Params | Request Body Format (JSON) | Description | Auth Required |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **GET** | `/events/:id/tasks` | `:id` | None | Get all tasks for a specific event | No |
+| **POST** | `/events/:id/tasks` | `:id` | `JSON`: `{ "title", "priority" }` | Add a new task to an event | No |
+| **PUT** | `/events/:id/tasks/:taskId` | `:id`, `:taskId` | `JSON`: `{ "title", "status" }` | Update an existing task within an event | No |
+| **DELETE** | `/events/:id/tasks/:taskId` | `:id`, `:taskId` | None | Remove a task from a specific event | No |
+
+---
+
+### 5. Guests Resource (`/guests`)
+Direct management of objects without an event context.
+
+| Method | Endpoint | Params | Request Body Format (JSON) | Description | Auth Required |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **GET** | `/guests` | None | None | Get all guests across the entire system | Admin |
+| **GET** | `/guests/:id` | `:id` | None | Get a standalone guest by ID | No |
+| **POST** | `/guests` | None | `JSON`: `{ "name", "phone", "role" }` | Create a standalone guest | No |
+| **PUT** | `/guests/:id` | `:id` | `JSON`: `{ "name", "phone", "role" }` | Update a standalone guest | No |
+| **DELETE** | `/guests/:id` | `:id` | None | Delete a standalone guest | No |
+
+---
+
+### 6. Tasks Resource (`/tasks`)
+Direct management of objects without an event context.
+
+| Method | Endpoint | Params | Request Body Format (JSON) | Description | Auth Required |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **GET** | `/tasks` | None | None | Get all tasks across the entire system | Admin |
+| **GET** | `/tasks/:id` | `:id` | None | Get a standalone task by ID | No |
+| **POST** | `/tasks` | None | `JSON`: `{ "title", "priority" }` | Create a standalone task | No |
+| **PUT** | `/tasks/:id` | `:id` | `JSON`: `{ "title", "status" }` | Update a standalone task | No |
+| **DELETE** | `/tasks/:id` | `:id` | None | Delete a standalone task | No |
+
+---
+
 
 ## 💡 Example Requests & Responses
 
@@ -179,6 +211,17 @@ To test the API effectively:
     - Key: `x-user-role`
     - Value: `admin` (or `manager` / `user`)
 
+---
+
+## ⚠️ Important Notes for Testing
+
+### Environment Variables (`.env` File)
+This project utilizes environment variables to securely manage sensitive information, such as AI API keys (HuggingFace/Groq), and email service credentials.
+Normally, the `.env` file is excluded from version control (via `.gitignore`) for security purposes and will not appear in the GitHub repository. However, **we have explicitly included the `.env` file in our submitted project folder** so that you can run, test, and evaluate the system immediately without needing to set up your own API keys or configurations.
+
+### Testing the Email Verification Flow
+Please note that the email verification endpoints (`/users/send-verification-code`) rely on a live email integration using `nodemailer`.
+Because the system sends a real, dynamically generated code to the provided address, **this flow cannot be tested using mock or fake email addresses**. To successfully test the verification process, you must use a real, accessible email address in the request body to receive the code and complete the verification.
 
 ---
 ## ✒️ Author

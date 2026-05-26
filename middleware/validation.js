@@ -1,4 +1,6 @@
 const { VALID_ROLES } = require('../models/constants');
+const events = require('../models/eventModel');
+const users = require('../models/userModel');
 
 /**
  * Validates that the 'id' parameter in a URL is a positive integer.
@@ -250,6 +252,10 @@ const validateTaskFields = (req, res, next) => {
  * Checks for strict date (YYYY-MM-DD) and time (HH:MM) formatting.
  */
 const validateEventFields = (req, res, next) => {
+    if (req.body.guestsCount === undefined) {
+        req.body.guestsCount = 0;
+    }
+
     const { creatorId, title, date, time, location, eventType, guestsCount } = req.body;
     let errors = [];
 
@@ -330,6 +336,45 @@ const validateUserExists = (req, res, next) => {
     next();
 };
 
+/**
+ * Validation for Event Updates (PUT/PATCH).
+ * Only validates fields if they are provided in the request body.
+ */
+const validateOptionalEventFields = (req, res, next) => {
+    const { title, date, time, location, eventType, guestsCount } = req.body;
+    let errors = [];
+    const isProvided = (value) => value !== undefined && value !== null && value !== "";
+
+    if (isProvided(title) && (typeof title !== 'string' || title.trim().length < 2)) {
+        errors.push("title must be a string (min 2 chars)");
+    }
+    if (isProvided(date)) {
+        const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+        if (typeof date !== 'string' || !dateRegex.test(date)) errors.push("date must be a valid string in YYYY-MM-DD format");
+    }
+    if (isProvided(time)) {
+        const timeRegex = /^([0-1]\d|2[0-3]):([0-5]\d)$/;
+        if (typeof time !== 'string' || !timeRegex.test(time)) errors.push("time must be a valid string in HH:MM format");
+    }
+    if (isProvided(location) && (typeof location !== 'string' || location.trim().length < 2)) {
+        errors.push("location must be a string (min 2 chars)");
+    }
+    if (isProvided(eventType) && (typeof eventType !== 'string' || eventType.trim().length < 2)) {
+        errors.push("eventType must be a string (min 2 chars)");
+    }
+    if (isProvided(guestsCount) && (typeof guestsCount !== 'number' || guestsCount < 0)) {
+        errors.push("guestsCount must be a non-negative number");
+    }
+
+    if (errors.length > 0) {
+        return res.status(400).json({
+            success: false, data: null,
+            error: { code: "VALIDATION_ERROR", message: "Invalid input data", details: { errors } }
+        });
+    }
+    next();
+};
+
 module.exports = {
     validateId,
     validateUserFields,
@@ -338,5 +383,6 @@ module.exports = {
     validateEventFields,
     validateEventExists,
     validateUserExists,
-    validateOptionalUserFields
+    validateOptionalUserFields,
+    validateOptionalEventFields
 };

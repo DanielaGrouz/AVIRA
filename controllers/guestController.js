@@ -37,8 +37,8 @@ const getAllGuests = (req, res) => {
  * Path Parameter: id
  */
 const getGuestById = (req, res) => {
+    const id = parseInt(req.params.id);
     try {
-        const id = parseInt(req.params.id);
         const guest = guestService.getGuestByIdLogic(id);
 
         // Handle case where guest does not exist in the data source
@@ -102,8 +102,8 @@ const createGuest = (req, res) => {
  * Body: Partial guest object (name, phone, etc.)
  */
 const updateGuest = (req, res) => {
+    const id = parseInt(req.params.id);
     try {
-        const id = parseInt(req.params.id);
         const updatedGuest = guestService.updateGuestLogic(id, req.body);
 
         res.status(200).json({
@@ -140,8 +140,8 @@ const updateGuest = (req, res) => {
  * Path Parameter: id
  */
 const deleteGuest = (req, res) => {
+    const id = parseInt(req.params.id);
     try {
-        const id = parseInt(req.params.id);
         guestService.deleteGuestLogic(id);
 
         res.status(200).json({
@@ -170,13 +170,3 @@ const deleteGuest = (req, res) => {
 };
 
 module.exports = { getAllGuests, getGuestById, createGuest, updateGuest, deleteGuest };
-
-
-
-
-
-
-
-
-
-
