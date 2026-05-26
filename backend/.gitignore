@@ -1,0 +1,17 @@
+# Node dependencies
+node_modules/
+
+# Environment variables (Critical - never commit this!)
+.env
+
+# IDE and OS files
+.idea/
+.DS_Store
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build/Uploads (If applicable)
+uploads/
