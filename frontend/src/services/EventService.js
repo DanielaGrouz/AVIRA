@@ -61,7 +61,7 @@ class EventService {
         return apiClient.put(`${this.route}/${guestData.eventId}/guests/${guestId}`, guestData);
     }
 
-    removeGuest(eventId, guestId) {
+    deleteGuest(eventId, guestId) {
         return apiClient.delete(`${this.route}/${eventId}/guests/${guestId}`);
     }
 
@@ -74,15 +74,15 @@ class EventService {
         return apiClient.get(`${this.route}/${eventId}/tasks`);
     }
 
-    addTask(eventId, taskData) {
-        return apiClient.post(`${this.route}/${eventId}/tasks`, taskData);
+    addTask(taskData) {
+        return apiClient.post(`${this.route}/${taskData.eventId}/tasks`, taskData);
     }
 
-    updateTask(eventId, taskId, taskData) {
-        return apiClient.put(`${this.route}/${eventId}/tasks/${taskId}`, taskData);
+    updateTask(taskId, taskData) {
+        return apiClient.put(`${this.route}/${taskData.eventId}/tasks/${taskId}`, taskData);
     }
 
-    removeTask(eventId, taskId) {
+    deleteTask(eventId, taskId) {
         return apiClient.delete(`${this.route}/${eventId}/tasks/${taskId}`);
     }
 

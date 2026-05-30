@@ -41,7 +41,7 @@ const EventDetailsPage = () => {
 
     // --- Delete Handlers ---
     const promptDeleteGuest = (guestId) => {
-        setItemToDelete({ id: guestId, type: 'guest' });
+        setItemToDelete({ id: guestId, type: 'guest'});
         setIsDeleteModalOpen(true);
     };
 
@@ -157,7 +157,6 @@ const EventDetailsPage = () => {
         e.preventDefault();
         try {
             const payload = { eventId: id, ...taskData };
-
             if (editingTaskId) {
                 await EventService.updateTask(editingTaskId, payload);
                 console.log("Updating Task:", editingTaskId, payload);
@@ -178,7 +177,8 @@ const EventDetailsPage = () => {
 
         if (itemToDelete.type === 'guest') {
             try {
-                await EventService.deleteGuest(itemToDelete.id);
+                console.log("Deleting Guest:", itemToDelete.id);
+                await EventService.deleteGuest(id, itemToDelete.id);
                 console.log("Deleted guest:", itemToDelete.id);
                 fetchGuests();
             } catch (error) {
@@ -186,7 +186,7 @@ const EventDetailsPage = () => {
             }
         } else if (itemToDelete.type === 'task') {
             try {
-                await EventService.deleteTask(itemToDelete.id);
+                await EventService.deleteTask(id, itemToDelete.id);
                 console.log("Deleted task:", itemToDelete.id);
                 fetchTasks();
             } catch (error) {
@@ -198,7 +198,6 @@ const EventDetailsPage = () => {
         setItemToDelete(null);
     };
 
-    // --- Table Columns ---
     const guestColumns = [
         { accessorKey: 'name', header: 'Name' },
         { accessorKey: 'phone', header: 'Phone' },
@@ -214,16 +213,23 @@ const EventDetailsPage = () => {
         {
             id: 'actions',
             header: '',
-            cell: ({ row }) => (
-                <div className="actions-cell">
-                    <button onClick={() => openEditGuestModal(row.original)} className="icon-btn edit-btn" title="Edit Guest">
-                        <FaEdit />
-                    </button>
-                    <button onClick={() => promptDeleteGuest(row.original.id || row.original._id)} className="icon-btn delete-btn" title="Delete Guest">
-                        <FaTrash />
-                    </button>
-                </div>
-            )
+            cell: ({ row }) => {
+                const isManager = row.original.role?.toUpperCase() === 'MANAGER';
+
+                return (
+                    <div className="actions-cell">
+                        <button onClick={() => openEditGuestModal(row.original)} className="icon-btn edit-btn" title="Edit Guest">
+                            <FaEdit />
+                        </button>
+
+                        {!isManager && (
+                            <button onClick={() => promptDeleteGuest(row.original.guestId)} className="icon-btn delete-btn" title="Delete Guest">
+                                <FaTrash />
+                            </button>
+                        )}
+                    </div>
+                );
+            }
         }
     ];
 
@@ -239,7 +245,7 @@ const EventDetailsPage = () => {
                     <button onClick={() => openEditTaskModal(row.original)} className="icon-btn edit-btn" title="Edit Task">
                         <FaEdit />
                     </button>
-                    <button onClick={() => promptDeleteTask(row.original.id || row.original._id)} className="icon-btn delete-btn" title="Delete Task">
+                    <button onClick={() => promptDeleteTask(row.original.taskId)} className="icon-btn delete-btn" title="Delete Task">
                         <FaTrash />
                     </button>
                 </div>

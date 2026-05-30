@@ -13,13 +13,12 @@ router.post('/', authorize(['user', 'admin']), validateEventFields, eventControl
 router.put('/:id', authorize(['user', 'admin']), validateId, validateEventId, validateOptionalEventFields, eventController.updateEvent);
 router.delete('/:id', authorize(['user', 'admin']), validateId, validateEventId, eventController.deleteEvent);
 
-// Sub-resources (Guests and Tasks for a specific event)
-// Changed to /:id/guests to avoid collision with getEventById
 router.get('/:id/guests', authorize(['user', 'admin']), validateId, validateEventId, eventController.getAllGuestsByEvent);
 router.post('/:id/guests', authorize(['user', 'admin']), validateId, validateEventId, validateGuestFields, eventController.addGuestToEvent);
 router.delete('/:id/guests/:guestId', authorize(['user', 'admin']), validateId, validateEventId, eventController.removeGuestFromEvent);
 router.put('/:id/guests/:guestId', authorize(['user', 'admin']), validateId, validateEventId, validateGuestFields, eventController.updateGuestInEvent);
 router.patch('/:id/guests/:guestId/rsvp', authorize(['user', 'admin']), validateId, validateEventId, eventController.confirmGuestAttendance);
+
 router.get('/:id/tasks', authorize(['user', 'admin']), validateId, validateEventId, eventController.getTasksByEventId);
 router.post('/:id/tasks', authorize(['user', 'admin']), validateId, validateEventId, eventController.addTaskToEvent);
 router.put('/:id/tasks/:taskId', authorize(['user', 'admin']), validateId, validateEventId, eventController.updateTaskInEvent);
