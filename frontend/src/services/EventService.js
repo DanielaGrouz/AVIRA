@@ -53,12 +53,12 @@ class EventService {
         return apiClient.get(`${this.route}/${eventId}/guests`);
     }
 
-    addGuest(eventId, guestData) {
-        return apiClient.post(`${this.route}/${eventId}/guests`, guestData);
+    addGuest(guestData) {
+        return apiClient.post(`${this.route}/${guestData.eventId}/guests`, guestData);
     }
 
-    updateGuest(eventId, guestId, guestData) {
-        return apiClient.put(`${this.route}/${eventId}/guests/${guestId}`, guestData);
+    updateGuest(guestId, guestData) {
+        return apiClient.put(`${this.route}/${guestData.eventId}/guests/${guestId}`, guestData);
     }
 
     removeGuest(eventId, guestId) {

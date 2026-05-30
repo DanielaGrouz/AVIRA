@@ -180,7 +180,7 @@ const validateOptionalUserFields = (req, res, next) => {
  * Validates Guest data including their specific roles and confirmation statuses.
  */
 const validateGuestFields = (req, res, next) => {
-    const { name, phone, role, status } = req.body;
+    const { name, phone, status } = req.body;
     let errors = [];
     if (!name || typeof name !== 'string' || name.trim().length < 2) {
         errors.push("name must be a string (min 2 chars)");
@@ -188,11 +188,6 @@ const validateGuestFields = (req, res, next) => {
     const phoneRegex = /^05\d-?\d{7}$/;
     if (!phone || !phoneRegex.test(phone)) {
         errors.push("A valid Israeli phone number is required (e.g., 0545368889)");
-    }
-
-    const VALID_GUEST_ROLES = ['manager', 'guest'];
-    if (!role || !VALID_GUEST_ROLES.includes(role)) {
-        errors.push(`role must be one of: ${VALID_GUEST_ROLES.join(', ')}`);
     }
 
     const VALID_STATUSES = ['confirmed', 'pending', 'cancelled'];

@@ -25,7 +25,9 @@ apiClient.interceptors.response.use(
     },
     (error) => {
         // Any non-2xx status code triggers this wrapper
+        console.error(error);
         if (error.response) {
+            console.log(error.response);
             // The server responded with a status outside the 2xx range
             throw new ApiError(
                 error.response.status,

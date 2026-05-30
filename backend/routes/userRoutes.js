@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController'); // import user logic
-const authorize = require('../middleware/auth');
+const {authorize} = require('../middleware/auth');
 const { validateId, validateUserFields, validateOptionalUserFields } = require('../middleware/validation');
 const {upload} = require("../middleware/fileUpload");
 

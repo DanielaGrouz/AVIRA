@@ -93,16 +93,16 @@ const EventDetailsPage = () => {
     // --- Open Modal Handlers ---
     const openAddGuestModal = () => {
         setEditingGuestId(null);
-        setGuestData({ name: '', phone: '', role: 'Guest', status: 'Pending' });
+        setGuestData({ name: '', phone: '', status: 'Pending' });
         setIsGuestModalOpen(true);
     };
 
     const openEditGuestModal = (guest) => {
-        setEditingGuestId(guest.id || guest._id);
+        console.error(`guest is: ${JSON.stringify(guest)}`);
+        setEditingGuestId(guest.guestId);
         setGuestData({
             name: guest.name,
             phone: guest.phone,
-            role: guest.role,
             status: guest.status
         });
         setIsGuestModalOpen(true);
@@ -115,7 +115,7 @@ const EventDetailsPage = () => {
     };
 
     const openEditTaskModal = (task) => {
-        setEditingTaskId(task.id || task._id);
+        setEditingTaskId(task.taskId);
         setTaskData({
             title: task.title || task.description,
             status: task.status,
@@ -137,12 +137,11 @@ const EventDetailsPage = () => {
 
         try {
             const payload = { eventId: id, ...guestData, phone: cleanPhone };
-
             if (editingGuestId) {
-                // await EventService.updateGuest(editingGuestId, payload);
+                await EventService.updateGuest(editingGuestId, payload);
                 console.log("Updating Guest:", editingGuestId, payload);
             } else {
-                // await EventService.addGuest(payload);
+                await EventService.addGuest(payload);
                 console.log("Adding New Guest:", payload);
             }
 
@@ -160,10 +159,10 @@ const EventDetailsPage = () => {
             const payload = { eventId: id, ...taskData };
 
             if (editingTaskId) {
-                // await EventService.updateTask(editingTaskId, payload);
+                await EventService.updateTask(editingTaskId, payload);
                 console.log("Updating Task:", editingTaskId, payload);
             } else {
-                // await EventService.addTask(payload);
+                await EventService.addTask(payload);
                 console.log("Adding New Task:", payload);
             }
 
@@ -179,7 +178,7 @@ const EventDetailsPage = () => {
 
         if (itemToDelete.type === 'guest') {
             try {
-                // await EventService.deleteGuest(itemToDelete.id);
+                await EventService.deleteGuest(itemToDelete.id);
                 console.log("Deleted guest:", itemToDelete.id);
                 fetchGuests();
             } catch (error) {
@@ -187,7 +186,7 @@ const EventDetailsPage = () => {
             }
         } else if (itemToDelete.type === 'task') {
             try {
-                // await EventService.deleteTask(itemToDelete.id);
+                await EventService.deleteTask(itemToDelete.id);
                 console.log("Deleted task:", itemToDelete.id);
                 fetchTasks();
             } catch (error) {
@@ -292,7 +291,7 @@ const EventDetailsPage = () => {
             {/* --- Modals --- */}
 
             {/* Guest Modal */}
-            <Modal isOpen={isGuestModalOpen} onClose={() => setIsGuestModalOpen(false)} title={editingGuestId ? "Edit Guest" : "Add New Guest"}>
+            <Modal isOpen={isGuestModalOpen} onClose={() => setIsGuestModalOpen(false)} title={editingGuestId ? "Edit Guest" : "Edit Guest"}>
                 <form onSubmit={handleSaveGuest}>
                     <div className="modal-body">
                         {guestError && (
@@ -322,18 +321,6 @@ const EventDetailsPage = () => {
                             />
                         </div>
                         <div className="form-group">
-                            <label className="form-label">Role</label>
-                            <CustomSelect
-                                value={guestData.role}
-                                onChange={(e) => setGuestData({...guestData, role: e.target.value})}
-                                options={[
-                                    { value: 'guest', label: 'guest' },
-                                    { value: 'VIP', label: 'VIP' },
-                                    { value: 'vendor', label: 'vendor' }
-                                ]}
-                            />
-                        </div>
-                        <div className="form-group">
                             <label className="form-label">Status</label>
                             <CustomSelect
                                 value={guestData.status}
@@ -342,7 +329,7 @@ const EventDetailsPage = () => {
                                 options={[
                                     { value: 'pending', label: 'pending' },
                                     { value: 'confirmed', label: 'confirmed' },
-                                    { value: 'declined', label: 'declined' }
+                                    { value: 'cancelled', label: 'cancelled' }
                                 ]}
                             />
                         </div>
