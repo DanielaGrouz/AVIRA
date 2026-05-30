@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import UserService from '../../services/UserService';
-import '../../styles/Login.css';
+import '../../styles/auth.css';
 import {useAuth} from "../../hooks/useAuth"; // Reusing your existing styles
 
 export default function VerifyEmail() {

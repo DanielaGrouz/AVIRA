@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import UserService from '../../services/UserService';
 import ProfileImageUploader from '../../components/ProfileImageUploader';
-import '../../styles/Login.css';
+import '../../styles/auth.css';
 
 export default function Signup() {
     const [firstName, setFirstName] = useState('');

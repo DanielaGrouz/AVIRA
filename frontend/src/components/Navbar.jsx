@@ -8,13 +8,13 @@ import '../styles/Navbar.css';
 export default function Navbar() {
     const { user, forgetUser } = useAuth();
 
+    console.log(user)
     // Helper function to handle the active class neatly
     const getLinkClass = ({ isActive }) => isActive ? "nav-link active" : "nav-link";
 
     return (
         <nav className="navbar">
             <div className="navbar-container">
-                {/* Left Corner: Brand / Logo */}
                 <Link to="/" className="navbar-brand">
                     <img
                         src="/logo.png"

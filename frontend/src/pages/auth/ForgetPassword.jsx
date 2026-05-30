@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 import UserService from '../../services/UserService';
-import '../../styles/Login.css';
+import '../../styles/auth.css';
 import AppRoutes from "../../AppRoutesConfig"; // Reusing your existing styles
 
 export default function ForgotPassword() {

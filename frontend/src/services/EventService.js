@@ -5,15 +5,6 @@ class EventService {
         this.route = '/events';
     }
 
-    // --- Search and Browse ---
-    search(query) {
-        return apiClient.get(`${this.route}/search`, { params: { q: query } });
-    }
-
-    browse(filters) {
-        return apiClient.get(`${this.route}/browse`, { params: filters });
-    }
-
     // --- Filtered Retrieval ---
     getByCreator(creatorId) {
         return apiClient.get(`${this.route}/creator/${creatorId}`);
@@ -28,8 +19,8 @@ class EventService {
     }
 
     // --- Standard CRUD ---
-    getAll(page = 1, sortBy = 'id') {
-        return apiClient.get(this.route, { params: { page, sortBy } });
+    getAll(page, sortBy, searchQuery, limit) {
+        return apiClient.get(this.route, { params: { page, sortBy, searchQuery, limit } });
     }
 
     getById(id) {

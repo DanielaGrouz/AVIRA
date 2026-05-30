@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import UserService from '../../services/UserService';
-import '../../styles/Login.css';
+import '../../styles/auth.css';
 import { useAuth } from "../../hooks/useAuth";
 
 export default function Login() {
@@ -68,17 +68,11 @@ export default function Login() {
                     </div>
 
                     <div className="input-group">
-                        {/* Modern layout: Label on the left, Forgot Password on the right */}
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div className='forget-password-container'>
                             <label htmlFor="password" style={{ margin: 0 }}>Password</label>
                             <Link
                                 to="/forgot-password"
-                                style={{
-                                    fontSize: '13px',
-                                    color: '#5469d4',
-                                    textDecoration: 'none',
-                                    fontWeight: '500'
-                                }}
+                                className='forgot-password-button'
                                 onMouseEnter={(e) => e.target.style.textDecoration = 'underline'}
                                 onMouseLeave={(e) => e.target.style.textDecoration = 'none'}
                             >
@@ -103,22 +97,11 @@ export default function Login() {
                         {loading ? 'Logging in...' : 'Sign In'}
                     </button>
 
-                    {/* Modern Signup Prompt at the bottom */}
-                    <div style={{
-                        textAlign: 'center',
-                        marginTop: '24px',
-                        fontSize: '14px',
-                        color: '#697386'
-                    }}>
+                    <div className='signup-container'>
                         Don't have an account?{' '}
                         <Link
                             to="/signup"
-                            style={{
-                                color: '#5469d4',
-                                textDecoration: 'none',
-                                fontWeight: '600',
-                                transition: 'color 0.2s ease'
-                            }}
+                            className='signup-link'
                             onMouseEnter={(e) => e.target.style.color = '#4a5ece'}
                             onMouseLeave={(e) => e.target.style.color = '#5469d4'}
                         >

@@ -68,3 +68,147 @@
     font-size: 0.8rem;
     color: #9ca3af;
 }
+
+
+/* --- Pagination Styles --- */
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 2.5rem;
+    margin-bottom: 4rem; /* Give space for the FAB */
+}
+
+.pagination-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 0.5rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background-color: white;
+    color: #4a5568;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background-color: #edf2f7;
+    border-color: #cbd5e0;
+}
+
+/* The active page styling */
+.pagination-btn.active {
+    background-color: #3182ce; /* Your brand primary color */
+    color: white;
+    border-color: #3182ce;
+    box-shadow: 0 2px 4px rgba(49, 130, 206, 0.2);
+}
+
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: #f7fafc;
+}
+
+.pagination-ellipsis {
+    color: #a0aec0;
+    font-weight: 600;
+    padding: 0 0.25rem;
+    letter-spacing: 2px;
+}
+
+/* Optional: Make arrows look cleaner */
+.pagination-btn.icon-btn {
+    padding: 0;
+}
+
+
+/* --- Header Layout --- */
+.home-header {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem; /* Space between title row and controls */
+    margin-bottom: 2rem;
+}
+
+.header-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 1rem;
+}
+
+.header-top-row h1 {
+    margin: 0;
+    font-size: 2rem;
+    color: #2d3748;
+}
+
+/* --- Modern Create Button --- */
+.modern-create-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #3182ce; /* Primary brand color */
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 0.6rem 1.25rem;
+    border: none;
+    border-radius: 8px; /* Modern rounded corners */
+    cursor: pointer;
+    box-shadow: 0 4px 6px -1px rgba(49, 130, 206, 0.2), 0 2px 4px -1px rgba(49, 130, 206, 0.1);
+    transition: all 0.2s ease;
+}
+
+.modern-create-btn:hover {
+    background-color: #2b6cb0;
+    transform: translateY(-1px); /* Slight lift effect */
+    box-shadow: 0 6px 8px -1px rgba(49, 130, 206, 0.3), 0 4px 6px -1px rgba(49, 130, 206, 0.2);
+}
+
+.modern-create-btn:active {
+    transform: translateY(1px); /* Click depression effect */
+    box-shadow: 0 2px 4px -1px rgba(49, 130, 206, 0.2);
+}
+
+.btn-icon {
+    stroke-width: 2.5; /* Makes the plus sign a bit bolder */
+}
+
+/* --- Home Controls (Search & Sort) --- */
+.home-controls {
+    display: flex;
+    gap: 1rem;
+}
+
+.search-input {
+    flex: 1; /* Makes search bar take up remaining space */
+    padding: 0.75rem 1rem;
+    border: 1px solid #cbd5e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #3182ce;
+    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+}
+
+.sort-select {
+    padding: 0.75rem 1rem;
+    border: 1px solid #cbd5e0;
+    border-radius: 8px;
+    background-color: white;
+    font-size: 1rem;
+    cursor: pointer;
+}

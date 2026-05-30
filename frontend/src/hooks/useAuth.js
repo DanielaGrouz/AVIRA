@@ -8,7 +8,7 @@ export function AuthProvider({ children }) {
     // Initialize state from local storage so it persists on refresh
     const [user, setUser] = useState(() => {
         const storedUser = localStorage.getItem('avira_user');
-        return storedUser ? JSON.parse(storedUser) : null;
+        return storedUser ? JSON.parse(storedUser).user : null;
     });
 
     const saveUser = (userData) => {

@@ -3,11 +3,12 @@ const eventService = require('../services/eventService');
 // Get all events with pagination and sorting
 const getAllEvents = (req, res) => {
     try {
-        const limit = 5;
+        const limit = req.query.limit || 5;
         const page = parseInt(req.query.page) || 1;
         const sortBy = req.query.sortBy || 'id';
+        const searchQuery = req.query.searchQuery || null;
 
-        const result = eventService.getAllEventsLogic(page, limit, sortBy);
+        const result = eventService.getAllEventsLogic(page, limit, sortBy, searchQuery);
 
         res.status(200).json({
             success: true,

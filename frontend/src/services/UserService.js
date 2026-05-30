@@ -22,7 +22,6 @@ class UserService {
 
         formData.append('email', email);
         formData.append('password', password);
-
         formData.append('firstName', firstName);
         formData.append('lastName', lastName);
         formData.append('phoneNumber', phoneNumber);
