@@ -145,3 +145,59 @@
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+
+/* Action Buttons */
+.actions-cell {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 0.25rem;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.edit-btn {
+    color: #64748b;
+}
+
+.edit-btn:hover {
+    color: #3b82f6;
+    background-color: #eff6ff;
+}
+
+.delete-btn {
+    color: #94a3b8;
+}
+
+.delete-btn:hover {
+    color: #ef4444;
+    background-color: #fef2f2;
+}
+
+
+.btn-danger {
+    background-color: #ef4444;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-danger:hover {
+    background-color: #dc2626;
+}

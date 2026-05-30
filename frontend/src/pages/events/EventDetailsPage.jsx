@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { FaEdit, FaTrash } from 'react-icons/fa'; // Import icons
 import EventService from '../../services/EventService';
 import Table from '../../components/Table';
 import Button from '../../components/Button';
-import Modal from '../../components/Modal'; // Import the new Modal
+import Modal from '../../components/Modal';
 import '../../styles/events/EventDetailsPage.css';
 
 const EventDetailsPage = () => {
@@ -21,12 +22,32 @@ const EventDetailsPage = () => {
     const [taskPageCount, setTaskPageCount] = useState(0);
     const [taskPagination, setTaskPagination] = useState({ pageIndex: 0, pageSize: 10 });
 
+    // --- Modal States ---
     const [isGuestModalOpen, setIsGuestModalOpen] = useState(false);
     const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+
+    // Track if we are editing an existing item (null = adding new)
+    const [editingGuestId, setEditingGuestId] = useState(null);
+    const [editingTaskId, setEditingTaskId] = useState(null);
 
     const [guestData, setGuestData] = useState({ name: '', phone: '', role: 'Guest', status: 'Pending' });
     const [taskData, setTaskData] = useState({ title: '', status: 'Pending', priority: 'Medium' });
     const [guestError, setGuestError] = useState('');
+
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState(null); // Will hold { id, type: 'guest' | 'task' }
+
+// 2. REPLACE your existing handleDeleteGuest and handleDeleteTask with these:
+    const promptDeleteGuest = (guestId) => {
+        setItemToDelete({ id: guestId, type: 'guest' });
+        setIsDeleteModalOpen(true);
+    };
+
+    const promptDeleteTask = (taskId) => {
+        setItemToDelete({ id: taskId, type: 'task' });
+        setIsDeleteModalOpen(true);
+    };
+
 
     // --- Fetchers ---
     useEffect(() => {
@@ -41,77 +62,140 @@ const EventDetailsPage = () => {
         fetchEvent();
     }, [id]);
 
-    useEffect(() => {
-        const fetchGuests = async () => {
-            try {
-                const res = await EventService.getGuests(id, {
-                    page: guestPagination.pageIndex + 1, limit: guestPagination.pageSize
-                });
-                setGuests(res.data.data.guests);
-                setGuestPageCount(Math.ceil((res.data.data.totalCount || 0) / guestPagination.pageSize));
-            } catch (error) {
-                console.error("Error fetching guests:", error);
-            }
-        };
-        fetchGuests();
-    }, [id, guestPagination]);
-
-    useEffect(() => {
-        const fetchTasks = async () => {
-            try {
-                const res = await EventService.getTasks(id, {
-                    page: taskPagination.pageIndex + 1, limit: taskPagination.pageSize
-                });
-                setTasks(res.data.data.tasks || res.data.data);
-                setTaskPageCount(Math.ceil((res.data.data.totalCount || 0) / taskPagination.pageSize));
-            } catch (error) {
-                console.error("Error fetching tasks:", error);
-            }
-        };
-        fetchTasks();
-    }, [id, taskPagination]);
-
-    const handleAddGuest = async (e) => {
-        e.preventDefault();
-        setGuestError(''); // Reset previous errors
-
-        // 1. Phone Number Validation
-        const cleanPhone = guestData.phone.replace(/\D/g, '');
-
-        if (!cleanPhone.startsWith('05') || cleanPhone.length !== 10) {
-            setGuestError('Please enter a valid Israeli phone number (e.g., 0545368889).');
-            return; // Stop the form submission
-        }
-
-        // 2. API Call
+    const fetchGuests = async () => {
         try {
-            // Optional: Save the cleaned phone number to the database instead of the raw input
-            const payload = { eventId: id, ...guestData, phone: cleanPhone };
-
-            // await EventService.addGuest(payload);
-            console.log("Submitting Guest:", payload);
-
-            // Reset and close on success
-            setIsGuestModalOpen(false);
-            setGuestData({ name: '', phone: '', role: 'Guest', status: 'Pending' });
+            const res = await EventService.getGuests(id, {
+                page: guestPagination.pageIndex + 1, limit: guestPagination.pageSize
+            });
+            setGuests(res.data.data.guests);
+            setGuestPageCount(Math.ceil((res.data.data.totalCount || 0) / guestPagination.pageSize));
         } catch (error) {
-            console.error("Failed to add guest", error);
-            setGuestError('Failed to add guest. Please try again.');
+            console.error("Error fetching guests:", error);
         }
     };
 
-    const handleAddTask = async (e) => {
+    const fetchTasks = async () => {
+        try {
+            const res = await EventService.getTasks(id, {
+                page: taskPagination.pageIndex + 1, limit: taskPagination.pageSize
+            });
+            setTasks(res.data.data.tasks || res.data.data);
+            setTaskPageCount(Math.ceil((res.data.data.totalCount || 0) / taskPagination.pageSize));
+        } catch (error) {
+            console.error("Error fetching tasks:", error);
+        }
+    };
+
+    useEffect(() => { fetchGuests(); }, [id, guestPagination]);
+    useEffect(() => { fetchTasks(); }, [id, taskPagination]);
+
+    // --- Open Modal Handlers ---
+    const openAddGuestModal = () => {
+        setEditingGuestId(null);
+        setGuestData({ name: '', phone: '', role: 'Guest', status: 'Pending' });
+        setIsGuestModalOpen(true);
+    };
+
+    const openEditGuestModal = (guest) => {
+        setEditingGuestId(guest.id || guest._id); // Adjust according to your DB ID field
+        setGuestData({
+            name: guest.name,
+            phone: guest.phone,
+            role: guest.role,
+            status: guest.status
+        });
+        setIsGuestModalOpen(true);
+    };
+
+    const openAddTaskModal = () => {
+        setEditingTaskId(null);
+        setTaskData({ title: '', status: 'Pending', priority: 'Medium' });
+        setIsTaskModalOpen(true);
+    };
+
+    const openEditTaskModal = (task) => {
+        setEditingTaskId(task.id || task._id);
+        setTaskData({
+            title: task.title || task.description, // Mapped to match your previous taskData definition
+            status: task.status,
+            priority: task.priority || 'Medium'
+        });
+        setIsTaskModalOpen(true);
+    };
+
+    // --- Submit Handlers ---
+    const handleSaveGuest = async (e) => {
+        e.preventDefault();
+        setGuestError('');
+
+        const cleanPhone = guestData.phone.replace(/\D/g, '');
+        if (!cleanPhone.startsWith('05') || cleanPhone.length !== 10) {
+            setGuestError('Please enter a valid Israeli phone number (e.g., 0545368889).');
+            return;
+        }
+
+        try {
+            const payload = { eventId: id, ...guestData, phone: cleanPhone };
+
+            if (editingGuestId) {
+                // await EventService.updateGuest(editingGuestId, payload);
+                console.log("Updating Guest:", editingGuestId, payload);
+            } else {
+                // await EventService.addGuest(payload);
+                console.log("Adding New Guest:", payload);
+            }
+
+            setIsGuestModalOpen(false);
+            fetchGuests(); // Refresh table
+        } catch (error) {
+            console.error("Failed to save guest", error);
+            setGuestError('Failed to save guest. Please try again.');
+        }
+    };
+
+    const handleSaveTask = async (e) => {
         e.preventDefault();
         try {
-            // await EventService.addTask({ eventId: id, ...taskData });
-            console.log("Submitting Task:", { eventId: id, ...taskData });
+            const payload = { eventId: id, ...taskData };
+
+            if (editingTaskId) {
+                // await EventService.updateTask(editingTaskId, payload);
+                console.log("Updating Task:", editingTaskId, payload);
+            } else {
+                // await EventService.addTask(payload);
+                console.log("Adding New Task:", payload);
+            }
 
             setIsTaskModalOpen(false);
-            setTaskData({ title: '', status: 'Pending', priority: 'Medium' }); // Reset form
-            // Optionally re-fetch tasks here to update the table
+            fetchTasks(); // Refresh table
         } catch (error) {
-            console.error("Failed to add task", error);
+            console.error("Failed to save task", error);
         }
+    };
+    const executeDelete = async () => {
+        if (!itemToDelete) return;
+
+        if (itemToDelete.type === 'guest') {
+            try {
+                // await EventService.deleteGuest(itemToDelete.id);
+                console.log("Deleted guest:", itemToDelete.id);
+                fetchGuests();
+            } catch (error) {
+                console.error("Failed to delete guest", error);
+            }
+        } else if (itemToDelete.type === 'task') {
+            try {
+                // await EventService.deleteTask(itemToDelete.id);
+                console.log("Deleted task:", itemToDelete.id);
+                fetchTasks();
+            } catch (error) {
+                console.error("Failed to delete task", error);
+            }
+        }
+
+        // Close and reset
+        setIsDeleteModalOpen(false);
+        setItemToDelete(null);
     };
 
     // --- Table Columns ---
@@ -126,13 +210,41 @@ const EventDetailsPage = () => {
                     {info.getValue()}
                 </span>
             )
+        },
+        {
+            id: 'actions',
+            header: '', // Empty header for clean look
+            cell: ({ row }) => (
+                <div className="actions-cell">
+                    <button onClick={() => openEditGuestModal(row.original)} className="icon-btn edit-btn" title="Edit Guest">
+                        <FaEdit />
+                    </button>
+                    <button onClick={() => promptDeleteGuest(row.original.id || row.original._id)} className="icon-btn delete-btn" title="Delete Guest">
+                        <FaTrash />
+                    </button>
+                </div>
+            )
         }
     ];
 
     const taskColumns = [
         { accessorKey: 'title', header: 'Task' },
         { accessorKey: 'priority', header: 'Priority' },
-        { accessorKey: 'status', header: 'Status' }
+        { accessorKey: 'status', header: 'Status' },
+        {
+            id: 'actions',
+            header: '',
+            cell: ({ row }) => (
+                <div className="actions-cell">
+                    <button onClick={() => openEditTaskModal(row.original)} className="icon-btn edit-btn" title="Edit Task">
+                        <FaEdit />
+                    </button>
+                    <button onClick={() => promptDeleteTask(row.original.id || row.original._id)} className="icon-btn delete-btn" title="Delete Task">
+                        <FaTrash />
+                    </button>
+                </div>
+            )
+        }
     ];
 
     if (!eventDetails) return <div className="loading-state">Loading Event Details...</div>;
@@ -152,7 +264,7 @@ const EventDetailsPage = () => {
                 <div className="table-card">
                     <div className="table-header">
                         <h2>Guest List</h2>
-                        <Button variant="success" onClick={() => setIsGuestModalOpen(true)}>
+                        <Button variant="success" onClick={openAddGuestModal}>
                             + Add Guest
                         </Button>
                     </div>
@@ -165,7 +277,7 @@ const EventDetailsPage = () => {
                 <div className="table-card">
                     <div className="table-header">
                         <h2>Event Tasks</h2>
-                        <Button variant="primary" onClick={() => setIsTaskModalOpen(true)}>
+                        <Button variant="primary" onClick={openAddTaskModal}>
                             + Add Task
                         </Button>
                     </div>
@@ -178,18 +290,14 @@ const EventDetailsPage = () => {
 
             {/* --- Modals --- */}
 
-            <Modal isOpen={isGuestModalOpen} onClose={() => setIsGuestModalOpen(false)} title="Add New Guest">
-                <form onSubmit={handleAddGuest}>
+            {/* Guest Modal */}
+            <Modal isOpen={isGuestModalOpen} onClose={() => setIsGuestModalOpen(false)} title={editingGuestId ? "Edit Guest" : "Add New Guest"}>
+                <form onSubmit={handleSaveGuest}>
                     <div className="modal-body">
                         {guestError && (
                             <div style={{
-                                color: '#b91c1c',
-                                backgroundColor: '#fef2f2',
-                                padding: '0.75rem',
-                                borderRadius: '8px',
-                                fontSize: '0.875rem',
-                                marginBottom: '1rem',
-                                border: '1px solid #f87171'
+                                color: '#b91c1c', backgroundColor: '#fef2f2', padding: '0.75rem',
+                                borderRadius: '8px', fontSize: '0.875rem', marginBottom: '1rem', border: '1px solid #f87171'
                             }}>
                                 {guestError}
                             </div>
@@ -208,7 +316,7 @@ const EventDetailsPage = () => {
                                 value={guestData.phone}
                                 onChange={(e) => {
                                     setGuestData({...guestData, phone: e.target.value});
-                                    if (guestError) setGuestError(''); // Clear error when user starts typing again
+                                    if (guestError) setGuestError('');
                                 }}
                             />
                         </div>
@@ -242,14 +350,14 @@ const EventDetailsPage = () => {
                                 setIsGuestModalOpen(false);
                                 setGuestError('');
                             }}>Cancel</Button>
-                        <Button variant="success" type="submit">Save Guest</Button>
+                        <Button variant="success" type="submit">{editingGuestId ? "Update Guest" : "Save Guest"}</Button>
                     </div>
                 </form>
             </Modal>
 
-            {/* Add Task Modal */}
-            <Modal isOpen={isTaskModalOpen} onClose={() => setIsTaskModalOpen(false)} title="Add New Task">
-                <form onSubmit={handleAddTask}>
+            {/* Task Modal */}
+            <Modal isOpen={isTaskModalOpen} onClose={() => setIsTaskModalOpen(false)} title={editingTaskId ? "Edit Task" : "Add New Task"}>
+                <form onSubmit={handleSaveTask}>
                     <div className="modal-body">
                         <div className="form-group">
                             <label className="form-label">Task Title</label>
@@ -283,9 +391,44 @@ const EventDetailsPage = () => {
                     </div>
                     <div className="modal-footer">
                         <Button variant="text" type="button" onClick={() => setIsTaskModalOpen(false)}>Cancel</Button>
-                        <Button variant="primary" type="submit">Save Task</Button>
+                        <Button variant="primary" type="submit">{editingTaskId ? "Update Task" : "Save Task"}</Button>
                     </div>
                 </form>
+            </Modal>
+
+            <Modal
+                isOpen={isDeleteModalOpen}
+                onClose={() => {
+                    setIsDeleteModalOpen(false);
+                    setItemToDelete(null);
+                }}
+                title="Confirm Deletion"
+            >
+                <div className="modal-body">
+                    <p style={{ margin: 0, color: '#475569', fontSize: '1rem', lineHeight: '1.5' }}>
+                        Are you sure you want to delete this {itemToDelete?.type}?
+                        <br/><br/>
+                        <strong>This action cannot be undone.</strong>
+                    </p>
+                </div>
+                <div className="modal-footer">
+                    <Button
+                        variant="text"
+                        onClick={() => {
+                            setIsDeleteModalOpen(false);
+                            setItemToDelete(null);
+                        }}
+                    >
+                        Cancel
+                    </Button>
+
+                    <Button
+                        variant="danger"
+                        onClick={executeDelete}
+                    >
+                        Yes, Delete
+                    </Button>
+                </div>
             </Modal>
         </div>
     );
