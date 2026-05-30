@@ -27,10 +27,9 @@ class EventService {
         return apiClient.get(`${this.route}/${id}`);
     }
 
-    create(creatorId, title, date, time, location, eventType, guestsCount) {
+    create(title, date, time, location, eventType, guestsCount) {
         // Construct the payload object expected by your backend
         const eventData = {
-            creatorId,
             title,
             date,
             time,

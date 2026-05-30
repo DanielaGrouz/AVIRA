@@ -257,7 +257,7 @@ const validateEventFields = (req, res, next) => {
         req.body.guestsCount = 0;
     }
 
-    const { creatorId, title, date, time, location, eventType, guestsCount } = req.body;
+    const { title, date, time, location, eventType, guestsCount } = req.body;
     let errors = [];
 
     if (!title || typeof title !== 'string' || title.trim().length < 2) {
@@ -267,7 +267,21 @@ const validateEventFields = (req, res, next) => {
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
     if (!date || typeof date !== 'string' || !dateRegex.test(date)) {
         errors.push("date must be a valid string in YYYY-MM-DD format");
+    } else {
+        // Split the date string to parse it in the local timezone
+        const [year, month, day] = date.split('-').map(Number);
+        const inputDate = new Date(year, month - 1, day);
+
+        // Get today's date and zero out the time for an accurate date-to-date comparison
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        // Check if the input date is today or in the past
+        if (inputDate <= today) {
+            errors.push("date must be in the future");
+        }
     }
+
 
     const timeRegex = /^([0-1]\d|2[0-3]):([0-5]\d)$/;
     if (!time || typeof time !== 'string' || !timeRegex.test(time)) {
@@ -284,10 +298,6 @@ const validateEventFields = (req, res, next) => {
 
     if (guestsCount === undefined || typeof guestsCount !== 'number' || guestsCount < 0) {
         errors.push("guestsCount must be a non-negative number");
-    }
-
-    if (creatorId !== undefined && (typeof creatorId !== 'number' || creatorId <= 0)) {
-        errors.push("creatorId must be a positive number");
     }
 
     if (errors.length > 0) {

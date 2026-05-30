@@ -59,7 +59,7 @@ const getEventById = (req, res) => {
 // Create a new event
 const createEvent = (req, res) => {
     try {
-        const newEvent = eventService.createEventLogic(req.body);
+        const newEvent = eventService.createEventLogic(req.user.userId, req.body);
 
         res.status(201).json({
             success: true,

@@ -2,6 +2,13 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import EventService from '../../services/EventService';
 import Button from '../../components/Button';
+import InputField from '../../components/InputField';
+import CustomSelect from "../../components/CustomSelect";
+
+// Import React DatePicker and its CSS
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+
 import '../../styles/events/CreateEventPage.css';
 
 const CreateEventPage = () => {
@@ -10,18 +17,25 @@ const CreateEventPage = () => {
     const [error, setError] = useState(null);
 
     const [formData, setFormData] = useState({
-        creatorId: '', // Note: In a real app, you'd likely get this from the authenticated user context
         title: '',
-        date: '',
-        time: '',
+        datetime: null, // Initialized as null for the DatePicker
         location: '',
         eventType: '',
         guestsCount: ''
     });
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+    const handleChange = (fieldName, value) => {
+        setFormData(prev => ({ ...prev, [fieldName]: value }));
+    };
+
+    // Calculate minimum time dynamically.
+    // If the selected date is today, restrict past times. If it's a future date, allow any time.
+    const getMinTime = () => {
+        const now = new Date();
+        if (formData.datetime && formData.datetime.toDateString() === now.toDateString()) {
+            return now; // Restrict to current time
+        }
+        return new Date(now.setHours(0, 0, 0, 0)); // Allow full 24 hours for future dates
     };
 
     const handleSubmit = async (e) => {
@@ -30,19 +44,40 @@ const CreateEventPage = () => {
         setError(null);
 
         try {
-            const { creatorId, title, date, time, location, eventType, guestsCount } = formData;
+            const { title, datetime, location, eventType, guestsCount } = formData;
+
+            // Frontend validation checks
+            if (!datetime) {
+                setError("Please select a date and time.");
+                setLoading(false);
+                return;
+            }
+
+            if (datetime <= new Date()) {
+                setError("Event date and time must be in the future.");
+                setLoading(false);
+                return;
+            }
+
+            // Manually extract local YYYY-MM-DD and HH:mm to avoid UTC timezone shifts
+            const year = datetime.getFullYear();
+            const month = String(datetime.getMonth() + 1).padStart(2, '0');
+            const day = String(datetime.getDate()).padStart(2, '0');
+            const datePart = `${year}-${month}-${day}`;
+
+            const hours = String(datetime.getHours()).padStart(2, '0');
+            const minutes = String(datetime.getMinutes()).padStart(2, '0');
+            const timePart = `${hours}:${minutes}`;
 
             await EventService.create(
-                creatorId,
                 title,
-                date,
-                time,
+                datePart,
+                timePart,
                 location,
                 eventType,
                 parseInt(guestsCount, 10) || 0
             );
 
-            // Navigate back to the home page on success
             navigate('/');
         } catch (err) {
             console.error("Error creating event:", err);
@@ -63,47 +98,79 @@ const CreateEventPage = () => {
                 {error && <div className="error-message">{error}</div>}
 
                 <form onSubmit={handleSubmit} className="event-form">
-                    <div className="form-group">
-                        <label>Creator ID</label>
-                        <input type="text" name="creatorId" value={formData.creatorId} onChange={handleChange} required />
+                    <InputField
+                        label="Event Title"
+                        id="title"
+                        name="title"
+                        value={formData.title}
+                        onChange={(e) => handleChange("title", e.target.value)}
+                        required
+                    />
+
+                    {/* Custom Wrapper for React DatePicker to match InputField styles */}
+                    <div className="input-group">
+                        <div className="input-label-row">
+                            <label htmlFor="datetime">Date & Time</label>
+                        </div>
+                        <DatePicker
+                            id="datetime"
+                            selected={formData.datetime}
+                            onChange={(date) => handleChange("datetime", date)}
+                            showTimeSelect
+                            timeFormat="HH:mm"
+                            timeIntervals={15}
+                            timeCaption="Time"
+                            dateFormat="MMMM d, yyyy h:mm aa"
+                            minDate={new Date()} // Disables past calendar days
+                            minTime={getMinTime()} // Disables past times if today is selected
+                            maxTime={new Date(new Date().setHours(23, 59, 59, 999))} // End of day
+                            className="modern-input" // Uses your existing input styles
+                            placeholderText="Select date and time"
+                            required
+                        />
                     </div>
 
-                    <div className="form-group">
-                        <label>Event Title</label>
-                        <input type="text" name="title" value={formData.title} onChange={handleChange} required />
-                    </div>
+                    <InputField
+                        label="Location"
+                        id="location"
+                        name="location"
+                        value={formData.location}
+                        onChange={(e) => handleChange("location", e.target.value)}
+                        required
+                    />
 
                     <div className="form-row">
-                        <div className="form-group">
-                            <label>Date</label>
-                            <input type="date" name="date" value={formData.date} onChange={handleChange} required />
+                        <div className="form-group" style={{ flex: 1 }}>
+                            <div className="input-label-row">
+                                <label htmlFor="eventType">Event Type</label>
+                            </div>
+                            <CustomSelect
+                                name="eventType"
+                                placement="top"
+                                value={formData.eventType}
+                                onChange={(e) => handleChange("eventType", e.target.value)}
+                                options={[
+                                    { value: '', label: 'Select type...' },
+                                    { value: 'Birthday', label: 'Birthday' },
+                                    { value: 'Wedding', label: 'Wedding' },
+                                    { value: 'Corporate', label: 'Corporate' },
+                                    { value: 'Casual', label: 'Casual Gathering' },
+                                    { value: 'Other', label: 'Other' }
+                                ]}
+                            />
                         </div>
-                        <div className="form-group">
-                            <label>Time</label>
-                            <input type="time" name="time" value={formData.time} onChange={handleChange} required />
-                        </div>
-                    </div>
 
-                    <div className="form-group">
-                        <label>Location</label>
-                        <input type="text" name="location" value={formData.location} onChange={handleChange} required />
-                    </div>
-
-                    <div className="form-row">
-                        <div className="form-group">
-                            <label>Event Type</label>
-                            <select name="eventType" value={formData.eventType} onChange={handleChange} required>
-                                <option value="" disabled>Select type...</option>
-                                <option value="Birthday">Birthday</option>
-                                <option value="Wedding">Wedding</option>
-                                <option value="Corporate">Corporate</option>
-                                <option value="Casual">Casual Gathering</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
-                        <div className="form-group">
-                            <label>Estimated Guests</label>
-                            <input type="number" name="guestsCount" min="1" value={formData.guestsCount} onChange={handleChange} required />
+                        <div style={{ flex: 1 }}>
+                            <InputField
+                                label="Estimated Guests"
+                                id="guestsCount"
+                                name="guestsCount"
+                                type="number"
+                                min="1"
+                                value={formData.guestsCount}
+                                onChange={(e) => handleChange("guestsCount", e.target.value)}
+                                required
+                            />
                         </div>
                     </div>
 

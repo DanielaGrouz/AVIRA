@@ -12,10 +12,10 @@ router.get('/guest/phone/:phone', eventController.getEventsByPhone);
 
 // Standard CRUD Operations
 router.get('/', authorize(['user', 'admin']), eventController.getAllEvents);
-router.get('/:id', validateId, eventController.getEventById);
-router.post('/', validateUserExists, validateEventFields, eventController.createEvent);
-router.put('/:id', validateId, validateOptionalEventFields, eventController.updateEvent);
-router.delete('/:id', validateId, eventController.deleteEvent);
+router.get('/:id', authorize(['user', 'admin']), validateId, eventController.getEventById);
+router.post('/', authorize(['user', 'admin']), validateEventFields, eventController.createEvent);
+router.put('/:id', authorize(['user', 'admin']), validateId, validateOptionalEventFields, eventController.updateEvent);
+router.delete('/:id', authorize(['user', 'admin']), validateId, eventController.deleteEvent);
 
 // Sub-resources (Guests and Tasks for a specific event)
 // Changed to /:id/guests to avoid collision with getEventById
