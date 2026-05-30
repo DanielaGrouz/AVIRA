@@ -3,18 +3,24 @@ import { useNavigate, Link } from 'react-router-dom';
 import UserService from '../../services/UserService';
 import ProfileImageUploader from '../../components/ProfileImageUploader';
 import '../../styles/auth.css';
+import InputField from '../../components/InputField';
 
 export default function Signup() {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
-    const [phoneNumber, setPhoneNumber] = useState(''); // Added phone number state
+    const [phoneNumber, setPhoneNumber] = useState('');
     const [password, setPassword] = useState('');
     const [picture, setPicture] = useState(null);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
+
+    const isStrongPassword = (pass) => {
+        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        return regex.test(pass);
+    };
 
     const handleSignup = async (e) => {
         e.preventDefault();
@@ -39,8 +45,8 @@ export default function Signup() {
             return setError('Please enter a valid Israeli phone number (e.g., 0545368889).');
         }
 
-        if (password.length < 6) {
-            return setError('Password must be at least 6 characters long.');
+        if (!isStrongPassword(password)) {
+            return setError('Password must be at least 8 characters long, include uppercase and lowercase letters, a number, and a special character.');
         }
 
         setLoading(true);
@@ -62,6 +68,10 @@ export default function Signup() {
         }
     };
 
+    const clearError = () => {
+        if (error) setError('');
+    };
+
     return (
         <div className="login-wrapper">
             <div className="login-card">
@@ -77,67 +87,70 @@ export default function Signup() {
                         onImageSelected={(file) => setPicture(file)}
                     />
 
-                    <div style={{ display: 'flex', gap: '10px' }}>
-                        <div className="input-group" style={{ flex: 1 }}>
-                            <label htmlFor="firstName">First Name</label>
-                            <input
+                    <div style={{ display: 'flex', gap: '16px' }}>
+                        <div style={{ flex: 1 }}>
+                            <InputField
                                 id="firstName"
                                 type="text"
+                                label="First Name"
                                 placeholder="John"
-                                className="login-input"
                                 value={firstName}
-                                onChange={(e) => setFirstName(e.target.value)}
+                                onChange={(e) => {
+                                    setFirstName(e.target.value);
+                                    clearError();
+                                }}
                             />
                         </div>
-                        <div className="input-group" style={{ flex: 1 }}>
-                            <label htmlFor="lastName">Last Name</label>
-                            <input
+                        <div style={{ flex: 1 }}>
+                            <InputField
                                 id="lastName"
                                 type="text"
+                                label="Last Name"
                                 placeholder="Doe"
-                                className="login-input"
                                 value={lastName}
-                                onChange={(e) => setLastName(e.target.value)}
+                                onChange={(e) => {
+                                    setLastName(e.target.value);
+                                    clearError();
+                                }}
                             />
                         </div>
                     </div>
 
-                    <div className="input-group">
-                        <label htmlFor="email">Email</label>
-                        <input
-                            id="email"
-                            type="email"
-                            placeholder="name@example.com"
-                            className="login-input"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
-                    </div>
+                    <InputField
+                        id="email"
+                        type="email"
+                        label="Email"
+                        placeholder="name@example.com"
+                        value={email}
+                        onChange={(e) => {
+                            setEmail(e.target.value);
+                            clearError();
+                        }}
+                    />
 
-                    {/* Added Phone Number Input */}
-                    <div className="input-group">
-                        <label htmlFor="phoneNumber">Phone Number</label>
-                        <input
-                            id="phoneNumber"
-                            type="tel"
-                            placeholder="05XXXXXXXX"
-                            className="login-input"
-                            value={phoneNumber}
-                            onChange={(e) => setPhoneNumber(e.target.value)}
-                        />
-                    </div>
+                    <InputField
+                        id="phoneNumber"
+                        type="tel"
+                        label="Phone Number"
+                        placeholder="05XXXXXXXX"
+                        value={phoneNumber}
+                        onChange={(e) => {
+                            setPhoneNumber(e.target.value);
+                            clearError();
+                        }}
+                    />
 
-                    <div className="input-group">
-                        <label htmlFor="password">Password</label>
-                        <input
-                            id="password"
-                            type="password"
-                            placeholder="••••••••"
-                            className="login-input"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                    </div>
+                    <InputField
+                        id="password"
+                        type="password"
+                        label="Password"
+                        placeholder="••••••••"
+                        value={password}
+                        onChange={(e) => {
+                            setPassword(e.target.value);
+                            clearError();
+                        }}
+                    />
 
                     <button
                         type="submit"
