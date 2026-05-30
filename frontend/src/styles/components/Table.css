@@ -1,0 +1,128 @@
+/* =========================================
+   Table Container & Search
+========================================= */
+.table-container-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.table-search-header {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+}
+
+.table-search-input {
+    padding: 0.5rem 1rem;
+    border: 1px solid #cbd5e0;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    width: 100%;
+    max-width: 300px;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.table-search-input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* =========================================
+   Core Table Styles
+========================================= */
+.modern-table-wrapper {
+    overflow-x: auto;
+    flex-grow: 1;
+}
+
+.modern-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.9rem;
+}
+
+.modern-table th {
+    font-weight: 600;
+    color: #64748b;
+    padding: 1rem;
+    border-bottom: 1px solid #f1f5f9;
+    white-space: nowrap;
+}
+
+.modern-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #f8fafc;
+    color: #475569;
+}
+
+.modern-table tbody tr:hover td {
+    background-color: #f8fafc;
+}
+
+/* =========================================
+   Sortable Headers
+========================================= */
+.modern-table th.sortable-header {
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.modern-table th.sortable-header:hover {
+    background-color: #f1f5f9;
+    color: #0f172a;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.sort-indicator {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    width: 12px; /* Fixed width prevents header from jumping when arrow appears */
+    display: inline-block;
+}
+
+/* =========================================
+   Pagination Controls
+========================================= */
+.pagination-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.5rem;
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+.pagination-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.page-btn {
+    padding: 0.5rem 1rem;
+    background-color: white;
+    border: 1px solid #cbd5e0;
+    border-radius: 6px;
+    color: #475569;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.page-btn:hover:not(:disabled) {
+    background: #f1f5f9;
+    color: #0f172a;
+}
+
+.page-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

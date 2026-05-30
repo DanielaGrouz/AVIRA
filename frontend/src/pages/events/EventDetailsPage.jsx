@@ -18,14 +18,17 @@ const EventDetailsPage = () => {
 
     // --- Pagination States ---
     const [guests, setGuests] = useState([]);
+    const [searchQueryGuests, setSearchQueryGuests] = useState("");
+    const [sortingGuests, setSortingGuests] = useState([]);
+
     const [guestPageCount, setGuestPageCount] = useState(0);
     const [guestCurrentPage, setGuestCurrentPage] = useState(1);
-    const GUEST_PAGE_SIZE = 10;
+    const GUEST_PAGE_SIZE = 1;
 
     const [tasks, setTasks] = useState([]);
     const [taskPageCount, setTaskPageCount] = useState(0);
     const [taskCurrentPage, setTaskCurrentPage] = useState(1);
-    const TASK_PAGE_SIZE = 10;
+    const TASK_PAGE_SIZE = 1;
 
     // --- AI & Tools States ---
     const [isResultModalOpen, setIsResultModalOpen] = useState(false);
@@ -33,9 +36,11 @@ const EventDetailsPage = () => {
     const [actionResultText, setActionResultText] = useState('');
     const [actionResultData, setActionResultData] = useState(null);
     const [actionResultImage, setActionResultImage] = useState(null);
+    const [actionResultBlob, setActionResultBlob] = useState(null);
     const [activeAction, setActiveAction] = useState(null);
     const [modalActionType, setModalActionType] = useState(null);
     const [addedSuggestedTasks, setAddedSuggestedTasks] = useState(new Set());
+    const [isSavingInvite, setIsSavingInvite] = useState(false);
     const fileInputRef = useRef(null);
 
     // --- Modal States ---
@@ -53,25 +58,24 @@ const EventDetailsPage = () => {
     const [itemToDelete, setItemToDelete] = useState(null);
 
     // --- Fetchers ---
+    const fetchEvent = async () => {
+        try {
+            const res = await EventService.getById(id);
+            setEventDetails(res.data.data);
+        } catch (error) {
+            return navigate(AppRoutes.NOT_FOUND);
+        }
+    };
+
     useEffect(() => {
-        const fetchEvent = async () => {
-            try {
-                const res = await EventService.getById(id);
-                setEventDetails(res.data.data);
-            } catch (error) {
-                return navigate(AppRoutes.NOT_FOUND);
-            }
-        };
         fetchEvent();
     }, [id, navigate]);
 
     const fetchGuests = async () => {
         try {
-            const res = await EventService.getGuests(id, {
-                page: guestCurrentPage, limit: GUEST_PAGE_SIZE
-            });
-            setGuests(res.data.data.guests);
-            setGuestPageCount(Math.ceil((res.data.data.totalCount || 0) / GUEST_PAGE_SIZE));
+            const res = await EventService.getGuests(id, guestCurrentPage, sortingGuests, searchQueryGuests, GUEST_PAGE_SIZE);
+            setGuests(res.data.data.data);
+            setGuestPageCount(res.data.data.totalPages);
         } catch (error) {
             console.error("Error fetching guests:", error);
         }
@@ -79,23 +83,22 @@ const EventDetailsPage = () => {
 
     const fetchTasks = async () => {
         try {
-            const res = await EventService.getTasks(id, {
-                page: taskCurrentPage, limit: TASK_PAGE_SIZE
-            });
-            setTasks(res.data.data.tasks || res.data.data);
-            setTaskPageCount(Math.ceil((res.data.data.totalCount || 0) / TASK_PAGE_SIZE));
+            const res = await EventService.getTasks(id, taskCurrentPage, null, "", TASK_PAGE_SIZE);
+            setTasks(res.data.data.data);
+            setTaskPageCount(res.data.data.totalPages);
         } catch (error) {
             console.error("Error fetching tasks:", error);
         }
     };
 
-    useEffect(() => { fetchGuests(); }, [id, guestCurrentPage]);
+    useEffect(() => { fetchGuests(); }, [id, guestCurrentPage, searchQueryGuests, sortingGuests]);
     useEffect(() => { fetchTasks(); }, [id, taskCurrentPage]);
 
     // --- Smart Actions Handlers ---
     const handleSmartAction = async (actionType, title) => {
         setActiveAction(actionType);
         setActionResultImage(null);
+        setActionResultBlob(null);
         setActionResultText('');
         setActionResultData(null);
         setAddedSuggestedTasks(new Set());
@@ -104,9 +107,11 @@ const EventDetailsPage = () => {
             let res;
             if (actionType === 'invite') {
                 res = await EventService.generateInvite(id);
+                setActionResultBlob(res.data);
                 const imageUrl = URL.createObjectURL(res.data);
                 setActionResultImage(imageUrl);
                 setActionResultTitle(title);
+                setModalActionType(actionType);
                 setIsResultModalOpen(true);
                 return;
             }
@@ -114,7 +119,7 @@ const EventDetailsPage = () => {
             else if (actionType === 'tasks') res = await EventService.generateTaskList(id);
             else if (actionType === 'stores') {
                 const location = eventDetails?.location || 'Israel';
-                res = await EventService.findStores(id, location);
+                res = await EventService.findStores(location, id);
             }
 
             let resultData = res.data?.data || res.data;
@@ -139,12 +144,9 @@ const EventDetailsPage = () => {
         }
     };
 
-    // פונקציה חכמה שמוסיפה גם משימה רגילה וגם פריט קניות בתור משימה
     const handleAddSuggestedTask = async (itemObj, index, isShopping = false) => {
         try {
             let titleStr = "New Task";
-
-            // במידה וזה פריט קניות נרכיב כותרת כמו: Buy Orange Juice (0.25 liters)
             if (isShopping) {
                 const qtyUnit = [itemObj.quantity, itemObj.unit].filter(Boolean).join(' ');
                 titleStr = qtyUnit ? `Buy ${itemObj.item} (${qtyUnit})` : `Buy ${itemObj.item}`;
@@ -152,18 +154,32 @@ const EventDetailsPage = () => {
                 titleStr = itemObj.task || itemObj.title || "New Task";
             }
 
-            const payload = {
-                eventId: id,
-                title: titleStr,
-                status: 'Pending',
-                priority: 'Medium'
-            };
-
+            const payload = { eventId: id, title: titleStr, status: 'Pending', priority: 'Medium' };
             await EventService.addTask(payload);
             fetchTasks();
             setAddedSuggestedTasks(prev => new Set(prev).add(index));
         } catch (error) {
             console.error("Failed to add suggested item as task", error);
+        }
+    };
+
+    const handleSaveGeneratedInvite = async () => {
+        if (!actionResultBlob) return;
+
+        setIsSavingInvite(true);
+        try {
+            const file = new File([actionResultBlob], `generated_invite_${id}.png`, { type: 'image/png' });
+            await EventService.saveInvitation(id, file);
+            await fetchEvent();
+            setActionResultTitle("Success");
+            setActionResultText("Invitation saved successfully to your event!");
+            setActionResultImage(null);
+            setModalActionType('success');
+        } catch (error) {
+            console.error("Failed to save generated invite", error);
+            alert("Failed to save invitation.");
+        } finally {
+            setIsSavingInvite(false);
         }
     };
 
@@ -178,9 +194,7 @@ const EventDetailsPage = () => {
         setActiveAction('upload');
         try {
             await EventService.saveInvitation(id, file);
-            const res = await EventService.getById(id);
-            setEventDetails(res.data.data);
-
+            await fetchEvent();
             setActionResultTitle("Success");
             setActionResultText("Invitation uploaded and saved successfully!");
             setActionResultImage(null);
@@ -194,6 +208,28 @@ const EventDetailsPage = () => {
         } finally {
             setActiveAction(null);
             event.target.value = null;
+        }
+    };
+
+    // פונקציה חדשה להורדת התמונה מהשרת ישירות למחשב של המשתמש
+    const handleDownloadSavedInvite = async (url) => {
+        const fullUrl = url.startsWith('http') ? url : `http://localhost:3000${url}`;
+        try {
+            const response = await fetch(fullUrl);
+            const blob = await response.blob();
+            const blobUrl = URL.createObjectURL(blob);
+
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.download = `event_${id}_invitation.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(blobUrl);
+        } catch (error) {
+            console.error("Failed to download image, opening in new tab instead", error);
+            // אם ההורדה נכשלת (למשל מבעיות CORS), נפתח בכרטיסייה חדשה כגיבוי
+            window.open(fullUrl, '_blank');
         }
     };
 
@@ -328,6 +364,7 @@ const EventDetailsPage = () => {
         {
             id: 'actions',
             header: '',
+            enableSorting: false,
             cell: ({ row }) => {
                 const isManager = row.original.role?.toUpperCase() === 'MANAGER';
                 return (
@@ -353,6 +390,7 @@ const EventDetailsPage = () => {
         {
             id: 'actions',
             header: '',
+            enableSorting: false,
             cell: ({ row }) => (
                 <div className="actions-cell">
                     <button onClick={() => openEditTaskModal(row.original)} className="icon-btn edit-btn" title="Edit Task">
@@ -368,15 +406,31 @@ const EventDetailsPage = () => {
 
     if (!eventDetails) return <div className="loading-state">Loading Event Details...</div>;
 
+    const invitationUrl = eventDetails.invitationPath;
     return (
         <div className="details-container">
             <Button variant="text" className="back-btn" onClick={() => navigate(-1)}>
                 &larr; Back to Events
             </Button>
 
-            <div className="details-header">
-                <h1 className="details-title">{eventDetails.name}</h1>
-                <p className="details-description">{eventDetails.description}</p>
+            <div className="details-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '20px' }}>
+                <div style={{ flex: 1 }}>
+                    <h1 className="details-title">{eventDetails.name || eventDetails.title}</h1>
+                    <p className="details-description">{eventDetails.description}</p>
+                </div>
+
+                {invitationUrl && (
+                    <div
+                        className="event-invitation-thumbnail"
+                        onClick={() => handleDownloadSavedInvite(invitationUrl)}
+                        title="Click to download invitation"
+                    >
+                        <img
+                            src={invitationUrl.startsWith('http') ? invitationUrl : `http://localhost:3000${invitationUrl}`}
+                            alt="Event Invitation"
+                        />
+                    </div>
+                )}
             </div>
 
             {/* --- Smart Actions / Event Tools Section --- */}
@@ -419,7 +473,7 @@ const EventDetailsPage = () => {
                         onClick={handleUploadClick}
                         disabled={activeAction !== null}
                     >
-                        📤 {activeAction === 'upload' ? 'Uploading...' : 'Save Invitation'}
+                        📤 {activeAction === 'upload' ? 'Uploading...' : 'Uplaod Invitation'}
                     </button>
                     <input
                         type="file"
@@ -440,7 +494,15 @@ const EventDetailsPage = () => {
                             + Add Guest
                         </Button>
                     </div>
-                    <Table data={guests} columns={guestColumns} />
+                    <Table
+                        data={guests}
+                        columns={guestColumns}
+                        searchQuery={searchQueryGuests}
+                        setSearchQuery={setSearchQueryGuests}
+                        sorting={sortingGuests}
+                        setSorting={setSortingGuests}
+
+                    />
 
                     {guestPageCount > 1 && (
                         <div className="table-pagination-wrapper">
@@ -619,16 +681,12 @@ const EventDetailsPage = () => {
                                 </div>
                             )
 
-                            /* 2. רשימת משימות או קניות - רינדור כרטיסיות עם כפתור +Add */
+                            /* 2. רשימת משימות או קניות */
                             : (modalActionType === 'tasks' || modalActionType === 'shopping') && Array.isArray(actionResultData) ? (
                                     <div className="suggested-items-container">
                                         {actionResultData.map((item, index) => {
                                             const isShopping = modalActionType === 'shopping';
-
-                                            // התאמת הכיתוב הראשי לפי סוג החלון
                                             const mainText = isShopping ? item.item : (item.task || item.title || "New Task");
-
-                                            // התאמת טקסט עזר (ימים לפני למשימה, וכמות+יחידה לקניות)
                                             const subText = isShopping
                                                 ? [item.quantity, item.unit].filter(Boolean).join(' ')
                                                 : (item.daysBefore !== undefined ? `${item.daysBefore} days before` : '');
@@ -655,7 +713,7 @@ const EventDetailsPage = () => {
                                     </div>
                                 )
 
-                                /* 3. טקסט גולמי / JSON סטנדרטי למצבים אחרים (למשל מציאת חנויות) */
+                                /* 3. טקסט גולמי / הודעות הצלחה */
                                 : (
                                     <div style={{ padding: '1.25rem', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', whiteSpace: 'pre-wrap' }}>
                                         {actionResultText}
@@ -665,6 +723,16 @@ const EventDetailsPage = () => {
                     </div>
                 </div>
                 <div className="modal-footer">
+                    {/* כפתור שמירה לאירוע עבור הזמנה שנוצרה */}
+                    {modalActionType === 'invite' && actionResultImage && (
+                        <Button
+                            variant="primary"
+                            onClick={handleSaveGeneratedInvite}
+                            disabled={isSavingInvite}
+                        >
+                            {isSavingInvite ? 'Saving...' : 'Save to Event'}
+                        </Button>
+                    )}
                     {actionResultImage && (
                         <a href={actionResultImage} download={`invitation_${id}.png`} style={{ textDecoration: 'none' }}>
                             <Button variant="success" type="button">Download Image</Button>

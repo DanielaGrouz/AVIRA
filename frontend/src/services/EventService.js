@@ -49,8 +49,8 @@ class EventService {
     }
 
     // --- Guest Sub-resources ---
-    getGuests(eventId) {
-        return apiClient.get(`${this.route}/${eventId}/guests`);
+    getGuests(eventId, page, sortBy, searchQuery, limit) {
+        return apiClient.get(`${this.route}/${eventId}/guests`, { params: { page, sortBy, searchQuery, limit } });
     }
 
     addGuest(guestData) {
@@ -70,8 +70,8 @@ class EventService {
     }
 
     // --- Task Sub-resources ---
-    getTasks(eventId) {
-        return apiClient.get(`${this.route}/${eventId}/tasks`);
+    getTasks(eventId, page, sortBy, searchQuery, limit ) {
+        return apiClient.get(`${this.route}/${eventId}/tasks`, { params: { page, sortBy, searchQuery, limit } });
     }
 
     addTask(taskData) {
@@ -99,9 +99,7 @@ class EventService {
         return apiClient.get(`${this.route}/${eventId}/task-list`);
     }
 
-    findStores(eventId, location) {
-        // Note: Backend uses req.body for a GET request here.
-        // Passing data in a GET request config for axios:
+    findStores(location, eventId) {
         return apiClient.get(`${this.route}/${eventId}/find-stores`, { data: { location } });
     }
 
