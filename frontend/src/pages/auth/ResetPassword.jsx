@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import {Link, useNavigate, useSearchParams} from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import UserService from '../../services/UserService';
+import InputField from '../../components/InputField';
 import '../../styles/auth.css';
 
 export default function ResetPassword() {
@@ -15,6 +16,11 @@ export default function ResetPassword() {
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
+
+    const isStrongPassword = (pass) => {
+        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        return regex.test(pass);
+    };
 
     const handlePasswordReset = async (e) => {
         e.preventDefault();
@@ -35,17 +41,17 @@ export default function ResetPassword() {
             return;
         }
 
-        if (newPassword.length < 6) {
-            setError('Password must be at least 6 characters long.');
+        if (!isStrongPassword(newPassword)) {
+            setError('Password must be at least 8 characters long, include uppercase and lowercase letters, a number, and a special character.');
             return;
         }
 
         setLoading(true);
         setError('');
+
         try {
             await UserService.resetPassword(email, newPassword, code);
             setSuccess(true);
-            navigate("/");
         } catch (err) {
             console.log(err);
             setError(
@@ -55,6 +61,10 @@ export default function ResetPassword() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const clearError = () => {
+        if (error) setError('');
     };
 
     return (
@@ -69,41 +79,41 @@ export default function ResetPassword() {
                     <form onSubmit={handlePasswordReset} className="login-form">
                         {error && <div className="login-error-message">{error}</div>}
 
-                        <div className="input-group">
-                            <label htmlFor="code">Verification Code</label>
-                            <input
-                                id="code"
-                                type="text"
-                                placeholder="Enter 4-digit code"
-                                className="login-input"
-                                value={code}
-                                onChange={(e) => setCode(e.target.value)}
-                            />
-                        </div>
+                        <InputField
+                            id="code"
+                            type="text"
+                            label="Verification Code"
+                            placeholder="Enter 4-digit code"
+                            value={code}
+                            onChange={(e) => {
+                                setCode(e.target.value);
+                                clearError();
+                            }}
+                        />
 
-                        <div className="input-group">
-                            <label htmlFor="newPassword">New Password</label>
-                            <input
-                                id="newPassword"
-                                type="password"
-                                placeholder="Enter new password"
-                                className="login-input"
-                                value={newPassword}
-                                onChange={(e) => setNewPassword(e.target.value)}
-                            />
-                        </div>
+                        <InputField
+                            id="newPassword"
+                            type="password"
+                            label="New Password"
+                            placeholder="Enter new password"
+                            value={newPassword}
+                            onChange={(e) => {
+                                setNewPassword(e.target.value);
+                                clearError();
+                            }}
+                        />
 
-                        <div className="input-group">
-                            <label htmlFor="confirmPassword">Confirm New Password</label>
-                            <input
-                                id="confirmPassword"
-                                type="password"
-                                placeholder="Repeat new password"
-                                className="login-input"
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                            />
-                        </div>
+                        <InputField
+                            id="confirmPassword"
+                            type="password"
+                            label="Confirm New Password"
+                            placeholder="Repeat new password"
+                            value={confirmPassword}
+                            onChange={(e) => {
+                                setConfirmPassword(e.target.value);
+                                clearError();
+                            }}
+                        />
 
                         <button
                             type="submit"
@@ -127,7 +137,7 @@ export default function ResetPassword() {
                                 Your password has been successfully updated. You can now use your new password to log in.
                             </p>
                         </div>
-                        <Link to="/login" className="login-button" style={{ display: 'inline-block', textDecoration: 'none' }}>
+                        <Link to="/login" className="login-button" style={{ display: 'inline-block', textDecoration: 'none', width: '100%', boxSizing: 'border-box' }}>
                             Go to Login
                         </Link>
                     </div>
