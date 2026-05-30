@@ -1,5 +1,6 @@
 const express = require('express');
 const logger = require('./middleware/logger');
+const cors = require('cors'); // 1. Import cors
 const userRoutes = require('./routes/userRoutes');
 const guestsRoutes = require('./routes/guestsRoutes');
 const eventRoutes = require('./routes/eventRoutes');
@@ -8,7 +9,7 @@ const {uploadDir} = require("./middleware/fileUpload");
 const app = express();
 const port = 3000;
 
-
+app.use(cors());
 app.use('/uploads', express.static(uploadDir));
 app.use(express.json());
 app.use(logger);

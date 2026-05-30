@@ -1,0 +1,78 @@
+/* src/styles/Navbar.css */
+
+.navbar {
+    width: 100%;
+    background-color: #ffffff;
+    border-bottom: 1px solid #eaeaea;
+    padding: 0.75rem 2rem;
+}
+
+.navbar-container {
+    display: flex;
+    justify-content: space-between; /* This pushes children to opposite corners */
+    align-items: center; /* Vertically centers everything */
+}
+
+/* Grouping the right-side elements */
+.navbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem; /* Space between links, divider, and profile */
+}
+
+.navbar-links {
+    display: flex;
+    gap: 1rem;
+}
+
+/* src/styles/Navbar.css */
+
+.nav-link {
+    text-decoration: none;
+    color: #888888; /* Softer color for inactive links */
+    font-weight: 500;
+    padding-bottom: 4px;
+
+    /* Transparent border reserves space so the layout doesn't jump when active */
+    border-bottom: 2px solid transparent;
+    transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.nav-link:hover {
+    color: #4a4a4a;
+}
+
+/* The active state applied by NavLink */
+.nav-link.active {
+    color: #333333;
+    font-weight: 600;
+    /* Uses the muted dusty-rose tone from your profile image fallback */
+    border-bottom: 2px solid #7a6069;
+}
+
+.navbar-divider {
+    width: 1px;
+    height: 24px;
+    background-color: #eaeaea;
+}
+
+.navbar-profile {
+    margin-right: 50px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand-name {
+    font-weight: 600;
+    font-size: 1.25rem;
+    color: #333;
+    text-decoration: none;
+    margin-left: 8px;
+}
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Adjust the space between the image and the text */
+    text-decoration: none;
+}

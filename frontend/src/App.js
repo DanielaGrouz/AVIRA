@@ -1,0 +1,71 @@
+import React from 'react';
+import {BrowserRouter as Router, Routes, Route, Navigate} from 'react-router-dom';
+import Login from './pages/auth/Login';
+import EventHomePage from './pages/events/EventHomePage';
+import Settings from './pages/Settings';
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+import {AuthProvider, useAuth} from "./hooks/useAuth";
+import Signup from "./pages/auth/Signup";
+import ForgotPassword from "./pages/auth/ForgetPassword";
+import VerifyEmail from "./pages/auth/VerifyEmail";
+import EventDetailsPage from "./pages/events/EventDetailsPage";
+import AppRoutes from "./AppRoutesConfig";
+import CreateEventPage from "./pages/events/CreateEventPage";
+
+
+function AppContent() {
+    const {isAuthenticated} = useAuth();
+    const makeProtected = (element) => {
+        return isAuthenticated ? element : <Navigate to={AppRoutes.LOGIN} replace />;
+    };
+
+    return (
+        <div>
+            {isAuthenticated && <Navbar/>}
+            <main>
+                <Routes>
+                    {/* User Routes */}
+
+                    <Route path={AppRoutes.LOGIN} element={<Login />} />
+                    <Route path={AppRoutes.SIGNUP} element={<Signup />} />
+                    <Route path={AppRoutes.FORGOT_PASSWORD} element={<ForgotPassword />} />
+                    <Route path={AppRoutes.VERIFY_EMAIL} element={<VerifyEmail />} />
+
+                    {/* Events Routes */}
+                    <Route
+                        path={AppRoutes.HOME}
+                        element={makeProtected(<EventHomePage />)}
+                    />
+                    <Route
+                        path={AppRoutes.EVENT_DETAILS}
+                        element={isAuthenticated ? <EventDetailsPage /> : <Navigate to={AppRoutes.LOGIN} />}
+                    />
+                    <Route
+                        path={AppRoutes.CREATE_EVENT}
+                        element={isAuthenticated ? <CreateEventPage /> : <Navigate to={AppRoutes.LOGIN} />}
+                    />
+
+
+
+                    <Route
+                        path={AppRoutes.SETTINGS}
+                        element={isAuthenticated ? <Settings /> : <Navigate to={AppRoutes.LOGIN} />}
+                    />
+                </Routes>
+            </main>
+            {/*{isAuthenticated && <Footer/>}*/}
+        </div>
+    );
+}
+
+export default function App() {
+    return (
+        <AuthProvider>
+            <Router>
+                <AppContent/>
+            </Router>
+        </AuthProvider>
+    );
+}
+

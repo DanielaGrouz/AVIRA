@@ -1,4 +1,5 @@
 const userService = require('../services/userService');
+const jwt = require('jsonwebtoken');
 
 /**
  * Retrieves a paginated list of all users.
@@ -69,7 +70,7 @@ const createUser = async (req, res) => {
             success: true,
             data: {
                 message: "User registered successfully. Please verify user's email.",
-                user: { userId: newUser.userId, email: newUser.email }
+                user: { userId: newUser.userId, email: newUser.email },
             },
             error: null
         });
@@ -138,14 +139,14 @@ const deleteUser = (req, res) => {
 /**
  * Finalizes the email verification process using a code sent to the user.
  */
-const completeEmailVerification = (req, res) => {
+const completeEmailVerification = async (req, res) => {
     try {
         const { email, code } = req.body;
-        const user = userService.completeEmailVerificationLogic(email, code);
-
+        const {user, token} = await userService.completeEmailVerificationLogic(email, code);
+        const { password, ...safeUserCopy } = user;
         res.status(200).json({
             success: true,
-            data: { userId: user.userId, message: "users email has been verified." },
+            data: { user: safeUserCopy, token: token, message: "users email has been verified." },
             error: null
         });
     } catch (error) {
@@ -173,9 +174,17 @@ const completeEmailVerification = (req, res) => {
 const login = async (req, res) => {
     try {
         const { email, password } = req.body;
-        const user = await userService.loginLogic(email, password);
+        const {user, token} = await userService.loginLogic(email, password);
+        const { password: _, ...safeUserCopy } = user;
 
-        res.status(200).json({ success: true, data: { user: { userId: user.userId } }, error: null });
+        res.status(200).json({
+            success: true,
+            data: {
+                user: safeUserCopy,
+                token: token
+            },
+            error: null
+        });
     } catch (error) {
         // Specific errors for security: distinct messages for missing email vs wrong password
         if (error.message === "EMAIL_NOT_FOUND") {
@@ -195,7 +204,6 @@ const sendVerificationCode = async (req, res) => {
     try {
         const { email } = req.body;
         await userService.sendVerificationCodeLogic(email);
-
         res.status(200).json({ success: true, data: { message: "Verification code sent to email" }, error: null });
     } catch (error) {
         if (error.message === "USER_NOT_FOUND") {
@@ -209,9 +217,9 @@ const sendVerificationCode = async (req, res) => {
  * Updates the user's password, typically used after a successful "Forgot Password" flow.
  */
 const resetPassword = async (req, res) => {
-    const { userId, newPassword } = req.body;
+    const { email, newPassword, code } = req.body;
     try {
-        await userService.resetPasswordLogic(userId, newPassword);
+        await userService.resetPasswordLogic(email, newPassword, code);
 
         res.status(200).json({ success: true, data: { message: "Password updated successfully" }, error: null });
     } catch (error) {

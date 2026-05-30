@@ -6,8 +6,8 @@ const authorize = require("../middleware/auth");
 const {upload} = require("../middleware/fileUpload");
 
 // Search and Browse (Placed first to avoid conflicts with /:id)
-router.get('/search', eventController.searchEvents);
-router.get('/browse', eventController.browseEvents);
+// router.get('/', authorize(['admin', 'user']), eventController.searchEvents);
+// router.get('/browse', authorize(['admin', 'user']), eventController.browseEvents);
 
 // Filtered Retrieval
 router.get('/creator/:creatorId', eventController.getEventsByCreator);
@@ -15,7 +15,7 @@ router.get('/guest/name/:name', eventController.getEventsByGuestName);
 router.get('/guest/phone/:phone', eventController.getEventsByPhone);
 
 // Standard CRUD Operations
-router.get('/', authorize(['admin']), eventController.getAllEvents);
+router.get('/', authorize(['user', 'admin']), eventController.getAllEvents);
 router.get('/:id', validateId, eventController.getEventById);
 router.post('/', validateUserExists, validateEventFields, eventController.createEvent);
 router.put('/:id', validateId, validateOptionalEventFields, eventController.updateEvent);

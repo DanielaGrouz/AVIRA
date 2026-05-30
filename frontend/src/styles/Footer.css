@@ -1,0 +1,36 @@
+.footer-container {
+    background-color: #1f2937; /* Equivalent to Tailwind's gray-800 */
+    color: #ffffff;
+    padding: 2rem 1rem;
+    margin-top: auto; /* Pushes the footer to the bottom if the parent is a flex container */
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow above the footer */
+    font-family: inherit; /* Inherits the font from your global styles */
+}
+
+.footer-content {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center; /* Ensures the text is perfectly centered */
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem; /* Creates clean spacing between the two paragraphs */
+}
+
+.footer-copyright {
+    font-size: 1rem;
+    font-weight: 500;
+    margin: 0;
+    letter-spacing: 0.5px;
+}
+
+.footer-credits {
+    font-size: 0.875rem; /* Equivalent to text-sm */
+    color: #9ca3af; /* Equivalent to Tailwind's gray-400 */
+    margin: 0;
+}
+
+/* Optional: Adds a subtle accent color to the names */
+.highlight-name {
+    color: #60a5fa; /* A soft blue to make the names stand out slightly */
+    font-weight: 600;
+}

@@ -5,6 +5,7 @@ const { sendMail } = require("../utils/emailClient");
 const {generateAvatar} = require("../utils/generateAvatarClient");
 const fs = require('fs/promises');
 const path = require('path');
+const jwt = require("jsonwebtoken");
 
 /**
  * Logic for retrieving a paginated list of users.
@@ -102,6 +103,7 @@ const createUserLogic = async (userData) => {
     if (!picturePath) {
         try {
             // Try to generate the cool AI avatar
+            throw Error("");
             finalPicture = await generateAvatarPicture(firstName, lastName);
         } catch (error) {
             // If AI fails, use a default placeholder instead of crashing the registration
@@ -119,7 +121,8 @@ const createUserLogic = async (userData) => {
         userRole: userRole || "user",
         createDate: new Date().toISOString(),
         updateDate: new Date().toISOString(),
-        picturePath: finalPicture
+        picturePath: finalPicture,
+        isEmailVerified: false,
     };
 
     users.push(newUser);
@@ -166,6 +169,7 @@ const checkVerificationCodeLogic = (email, code) => {
     const recordIndex = verificationCodes.findIndex(
         c => c.email === email && c.code.toString() === code.toString()
     );
+    console.log(recordIndex, email, code);
     if (recordIndex === -1) return false;
 
     const record = verificationCodes[recordIndex];
@@ -185,14 +189,31 @@ const checkVerificationCodeLogic = (email, code) => {
 /**
  * Logic to complete the email verification flow.
  */
-const completeEmailVerificationLogic = (email, code) => {
+const completeEmailVerificationLogic = async (email, code) => {
     const isValid = checkVerificationCodeLogic(email, code);
     if (!isValid) throw new Error("INVALID_CODE");
 
     const user = users.find(u => u.email === email);
     if (!user) throw new Error("USER_NOT_FOUND");
-    return user;
+    user.isEmailVerified = true;
+    const token = await createToken(user);
+    return {user, token};
 };
+
+const createToken = async (user) => {
+
+    const tokenPayload = {
+        userId: user.userId,
+        userRole: user.userRole,
+        email: user.email,
+    };
+
+    return jwt.sign(
+        tokenPayload,
+        process.env.JWT_SECRET,
+        {expiresIn: '24h'}
+    );
+}
 
 /**
  * Logic for User Login.
@@ -205,8 +226,8 @@ const loginLogic = async (email, password) => {
     // Secure password comparison
     const isMatch = await bcrypt.compare(password, user.password).catch(() => password === user.password);
     if (!isMatch) throw new Error("INCORRECT_PASSWORD");
-
-    return user;
+    const token = await createToken(user);
+    return {user, token };
 };
 
 /**
@@ -231,9 +252,12 @@ const sendVerificationCodeLogic = async (email) => {
  * Logic for resetting a user's password.
  * Always hashes the new password before updating the "database".
  */
-const resetPasswordLogic = async (userId, newPassword) => {
-    const user = users.find(u => u.userId === userId);
+const resetPasswordLogic = async (email, newPassword, code) => {
+    const user = users.find(u => u.email === email);
     if (!user) throw new Error("USER_NOT_FOUND");
+    const isValid = checkVerificationCodeLogic(email, code);
+    if (!isValid) throw new Error("INVALID_CODE");
+
 
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(newPassword, salt);

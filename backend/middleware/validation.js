@@ -93,6 +93,7 @@ const validateUserFields = (req, res, next) => {
     }
 
     if (errors.length > 0) {
+        console.error(errors);
         return res.status(400).json({
             success: false,
             data: null,
