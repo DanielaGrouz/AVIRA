@@ -212,3 +212,31 @@
     font-size: 1rem;
     cursor: pointer;
 }
+
+/* --- Event Actions & Google Calendar Button --- */
+.event-actions {
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid #f3f4f6; /* קו הפרדה עדין מהטקסט */
+    display: flex;
+    justify-content: flex-start;
+}
+
+.google-calendar-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #4b5563;
+    background-color: #f3f4f6;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.google-calendar-btn:hover {
+    background-color: #3182ce; /* צבע המותג שלך בהובר */
+    color: white;
+}
