@@ -4,6 +4,7 @@ export default class AppRoutes {
     static SIGNUP = '/signup';
     static FORGOT_PASSWORD = '/forgot-password';
     static VERIFY_EMAIL = '/verify-email';
+    static RESET_PASSWORD = '/reset-password';
 
     // Main Routes
     static HOME = '/';

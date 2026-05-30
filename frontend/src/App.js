@@ -12,6 +12,7 @@ import VerifyEmail from "./pages/auth/VerifyEmail";
 import EventDetailsPage from "./pages/events/EventDetailsPage";
 import AppRoutes from "./AppRoutesConfig";
 import CreateEventPage from "./pages/events/CreateEventPage";
+import ResetPassword from "./pages/auth/ResetPassword";
 
 
 function AppContent() {
@@ -31,6 +32,8 @@ function AppContent() {
                     <Route path={AppRoutes.SIGNUP} element={<Signup />} />
                     <Route path={AppRoutes.FORGOT_PASSWORD} element={<ForgotPassword />} />
                     <Route path={AppRoutes.VERIFY_EMAIL} element={<VerifyEmail />} />
+                    <Route path={AppRoutes.RESET_PASSWORD} element={<ResetPassword />} />
+
 
                     {/* Events Routes */}
                     <Route

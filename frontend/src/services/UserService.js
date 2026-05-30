@@ -58,8 +58,8 @@ class UserService {
         return apiClient.post(`${this.route}/verify-email`, { email, code });
     }
 
-    resetPassword(email, newPassword, resetToken) {
-        return apiClient.post(`${this.route}/reset-password`, { email, newPassword, resetToken });
+    resetPassword(email, newPassword, code) {
+        return apiClient.post(`${this.route}/reset-password`, { email, newPassword, code });
     }
 }
 

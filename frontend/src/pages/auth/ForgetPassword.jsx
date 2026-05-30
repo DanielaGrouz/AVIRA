@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import UserService from '../../services/UserService';
-import '../../styles/Login.css'; // Reusing your existing styles
+import '../../styles/Login.css';
+import AppRoutes from "../../AppRoutesConfig"; // Reusing your existing styles
 
 export default function ForgotPassword() {
     const [email, setEmail] = useState('');
     const [error, setError] = useState('');
     const [success, setSuccess] = useState(false);
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     const handleResetRequest = async (e) => {
         e.preventDefault();
@@ -21,8 +23,9 @@ export default function ForgotPassword() {
         setError('');
 
         try {
-            await UserService.resetPassword(email);
+            await UserService.sendVerificationCode(email);
             setSuccess(true);
+            navigate(`${AppRoutes.RESET_PASSWORD}?email=${encodeURIComponent(email)}`);
         } catch (err) {
             console.log(err);
             setError(
@@ -38,7 +41,7 @@ export default function ForgotPassword() {
         <div className="login-wrapper">
             <div className="login-card">
                 <div className="login-header">
-                    <h2>Reset Password</h2>
+                    <h2>Forgot Password</h2>
                     <p>Enter your email to receive a verification code.</p>
                 </div>
 
@@ -63,7 +66,7 @@ export default function ForgotPassword() {
                             disabled={loading}
                             className={`login-button ${loading ? 'loading' : ''}`}
                         >
-                            {loading ? 'Sending...' : 'Send Reset Link'}
+                            {loading ? 'Sending...' : 'Send Reset Code'}
                         </button>
 
                         <div style={{ textAlign: 'center', marginTop: '16px', fontSize: '14px', color: '#697386' }}>

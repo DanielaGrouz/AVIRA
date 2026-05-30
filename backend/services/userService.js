@@ -222,7 +222,7 @@ const createToken = async (user) => {
 const loginLogic = async (email, password) => {
     const user = users.find(u => u.email === email);
     if (!user) throw new Error("EMAIL_NOT_FOUND");
-
+    if (!user.isEmailVerified) throw new Error("EMAIL_NOT_VERIFIED");
     // Secure password comparison
     const isMatch = await bcrypt.compare(password, user.password).catch(() => password === user.password);
     if (!isMatch) throw new Error("INCORRECT_PASSWORD");

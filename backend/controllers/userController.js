@@ -190,6 +190,9 @@ const login = async (req, res) => {
         if (error.message === "EMAIL_NOT_FOUND") {
             return res.status(404).json({ success: false, data: null, error: { code: "NOT_FOUND", message: "Email not exists", details:{} } });
         }
+        if (error.message === "EMAIL_NOT_VERIFIED"){
+            return res.status(401).json({ success: false, data: null, error: { code: "EMAIL_NOT_VERIFIED", message: "Email is not verified", details:{} } });
+        }
         if (error.message === "INCORRECT_PASSWORD") {
             return res.status(401).json({ success: false, data: null, error: { code: "UNAUTHORIZED", message: "Incorrect password", details:{} } });
         }
