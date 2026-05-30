@@ -12,7 +12,7 @@ const TaskManager = ({ eventId }) => {
     const [tasks, setTasks] = useState([]);
     const [pageCount, setPageCount] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
-    const TASK_PAGE_SIZE = 1;
+    const TASK_PAGE_SIZE = 3;
 
     // --- Modal States ---
     const [isModalOpen, setIsModalOpen] = useState(false);

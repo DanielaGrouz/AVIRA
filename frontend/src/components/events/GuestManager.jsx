@@ -14,7 +14,7 @@ const GuestManager = ({ eventId }) => {
     const [sorting, setSorting] = useState([]);
     const [pageCount, setPageCount] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
-    const GUEST_PAGE_SIZE = 1; // You might want to increase this for production!
+    const GUEST_PAGE_SIZE = 3;
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingGuestId, setEditingGuestId] = useState(null);

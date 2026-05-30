@@ -27,7 +27,12 @@ const EventSmartActions = ({ eventId, eventLocation, onEventUpdate }) => {
                 setModalState({ isOpen: true, type, title, data, text: typeof data === 'object' ? JSON.stringify(data, null, 2) : data });
             }
         } catch (error) {
-            setModalState({ isOpen: true, type: 'error', title: 'Error', text: 'Action failed.' });
+            if (type === 'invite') {
+                setModalState({ isOpen: true, type: 'error', title: 'Error', text: 'You have reached your daily quota' });
+            }
+            else {
+                setModalState({isOpen: true, type: 'error', title: 'Error', text: 'Action failed.'});
+            }
         } finally {
             setActiveAction(null);
         }
