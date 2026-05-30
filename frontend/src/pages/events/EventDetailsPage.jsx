@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FaEdit, FaTrash } from 'react-icons/fa'; // Import icons
+import { FaEdit, FaTrash } from 'react-icons/fa';
 import EventService from '../../services/EventService';
 import Table from '../../components/Table';
 import Button from '../../components/Button';
 import Modal from '../../components/Modal';
 import '../../styles/events/EventDetailsPage.css';
+import CustomSelect from "../../components/CustomSelect";
 
 const EventDetailsPage = () => {
     const { id } = useParams();
@@ -35,9 +36,9 @@ const EventDetailsPage = () => {
     const [guestError, setGuestError] = useState('');
 
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-    const [itemToDelete, setItemToDelete] = useState(null); // Will hold { id, type: 'guest' | 'task' }
+    const [itemToDelete, setItemToDelete] = useState(null);
 
-// 2. REPLACE your existing handleDeleteGuest and handleDeleteTask with these:
+    // --- Delete Handlers ---
     const promptDeleteGuest = (guestId) => {
         setItemToDelete({ id: guestId, type: 'guest' });
         setIsDeleteModalOpen(true);
@@ -47,7 +48,6 @@ const EventDetailsPage = () => {
         setItemToDelete({ id: taskId, type: 'task' });
         setIsDeleteModalOpen(true);
     };
-
 
     // --- Fetchers ---
     useEffect(() => {
@@ -97,7 +97,7 @@ const EventDetailsPage = () => {
     };
 
     const openEditGuestModal = (guest) => {
-        setEditingGuestId(guest.id || guest._id); // Adjust according to your DB ID field
+        setEditingGuestId(guest.id || guest._id);
         setGuestData({
             name: guest.name,
             phone: guest.phone,
@@ -116,7 +116,7 @@ const EventDetailsPage = () => {
     const openEditTaskModal = (task) => {
         setEditingTaskId(task.id || task._id);
         setTaskData({
-            title: task.title || task.description, // Mapped to match your previous taskData definition
+            title: task.title || task.description,
             status: task.status,
             priority: task.priority || 'Medium'
         });
@@ -146,7 +146,7 @@ const EventDetailsPage = () => {
             }
 
             setIsGuestModalOpen(false);
-            fetchGuests(); // Refresh table
+            fetchGuests();
         } catch (error) {
             console.error("Failed to save guest", error);
             setGuestError('Failed to save guest. Please try again.');
@@ -167,11 +167,12 @@ const EventDetailsPage = () => {
             }
 
             setIsTaskModalOpen(false);
-            fetchTasks(); // Refresh table
+            fetchTasks();
         } catch (error) {
             console.error("Failed to save task", error);
         }
     };
+
     const executeDelete = async () => {
         if (!itemToDelete) return;
 
@@ -193,7 +194,6 @@ const EventDetailsPage = () => {
             }
         }
 
-        // Close and reset
         setIsDeleteModalOpen(false);
         setItemToDelete(null);
     };
@@ -213,7 +213,7 @@ const EventDetailsPage = () => {
         },
         {
             id: 'actions',
-            header: '', // Empty header for clean look
+            header: '',
             cell: ({ row }) => (
                 <div className="actions-cell">
                     <button onClick={() => openEditGuestModal(row.original)} className="icon-btn edit-btn" title="Edit Guest">
@@ -322,25 +322,28 @@ const EventDetailsPage = () => {
                         </div>
                         <div className="form-group">
                             <label className="form-label">Role</label>
-                            <select
-                                className="form-select"
-                                value={guestData.role} onChange={(e) => setGuestData({...guestData, role: e.target.value})}
-                            >
-                                <option value="Guest">Guest</option>
-                                <option value="VIP">VIP</option>
-                                <option value="Vendor">Vendor</option>
-                            </select>
+                            <CustomSelect
+                                value={guestData.role}
+                                onChange={(e) => setGuestData({...guestData, role: e.target.value})}
+                                options={[
+                                    { value: 'guest', label: 'guest' },
+                                    { value: 'VIP', label: 'VIP' },
+                                    { value: 'vendor', label: 'vendor' }
+                                ]}
+                            />
                         </div>
                         <div className="form-group">
                             <label className="form-label">Status</label>
-                            <select
-                                className="form-select"
-                                value={guestData.status} onChange={(e) => setGuestData({...guestData, status: e.target.value})}
-                            >
-                                <option value="Pending">Pending</option>
-                                <option value="Confirmed">Confirmed</option>
-                                <option value="Declined">Declined</option>
-                            </select>
+                            <CustomSelect
+                                value={guestData.status}
+                                placement="top"
+                                onChange={(e) => setGuestData({...guestData, status: e.target.value})}
+                                options={[
+                                    { value: 'pending', label: 'pending' },
+                                    { value: 'confirmed', label: 'confirmed' },
+                                    { value: 'declined', label: 'declined' }
+                                ]}
+                            />
                         </div>
                     </div>
                     <div className="modal-footer">
@@ -368,25 +371,28 @@ const EventDetailsPage = () => {
                         </div>
                         <div className="form-group">
                             <label className="form-label">Priority</label>
-                            <select
-                                className="form-select"
-                                value={taskData.priority} onChange={(e) => setTaskData({...taskData, priority: e.target.value})}
-                            >
-                                <option value="Low">Low</option>
-                                <option value="Medium">Medium</option>
-                                <option value="High">High</option>
-                            </select>
+                            <CustomSelect
+                                value={taskData.priority}
+                                onChange={(e) => setTaskData({...taskData, priority: e.target.value})}
+                                options={[
+                                    { value: 'low', label: 'Low' },
+                                    { value: 'medium', label: 'Medium' },
+                                    { value: 'high', label: 'High' }
+                                ]}
+                            />
                         </div>
                         <div className="form-group">
                             <label className="form-label">Status</label>
-                            <select
-                                className="form-select"
-                                value={taskData.status} onChange={(e) => setTaskData({...taskData, status: e.target.value})}
-                            >
-                                <option value="Pending">Pending</option>
-                                <option value="In Progress">In Progress</option>
-                                <option value="Completed">Completed</option>
-                            </select>
+                            <CustomSelect
+                                value={taskData.status}
+                                placement="top"
+                                onChange={(e) => setTaskData({...taskData, status: e.target.value})}
+                                options={[
+                                    { value: 'pending', label: 'Pending' },
+                                    { value: 'in progress', label: 'In Progress' },
+                                    { value: 'completed', label: 'Completed' }
+                                ]}
+                            />
                         </div>
                     </div>
                     <div className="modal-footer">

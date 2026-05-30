@@ -21,7 +21,7 @@
     max-width: 450px;
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
     animation: slideUp 0.3s ease-out;
-    overflow: hidden;
+    /* REMOVED: overflow: hidden; so dropdowns can break out */
 }
 
 .modal-header {
@@ -30,6 +30,21 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    /* ADDED: Keep top corners rounded */
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+}
+
+.modal-footer {
+    padding: 1.25rem 1.5rem;
+    background-color: #f8fafc;
+    border-top: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    /* ADDED: Keep bottom corners rounded */
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
 }
 
 .modal-header h3 {
@@ -55,15 +70,6 @@
 
 .modal-body {
     padding: 1.5rem;
-}
-
-.modal-footer {
-    padding: 1.25rem 1.5rem;
-    background-color: #f8fafc;
-    border-top: 1px solid #f1f5f9;
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.75rem;
 }
 
 /* Modern Form Elements */
