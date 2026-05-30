@@ -29,9 +29,14 @@ apiClient.interceptors.response.use(
         if (error.response) {
             console.log(error.response);
             // The server responded with a status outside the 2xx range
+            const errorMessage =
+                error.response.data?.error?.message ||
+                error.response.data?.message ||
+                'An error occurred with the API';
+
             throw new ApiError(
                 error.response.status,
-                error.response.data?.message || 'An error occurred with the API',
+                errorMessage,
                 error.response.data
             );
         } else if (error.request) {

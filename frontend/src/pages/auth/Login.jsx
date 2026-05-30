@@ -88,7 +88,7 @@ export default function Login() {
                         disabled={loading}
                         className={`login-button ${loading ? 'loading' : ''}`}
                     >
-                        {loading ? 'Logging in...' : 'Sign In'}
+                        {loading ? 'Logging in...' : 'Login'}
                     </button>
 
                     <div className="signup-container">
