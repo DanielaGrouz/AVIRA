@@ -18,5 +18,6 @@ export default class AppRoutes {
         return `/events/${id}`;
     }
     static CREATE_EVENT = "/events/create";
+    static NOT_FOUND = "/not-found";
 
 }

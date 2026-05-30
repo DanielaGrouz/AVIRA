@@ -7,6 +7,7 @@ import Button from '../../components/Button';
 import Modal from '../../components/Modal';
 import '../../styles/events/EventDetailsPage.css';
 import CustomSelect from "../../components/CustomSelect";
+import AppRoutes from "../../AppRoutesConfig";
 
 const EventDetailsPage = () => {
     const { id } = useParams();
@@ -56,7 +57,7 @@ const EventDetailsPage = () => {
                 const res = await EventService.getById(id);
                 setEventDetails(res.data.data);
             } catch (error) {
-                console.error("Error fetching event details:", error);
+                return navigate(AppRoutes.NOT_FOUND);
             }
         };
         fetchEvent();

@@ -1,0 +1,62 @@
+/* --- 404 Not Found Styles --- */
+
+.not-found-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Overrides the default padding slightly to center perfectly in the viewport */
+    padding-top: 10vh;
+}
+
+.not-found-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background-color: #ffffff;
+    padding: 3rem 2rem;
+    border-radius: 8px; /* Matching your existing cards */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.1);
+    max-width: 450px;
+    width: 100%;
+}
+
+.not-found-icon-wrapper {
+    color: #a0aec0;
+    margin-bottom: 1rem;
+}
+
+.not-found-icon {
+    width: 64px;
+    height: 64px;
+}
+
+.not-found-title {
+    font-size: 5rem;
+    font-weight: 800;
+    color: #3182ce; /* Your primary brand color */
+    margin: 0;
+    line-height: 1;
+    letter-spacing: -2px;
+}
+
+.not-found-subtitle {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2d3748; /* Matching your header color */
+    margin: 1rem 0 0.5rem;
+}
+
+.not-found-text {
+    color: #4b5563; /* Matching your event detail text */
+    margin: 0 0 2rem 0;
+    line-height: 1.5;
+    font-size: 1rem;
+}
+
+.not-found-btn {
+    text-decoration: none; /* Prevents underline since it's a Link/anchor tag */
+    display: inline-flex;
+    justify-content: center;
+    width: auto;
+}

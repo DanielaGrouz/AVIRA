@@ -12,6 +12,7 @@ import EventDetailsPage from "./pages/events/EventDetailsPage";
 import AppRoutes from "./AppRoutesConfig";
 import CreateEventPage from "./pages/events/CreateEventPage";
 import ResetPassword from "./pages/auth/ResetPassword";
+import NotFoundPage from "./pages/NotFoundPage";
 
 function AppContent() {
     const {isAuthenticated} = useAuth();
@@ -52,6 +53,8 @@ function AppContent() {
                         path={AppRoutes.SETTINGS}
                         element={isAuthenticated ? <Settings/> : <Navigate to={AppRoutes.LOGIN}/>}
                     />
+                    <Route path={AppRoutes.NOT_FOUND} element={<NotFoundPage/>}/>
+
                 </Routes>
             </main>
             {/*{isAuthenticated && <Footer/>}*/}
