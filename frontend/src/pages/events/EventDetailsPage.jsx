@@ -73,7 +73,8 @@ const EventDetailsPage = () => {
 
     const fetchGuests = async () => {
         try {
-            const res = await EventService.getGuests(id, guestCurrentPage, sortingGuests, searchQueryGuests, GUEST_PAGE_SIZE);
+            const activeSortBy = sortingGuests.length > 0 ? sortingGuests[0].id : null;
+            const res = await EventService.getGuests(id, guestCurrentPage, activeSortBy, searchQueryGuests, GUEST_PAGE_SIZE);
             setGuests(res.data.data.data);
             setGuestPageCount(res.data.data.totalPages);
         } catch (error) {
