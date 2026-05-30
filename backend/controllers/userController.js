@@ -209,14 +209,17 @@ const sendVerificationCode = async (req, res) => {
  * Updates the user's password, typically used after a successful "Forgot Password" flow.
  */
 const resetPassword = async (req, res) => {
-    const { userId, newPassword } = req.body;
+    const { email, newPassword, code } = req.body;
     try {
-        await userService.resetPasswordLogic(userId, newPassword);
+        await userService.resetPasswordLogic(email, newPassword, code);
 
         res.status(200).json({ success: true, data: { message: "Password updated successfully" }, error: null });
     } catch (error) {
         if (error.message === "USER_NOT_FOUND") {
-            return res.status(404).json({ success: false, data: null, error: { code: "NOT_FOUND", message: `User with id: ${userId} not found.`, details:{} } });
+            return res.status(404).json({ success: false, data: null, error: { code: "NOT_FOUND", message: `User with email: ${email} not found.`, details:{} } });
+        }
+        if (error.message === "INVALID_CODE") {
+            return res.status(400).json({ success: false, data: null, error: { code: "INVALID_CODE", message: "Invalid verification code", details:{} } });
         }
         res.status(500).json({ success: false, data: null, error: { code: "SERVER_ERROR", message: error.message, details: {} } });
     }
