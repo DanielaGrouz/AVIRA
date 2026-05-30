@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import {Link, useNavigate} from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import UserService from '../../services/UserService';
+import InputField from '../../components/InputField';
 import '../../styles/auth.css';
-import AppRoutes from "../../AppRoutesConfig"; // Reusing your existing styles
+import AppRoutes from "../../AppRoutesConfig";
 
 export default function ForgotPassword() {
     const [email, setEmail] = useState('');
@@ -37,6 +38,10 @@ export default function ForgotPassword() {
         }
     };
 
+    const clearError = () => {
+        if (error) setError('');
+    };
+
     return (
         <div className="login-wrapper">
             <div className="login-card">
@@ -49,17 +54,17 @@ export default function ForgotPassword() {
                     <form onSubmit={handleResetRequest} className="login-form">
                         {error && <div className="login-error-message">{error}</div>}
 
-                        <div className="input-group">
-                            <label htmlFor="email">Email</label>
-                            <input
-                                id="email"
-                                type="email"
-                                placeholder="name@example.com"
-                                className="login-input"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
-                        </div>
+                        <InputField
+                            id="email"
+                            type="email"
+                            label="Email"
+                            placeholder="name@example.com"
+                            value={email}
+                            onChange={(e) => {
+                                setEmail(e.target.value);
+                                clearError();
+                            }}
+                        />
 
                         <button
                             type="submit"
@@ -81,7 +86,7 @@ export default function ForgotPassword() {
                                 A verification code has been sent to <strong>{email}</strong>.
                             </p>
                         </div>
-                        <Link to="/login" className="login-button" style={{ display: 'inline-block', textDecoration: 'none' }}>
+                        <Link to="/login" className="login-button" style={{ display: 'inline-block', textDecoration: 'none', width: '100%', boxSizing: 'border-box' }}>
                             Return to Login
                         </Link>
                     </div>

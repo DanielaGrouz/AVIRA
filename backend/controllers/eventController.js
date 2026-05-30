@@ -136,12 +136,17 @@ const updateEvent = (req, res) => {
 // Get a list of all guests invited to a specific event
 const getAllGuestsByEvent = (req, res) => {
     try {
-        const id = parseInt(req.params.id);
-        const result = eventService.getAllGuestsByEventLogic(id);
+        const eventId = parseInt(req.params.id);
+        const limit = req.query.limit || 5;
+        const page = parseInt(req.query.page) || 1;
+        const sortBy = req.query.sortBy || 'id';
+        const searchQuery = req.query.searchQuery || null;
+
+        const result = eventService.getAllGuestsByEventLogic(eventId, page, limit, sortBy, searchQuery);
 
         res.status(200).json({
             success: true,
-            data: { guests: result.data },
+            data: result,
             error: null
         });
     } catch (error) {
@@ -168,9 +173,13 @@ const getAllGuestsByEvent = (req, res) => {
 const getTasksByEventId = (req, res) => {
     try {
         const eventId = parseInt(req.params.id);
-        const eventTasks = eventService.getTasksByEventIdLogic(eventId);
+        const limit = req.query.limit || 5;
+        const page = parseInt(req.query.page) || 1;
+        const sortBy = req.query.sortBy || 'id';
+        const searchQuery = req.query.searchQuery || null;
+        const result = eventService.getTasksByEventIdLogic(eventId, page, limit, sortBy, searchQuery);
 
-        res.status(200).json({ success: true, data: eventTasks, error: null });
+        res.status(200).json({ success: true, data: result, error: null });
     } catch (error) {
         if (error.message === "EVENT_NOT_FOUND") {
             return res.status(404).json({

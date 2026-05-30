@@ -92,33 +92,81 @@ const updateEventLogic = (id, updateData) => {
     return events[eventIndex];
 };
 
-// Get a list of all guests invited to a specific event
-const getAllGuestsByEventLogic = (eventId, page = 1, limit = 5, sortBy = 'id') => {
-    const eventIndex = events.findIndex(e => e.eventId === eventId);
-    if (eventIndex === -1) throw new Error("EVENT_NOT_FOUND");
-    const eventGuests = guests.filter(g => g.eventId === eventId);
-    if (eventGuests.length === 0) {
+
+const processListData = (data, { page, limit, sortBy, searchQuery, searchFields }) => {
+    if (!data || data.length === 0) {
         return { page: 1, totalPages: 0, data: [] };
     }
-    let sortedGuests = [...eventGuests].sort((a, b) => {
-        if (a[sortBy] < b[sortBy]) return -1;
-        if (a[sortBy] > b[sortBy]) return 1;
-        return 0;
-    });
+
+    let processedData = [...data];
+
+    // 1. Filter by Search Query dynamically using the provided searchFields
+    if (searchQuery && searchQuery.trim() !== "") {
+        const queryTerms = searchQuery.toLowerCase().trim().split(/\s+/);
+
+        processedData = processedData.filter((item) => {
+            // Map over the provided fields, extract their values, and join them
+            const searchableString = searchFields
+                .map(field => item[field])
+                .filter(Boolean) // Removes null or undefined values
+                .join(" ")
+                .toLowerCase();
+
+            return queryTerms.every(term => searchableString.includes(term));
+        });
+    }
+
+    // 2. Sort the Data
+    if (sortBy) {
+        processedData = processedData.sort((a, b) => {
+            if (a[sortBy] < b[sortBy]) return -1;
+            if (a[sortBy] > b[sortBy]) return 1;
+            return 0;
+        });
+    }
+
+    // 3. Paginate the Data
+    const totalPages = Math.ceil(processedData.length / limit);
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
+
     return {
         page: page,
-        totalPages: Math.ceil(eventGuests.length / limit),
-        data: sortedGuests.slice(startIndex, endIndex)
+        totalPages: totalPages,
+        data: processedData.slice(startIndex, endIndex)
     };
 };
 
-// Get all tasks associated with a specific event ID
-const getTasksByEventIdLogic = (eventId) => {
+// Get a list of all guests invited to a specific event
+const getAllGuestsByEventLogic = (eventId, page, limit, sortBy, searchQuery) => {
     const eventIndex = events.findIndex(e => e.eventId === eventId);
     if (eventIndex === -1) throw new Error("EVENT_NOT_FOUND");
-    return tasks.filter(t => t.eventId === eventId);
+
+    const eventGuests = guests.filter(g => g.eventId === eventId);
+
+    return processListData(eventGuests, {
+        page,
+        limit,
+        sortBy,
+        searchQuery,
+        searchFields: ["name", "phone"]
+    });
+};
+
+// Get all tasks associated with a specific event ID
+const getTasksByEventIdLogic = (eventId, page, limit, sortBy, searchQuery) => {
+    const eventIndex = events.findIndex(e => e.eventId === eventId);
+    if (eventIndex === -1) throw new Error("EVENT_NOT_FOUND");
+
+    const eventTasks = tasks.filter(t => t.eventId === eventId);
+
+    return processListData(eventTasks, {
+        page,
+        limit,
+        sortBy,
+        searchQuery,
+        searchFields: ["title"]
+    });
 };
 
 // Add a new task to a specific event
