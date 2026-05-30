@@ -7,12 +7,12 @@ import {
 } from '@tanstack/react-table';
 
 export default function Table({
-                                        data,
-                                        columns,
-                                        pageCount,
-                                        pagination,
-                                        setPagination
-                                    }) {
+                                  data,
+                                  columns,
+                                  pageCount = -1,
+                                  pagination = { pageIndex: 0, pageSize: 10 }, // <-- ערך ברירת מחדל שמונע את הקריסה
+                                  setPagination
+                              }) {
     const table = useReactTable({
         data,
         columns,
@@ -20,7 +20,7 @@ export default function Table({
         state: { pagination },
         onPaginationChange: setPagination,
         getCoreRowModel: getCoreRowModel(),
-        manualPagination: true, // This tells the table we are doing server-side pagination
+        manualPagination: true,
     });
 
     return (
@@ -58,28 +58,30 @@ export default function Table({
                 </table>
             </div>
 
-            {/* Pagination Controls */}
-            <div className="pagination-controls">
-                <span>
-                    Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
-                </span>
-                <div className="pagination-buttons">
-                    <button
-                        className="page-btn"
-                        onClick={() => table.previousPage()}
-                        disabled={!table.getCanPreviousPage()}
-                    >
-                        Previous
-                    </button>
-                    <button
-                        className="page-btn"
-                        onClick={() => table.nextPage()}
-                        disabled={!table.getCanNextPage()}
-                    >
-                        Next
-                    </button>
+            {/* מרנדר את הפגנציה הפנימית רק אם העבירו פונקציית setPagination מבחוץ */}
+            {setPagination && (
+                <div className="pagination-controls">
+                    <span>
+                        Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount() === -1 ? 1 : table.getPageCount()}
+                    </span>
+                    <div className="pagination-buttons">
+                        <button
+                            className="page-btn"
+                            onClick={() => table.previousPage()}
+                            disabled={!table.getCanPreviousPage()}
+                        >
+                            Previous
+                        </button>
+                        <button
+                            className="page-btn"
+                            onClick={() => table.nextPage()}
+                            disabled={!table.getCanNextPage()}
+                        >
+                            Next
+                        </button>
+                    </div>
                 </div>
-            </div>
+            )}
         </>
     );
 }

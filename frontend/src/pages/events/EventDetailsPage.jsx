@@ -5,6 +5,7 @@ import EventService from '../../services/EventService';
 import Table from '../../components/Table';
 import Button from '../../components/Button';
 import Modal from '../../components/Modal';
+import Pagination from '../../components/Pagination';
 import '../../styles/events/EventDetailsPage.css';
 import CustomSelect from "../../components/CustomSelect";
 import AppRoutes from "../../AppRoutesConfig";
@@ -18,17 +19,17 @@ const EventDetailsPage = () => {
     // --- Pagination States ---
     const [guests, setGuests] = useState([]);
     const [guestPageCount, setGuestPageCount] = useState(0);
-    const [guestPagination, setGuestPagination] = useState({ pageIndex: 0, pageSize: 10 });
+    const [guestCurrentPage, setGuestCurrentPage] = useState(1);
+    const GUEST_PAGE_SIZE = 1;
 
     const [tasks, setTasks] = useState([]);
     const [taskPageCount, setTaskPageCount] = useState(0);
-    const [taskPagination, setTaskPagination] = useState({ pageIndex: 0, pageSize: 10 });
+    const [taskCurrentPage, setTaskCurrentPage] = useState(1);
+    const TASK_PAGE_SIZE = 1;
 
-    // --- Modal States ---
     const [isGuestModalOpen, setIsGuestModalOpen] = useState(false);
     const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
 
-    // Track if we are editing an existing item (null = adding new)
     const [editingGuestId, setEditingGuestId] = useState(null);
     const [editingTaskId, setEditingTaskId] = useState(null);
 
@@ -66,10 +67,10 @@ const EventDetailsPage = () => {
     const fetchGuests = async () => {
         try {
             const res = await EventService.getGuests(id, {
-                page: guestPagination.pageIndex + 1, limit: guestPagination.pageSize
+                page: guestCurrentPage, limit: GUEST_PAGE_SIZE
             });
             setGuests(res.data.data.guests);
-            setGuestPageCount(Math.ceil((res.data.data.totalCount || 0) / guestPagination.pageSize));
+            setGuestPageCount(Math.ceil((res.data.data.totalCount || 0) / GUEST_PAGE_SIZE));
         } catch (error) {
             console.error("Error fetching guests:", error);
         }
@@ -78,17 +79,17 @@ const EventDetailsPage = () => {
     const fetchTasks = async () => {
         try {
             const res = await EventService.getTasks(id, {
-                page: taskPagination.pageIndex + 1, limit: taskPagination.pageSize
+                page: taskCurrentPage, limit: TASK_PAGE_SIZE
             });
             setTasks(res.data.data.tasks || res.data.data);
-            setTaskPageCount(Math.ceil((res.data.data.totalCount || 0) / taskPagination.pageSize));
+            setTaskPageCount(Math.ceil((res.data.data.totalCount || 0) / TASK_PAGE_SIZE));
         } catch (error) {
             console.error("Error fetching tasks:", error);
         }
     };
 
-    useEffect(() => { fetchGuests(); }, [id, guestPagination]);
-    useEffect(() => { fetchTasks(); }, [id, taskPagination]);
+    useEffect(() => { fetchGuests(); }, [id, guestCurrentPage]);
+    useEffect(() => { fetchTasks(); }, [id, taskCurrentPage]);
 
     // --- Open Modal Handlers ---
     const openAddGuestModal = () => {
@@ -98,7 +99,6 @@ const EventDetailsPage = () => {
     };
 
     const openEditGuestModal = (guest) => {
-        console.error(`guest is: ${JSON.stringify(guest)}`);
         setEditingGuestId(guest.guestId);
         setGuestData({
             name: guest.name,
@@ -129,6 +129,12 @@ const EventDetailsPage = () => {
         e.preventDefault();
         setGuestError('');
 
+        const name = guestData.name;
+        if (!name || typeof name !== 'string' || name.trim().length < 2) {
+            setGuestError('Name must be a string (min 2 chars)');
+            return;
+        }
+
         const cleanPhone = guestData.phone.replace(/\D/g, '');
         if (!cleanPhone.startsWith('05') || cleanPhone.length !== 10) {
             setGuestError('Please enter a valid Israeli phone number (e.g., 0545368889).');
@@ -139,10 +145,8 @@ const EventDetailsPage = () => {
             const payload = { eventId: id, ...guestData, phone: cleanPhone };
             if (editingGuestId) {
                 await EventService.updateGuest(editingGuestId, payload);
-                console.log("Updating Guest:", editingGuestId, payload);
             } else {
                 await EventService.addGuest(payload);
-                console.log("Adding New Guest:", payload);
             }
 
             setIsGuestModalOpen(false);
@@ -159,10 +163,8 @@ const EventDetailsPage = () => {
             const payload = { eventId: id, ...taskData };
             if (editingTaskId) {
                 await EventService.updateTask(editingTaskId, payload);
-                console.log("Updating Task:", editingTaskId, payload);
             } else {
                 await EventService.addTask(payload);
-                console.log("Adding New Task:", payload);
             }
 
             setIsTaskModalOpen(false);
@@ -177,9 +179,7 @@ const EventDetailsPage = () => {
 
         if (itemToDelete.type === 'guest') {
             try {
-                console.log("Deleting Guest:", itemToDelete.id);
                 await EventService.deleteGuest(id, itemToDelete.id);
-                console.log("Deleted guest:", itemToDelete.id);
                 fetchGuests();
             } catch (error) {
                 console.error("Failed to delete guest", error);
@@ -187,7 +187,6 @@ const EventDetailsPage = () => {
         } else if (itemToDelete.type === 'task') {
             try {
                 await EventService.deleteTask(id, itemToDelete.id);
-                console.log("Deleted task:", itemToDelete.id);
                 fetchTasks();
             } catch (error) {
                 console.error("Failed to delete task", error);
@@ -267,6 +266,7 @@ const EventDetailsPage = () => {
             </div>
 
             <div className="tables-layout">
+                {/* --- Guests Card --- */}
                 <div className="table-card">
                     <div className="table-header">
                         <h2>Guest List</h2>
@@ -274,12 +274,20 @@ const EventDetailsPage = () => {
                             + Add Guest
                         </Button>
                     </div>
-                    <Table
-                        data={guests} columns={guestColumns}
-                        pageCount={guestPageCount} pagination={guestPagination} setPagination={setGuestPagination}
-                    />
+                    <Table data={guests} columns={guestColumns} />
+
+                    {guestPageCount > 1 && (
+                        <div className="table-pagination-wrapper">
+                            <Pagination
+                                currentPage={guestCurrentPage}
+                                totalPageCount={guestPageCount}
+                                onPageChange={setGuestCurrentPage}
+                            />
+                        </div>
+                    )}
                 </div>
 
+                {/* --- Tasks Card --- */}
                 <div className="table-card">
                     <div className="table-header">
                         <h2>Event Tasks</h2>
@@ -287,16 +295,20 @@ const EventDetailsPage = () => {
                             + Add Task
                         </Button>
                     </div>
-                    <Table
-                        data={tasks} columns={taskColumns}
-                        pageCount={taskPageCount} pagination={taskPagination} setPagination={setTaskPagination}
-                    />
+                    <Table data={tasks} columns={taskColumns} />
+
+                    {taskPageCount > 1 && (
+                        <div className="table-pagination-wrapper">
+                            <Pagination
+                                currentPage={taskCurrentPage}
+                                totalPageCount={taskPageCount}
+                                onPageChange={setTaskCurrentPage}
+                            />
+                        </div>
+                    )}
                 </div>
             </div>
 
-            {/* --- Modals --- */}
-
-            {/* Guest Modal */}
             <Modal isOpen={isGuestModalOpen} onClose={() => setIsGuestModalOpen(false)} title={editingGuestId ? "Edit Guest" : "Edit Guest"}>
                 <form onSubmit={handleSaveGuest}>
                     <div className="modal-body">
@@ -312,7 +324,11 @@ const EventDetailsPage = () => {
                             <label className="form-label">Full Name</label>
                             <input
                                 type="text" className="form-input" required placeholder="e.g. Jane Doe"
-                                value={guestData.name} onChange={(e) => setGuestData({...guestData, name: e.target.value})}
+                                value={guestData.name}
+                                onChange={(e) => {
+                                    setGuestData({...guestData, name: e.target.value});
+                                    if (guestError) setGuestError('');
+                                }}
                             />
                         </div>
                         <div className="form-group">
@@ -352,7 +368,6 @@ const EventDetailsPage = () => {
                 </form>
             </Modal>
 
-            {/* Task Modal */}
             <Modal isOpen={isTaskModalOpen} onClose={() => setIsTaskModalOpen(false)} title={editingTaskId ? "Edit Task" : "Add New Task"}>
                 <form onSubmit={handleSaveTask}>
                     <div className="modal-body">

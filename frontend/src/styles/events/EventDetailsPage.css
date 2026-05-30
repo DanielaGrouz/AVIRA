@@ -110,31 +110,19 @@
     background-color: #f8fafc;
 }
 
-/* Minimalist Pagination Controls */
-.pagination-controls {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+
+/* Wrapper for the new Pagination component inside table cards */
+.table-pagination-wrapper {
+    margin-top: auto; /* Pushes pagination to the bottom if table is small */
     padding-top: 1.5rem;
-    margin-top: auto;
-    border-top: 1px solid #f1f5f9;
-    font-size: 0.875rem;
-    color: #64748b;
-}
-
-.pagination-buttons {
     display: flex;
-    gap: 0.5rem;
+    justify-content: center;
 }
 
-.page-btn {
-    padding: 0.5rem 1rem;
-    border: 1px solid #e2e8f0;
-    background: #ffffff;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-weight: 500;
+/* Override the default margin of your global Pagination component when inside a card */
+.table-pagination-wrapper .pagination-container {
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 .page-btn:hover:not(:disabled) {
