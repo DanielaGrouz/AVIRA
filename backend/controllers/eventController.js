@@ -8,7 +8,7 @@ const getAllEvents = (req, res) => {
         const sortBy = req.query.sortBy || 'id';
         const searchQuery = req.query.searchQuery || null;
 
-        const result = eventService.getAllEventsLogic(page, limit, sortBy, searchQuery);
+        const result = eventService.getAllEventsLogic(page, limit, sortBy, searchQuery, req.user);
 
         res.status(200).json({
             success: true,
@@ -288,27 +288,6 @@ const getEventsByPhone = (req, res) => {
     }
 };
 
-// Browse events using exact query filters
-const browseEvents = (req, res) => {
-    try {
-        const data = eventService.browseEventsLogic(req.query);
-        res.status(200).json({ success: true, data, error: null });
-    } catch (error) {
-        res.status(500).json({ success: false, data: null, error: { code: "Internal Server Error", message: "Internal Server Error", details: {} } });
-    }
-};
-
-// Search events using a free text query across all fields
-const searchEvents = (req, res) => {
-    try {
-        const query = req.query.q;
-        const data = eventService.searchEventsLogic(query);
-        res.status(200).json({ success: true, data, error: null });
-    } catch (error) {
-        res.status(500).json({ success: false, data: null, error: { code: "Internal Server Error", message: "Internal Server Error", details: {} } });
-    }
-};
-
 // Add a new guest to an event
 const addGuestToEvent = (req, res) => {
     try {
@@ -521,8 +500,6 @@ module.exports = {
     getEventsByCreator,
     getEventsByGuestName,
     getEventsByPhone,
-    browseEvents,
-    searchEvents,
     addGuestToEvent,
     removeGuestFromEvent,
     updateGuestInEvent,

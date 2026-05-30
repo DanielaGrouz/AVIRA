@@ -7,8 +7,11 @@ const {generateEventInvite} = require("../utils/generateImageClient");
 const taskService = require('./taskService');
 
 // Get all events with pagination and sorting
-const getAllEventsLogic = (page, limit,sortBy, searchQuery) => {
+const getAllEventsLogic = (page, limit,sortBy, searchQuery, userData) => {
     let filteredEvents = [...events];
+    if (userData.userRole !== 'admin'){
+        filteredEvents = filteredEvents.filter(event => event.creatorId === userData.userId);
+    }
     if (searchQuery && searchQuery.trim() !== "") {
         const queryTerms = searchQuery.toLowerCase().trim().split(/\s+/);
 
@@ -35,7 +38,7 @@ const getAllEventsLogic = (page, limit,sortBy, searchQuery) => {
     const endIndex = page * limit;
     return {
         page: page,
-        totalPages: Math.ceil(events.length / limit),
+        totalPages: Math.ceil(filteredEvents.length / limit),
         data: sortedEvents.slice(startIndex, endIndex)
     };
 };
@@ -162,30 +165,6 @@ const getEventsByPhoneLogic = (phone) => {
     return events.filter(e => eventIds.includes(e.eventId));
 };
 
-// Browse events by any field provided in filters
-const browseEventsLogic = (filters) => {
-    let filteredEvents = [...events];
-    Object.keys(filters).forEach(key => {
-        if (filters[key]) {
-            // Match values as strings for flexibility (e.g., eventType, location, creatorId)
-            filteredEvents = filteredEvents.filter(e =>
-                String(e[key]).toLowerCase() === String(filters[key]).toLowerCase()
-            );
-        }
-    });
-    return filteredEvents;
-};
-
-// Search for a text string across all fields in the event object
-const searchEventsLogic = (query) => {
-    if (!query) return [];
-    const lowerQuery = query.toLowerCase();
-    return events.filter(e =>
-        Object.values(e).some(val =>
-            String(val).toLowerCase().includes(lowerQuery)
-        )
-    );
-};
 
 // Add a new guest to an event and update the guest count
 const addGuestToEventLogic = (eventId, guestData) => {
@@ -290,8 +269,6 @@ module.exports = {
     getEventsByCreatorLogic,
     getEventsByGuestNameLogic,
     getEventsByPhoneLogic,
-    browseEventsLogic,
-    searchEventsLogic,
     addGuestToEventLogic,
     removeGuestFromEventLogic,
     updateGuestInEventLogic,

@@ -5,10 +5,6 @@ const { validateId, validateEventFields, validateOptionalEventFields, validateUs
 const authorize = require("../middleware/auth");
 const {upload} = require("../middleware/fileUpload");
 
-// Search and Browse (Placed first to avoid conflicts with /:id)
-// router.get('/', authorize(['admin', 'user']), eventController.searchEvents);
-// router.get('/browse', authorize(['admin', 'user']), eventController.browseEvents);
-
 // Filtered Retrieval
 router.get('/creator/:creatorId', eventController.getEventsByCreator);
 router.get('/guest/name/:name', eventController.getEventsByGuestName);
