@@ -43,7 +43,6 @@ const EventHomePage = () => {
         setCurrentPage(1);
     };
 
-    // פונקציה לייצור קישור ליומן גוגל (עודכנה כדי לתמוך בשעות)
     const generateGoogleCalendarLink = (event) => {
         const title = encodeURIComponent(event.title || 'New Event');
         const location = encodeURIComponent(event.location || '');
@@ -52,7 +51,6 @@ const EventHomePage = () => {
         let datesStr = '';
 
         if (event.date && event.date !== 'TBD') {
-            // פונקציית עזר לעיצוב תאריך ושעה מקומיים לפורמט של גוגל (YYYYMMDDTHHMMSS)
             const formatLocalObjToGoogle = (d) => {
                 const pad = (n) => String(n).padStart(2, '0');
                 return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}T${pad(d.getHours())}${pad(d.getMinutes())}00`;
@@ -64,17 +62,15 @@ const EventHomePage = () => {
             };
 
             if (event.time && event.time !== 'TBD') {
-                // אם יש גם תאריך וגם שעה (יוצר אירוע מתוזמן, נניח לשעתיים)
                 const startDateTime = new Date(`${event.date}T${event.time}`);
                 if (!isNaN(startDateTime.getTime())) {
-                    const endDateTime = new Date(startDateTime.getTime() + 2 * 60 * 60 * 1000); // מוסיף שעתיים
+                    const endDateTime = new Date(startDateTime.getTime() + 2 * 60 * 60 * 1000);
 
                     const startStr = formatLocalObjToGoogle(startDateTime);
                     const endStr = formatLocalObjToGoogle(endDateTime);
                     datesStr = `&dates=${startStr}/${endStr}`;
                 }
             } else {
-                // אם יש רק תאריך (אירוע של יום שלם)
                 const startDate = new Date(event.date);
                 if (!isNaN(startDate.getTime())) {
                     const endDate = new Date(startDate);
@@ -136,7 +132,6 @@ const EventHomePage = () => {
                             <p className="event-detail">Type: {event.eventType}</p>
                             <p className="event-detail">Guests: {event.guestsCount}</p>
                             <p className="event-detail">Date: {event.date || 'TBD'}</p>
-                            {/* --- הוספת תצוגת השעה ממש כאן --- */}
                             <p className="event-detail">Time: {event.time || 'TBD'}</p>
                             <p className="event-detail">Location: {event.location || 'TBD'}</p>
 
