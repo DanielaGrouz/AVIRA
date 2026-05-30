@@ -22,7 +22,7 @@ export default function Navbar() {
                         style={{ width: '24px', height: '24px', objectFit: 'contain', borderRadius: '25%' }}
                         className="brand-image"
                     />
-                    <span className="brand-name">AVIRA</span>
+                    <span className="brand-name">AVIRA - Boutique Event Management System 🥂✨️ </span>
                 </Link>
 
                 {/* Right Corner: Navigation Links & User Actions */}
