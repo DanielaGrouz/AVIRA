@@ -5,7 +5,7 @@ import Button from '../../components/Button';
 import Pagination from '../../components/Pagination';
 import '../../styles/events/EventHomePage.css';
 import AppRoutes from "../../AppRoutesConfig";
-import { FiPlus, FiCalendar } from "react-icons/fi"; // הוספתי את האייקון של היומן
+import { FiPlus, FiCalendar } from "react-icons/fi";
 import CustomSelect from "../../components/CustomSelect";
 
 const EventHomePage = () => {
@@ -43,29 +43,47 @@ const EventHomePage = () => {
         setCurrentPage(1);
     };
 
-    // פונקציה לייצור קישור ליומן גוגל
+    // פונקציה לייצור קישור ליומן גוגל (עודכנה כדי לתמוך בשעות)
     const generateGoogleCalendarLink = (event) => {
         const title = encodeURIComponent(event.title || 'New Event');
         const location = encodeURIComponent(event.location || '');
-        // ניתן להוסיף כאן עוד פרטים לתיאור
         const details = encodeURIComponent(`Type: ${event.eventType}\nGuests: ${event.guestsCount}`);
 
         let datesStr = '';
+
         if (event.date && event.date !== 'TBD') {
-            const startDate = new Date(event.date);
-            if (!isNaN(startDate.getTime())) {
-                // המרת התאריך לפורמט שגוגל דורש (YYYYMMDD)
-                const formatDate = (date) => {
-                    return date.toISOString().replace(/-|:|\.\d+/g, '');
-                };
+            // פונקציית עזר לעיצוב תאריך ושעה מקומיים לפורמט של גוגל (YYYYMMDDTHHMMSS)
+            const formatLocalObjToGoogle = (d) => {
+                const pad = (n) => String(n).padStart(2, '0');
+                return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}T${pad(d.getHours())}${pad(d.getMinutes())}00`;
+            };
 
-                // מגדיר אירוע של יום שלם בתור ברירת מחדל
-                const endDate = new Date(startDate);
-                endDate.setDate(endDate.getDate() + 1);
+            const formatDateOnly = (d) => {
+                const pad = (n) => String(n).padStart(2, '0');
+                return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}`;
+            };
 
-                const startStr = formatDate(startDate).substring(0, 8);
-                const endStr = formatDate(endDate).substring(0, 8);
-                datesStr = `&dates=${startStr}/${endStr}`;
+            if (event.time && event.time !== 'TBD') {
+                // אם יש גם תאריך וגם שעה (יוצר אירוע מתוזמן, נניח לשעתיים)
+                const startDateTime = new Date(`${event.date}T${event.time}`);
+                if (!isNaN(startDateTime.getTime())) {
+                    const endDateTime = new Date(startDateTime.getTime() + 2 * 60 * 60 * 1000); // מוסיף שעתיים
+
+                    const startStr = formatLocalObjToGoogle(startDateTime);
+                    const endStr = formatLocalObjToGoogle(endDateTime);
+                    datesStr = `&dates=${startStr}/${endStr}`;
+                }
+            } else {
+                // אם יש רק תאריך (אירוע של יום שלם)
+                const startDate = new Date(event.date);
+                if (!isNaN(startDate.getTime())) {
+                    const endDate = new Date(startDate);
+                    endDate.setDate(endDate.getDate() + 1);
+
+                    const startStr = formatDateOnly(startDate);
+                    const endStr = formatDateOnly(endDate);
+                    datesStr = `&dates=${startStr}/${endStr}`;
+                }
             }
         }
 
@@ -118,9 +136,10 @@ const EventHomePage = () => {
                             <p className="event-detail">Type: {event.eventType}</p>
                             <p className="event-detail">Guests: {event.guestsCount}</p>
                             <p className="event-detail">Date: {event.date || 'TBD'}</p>
+                            {/* --- הוספת תצוגת השעה ממש כאן --- */}
+                            <p className="event-detail">Time: {event.time || 'TBD'}</p>
                             <p className="event-detail">Location: {event.location || 'TBD'}</p>
 
-                            {/* --- כפתור הוספה ליומן גוגל --- */}
                             <div className="event-actions" onClick={(e) => e.stopPropagation()}>
                                 <a
                                     href={generateGoogleCalendarLink(event)}
