@@ -1,10 +1,9 @@
 import React from 'react';
-import {BrowserRouter as Router, Routes, Route, Navigate} from 'react-router-dom';
+import {BrowserRouter as Router, Navigate, Route, Routes} from 'react-router-dom';
 import Login from './pages/auth/Login';
 import EventHomePage from './pages/events/EventHomePage';
 import Settings from './pages/Settings';
 import Navbar from './components/Navbar';
-import Footer from './components/Footer';
 import {AuthProvider, useAuth} from "./hooks/useAuth";
 import Signup from "./pages/auth/Signup";
 import ForgotPassword from "./pages/auth/ForgetPassword";
@@ -14,11 +13,10 @@ import AppRoutes from "./AppRoutesConfig";
 import CreateEventPage from "./pages/events/CreateEventPage";
 import ResetPassword from "./pages/auth/ResetPassword";
 
-
 function AppContent() {
     const {isAuthenticated} = useAuth();
     const makeProtected = (element) => {
-        return isAuthenticated ? element : <Navigate to={AppRoutes.LOGIN} replace />;
+        return isAuthenticated ? element : <Navigate to={AppRoutes.LOGIN} replace/>;
     };
 
     return (
@@ -28,32 +26,31 @@ function AppContent() {
                 <Routes>
                     {/* User Routes */}
 
-                    <Route path={AppRoutes.LOGIN} element={<Login />} />
-                    <Route path={AppRoutes.SIGNUP} element={<Signup />} />
-                    <Route path={AppRoutes.FORGOT_PASSWORD} element={<ForgotPassword />} />
-                    <Route path={AppRoutes.VERIFY_EMAIL} element={<VerifyEmail />} />
-                    <Route path={AppRoutes.RESET_PASSWORD} element={<ResetPassword />} />
+                    <Route path={AppRoutes.LOGIN} element={<Login/>}/>
+                    <Route path={AppRoutes.SIGNUP} element={<Signup/>}/>
+                    <Route path={AppRoutes.FORGOT_PASSWORD} element={<ForgotPassword/>}/>
+                    <Route path={AppRoutes.VERIFY_EMAIL} element={<VerifyEmail/>}/>
+                    <Route path={AppRoutes.RESET_PASSWORD} element={<ResetPassword/>}/>
 
 
                     {/* Events Routes */}
                     <Route
                         path={AppRoutes.HOME}
-                        element={makeProtected(<EventHomePage />)}
+                        element={makeProtected(<EventHomePage/>)}
                     />
                     <Route
                         path={AppRoutes.EVENT_DETAILS}
-                        element={isAuthenticated ? <EventDetailsPage /> : <Navigate to={AppRoutes.LOGIN} />}
+                        element={isAuthenticated ? <EventDetailsPage/> : <Navigate to={AppRoutes.LOGIN}/>}
                     />
                     <Route
                         path={AppRoutes.CREATE_EVENT}
-                        element={isAuthenticated ? <CreateEventPage /> : <Navigate to={AppRoutes.LOGIN} />}
+                        element={isAuthenticated ? <CreateEventPage/> : <Navigate to={AppRoutes.LOGIN}/>}
                     />
-
 
 
                     <Route
                         path={AppRoutes.SETTINGS}
-                        element={isAuthenticated ? <Settings /> : <Navigate to={AppRoutes.LOGIN} />}
+                        element={isAuthenticated ? <Settings/> : <Navigate to={AppRoutes.LOGIN}/>}
                     />
                 </Routes>
             </main>

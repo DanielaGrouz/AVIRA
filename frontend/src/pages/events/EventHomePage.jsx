@@ -58,14 +58,15 @@ const EventHomePage = () => {
             <div className="events-grid">
                 {events.map(event => (
                     <div
-                        key={event.id}
+                        key={event.eventId}
                         className="event-card"
-                        onClick={() => navigate(AppRoutes.getEventDetails(event.id))}
+                        onClick={() => navigate(AppRoutes.getEventDetails(event.eventId))}
                     >
-                        <h2 className="event-title">{event.title || event.name || 'Untitled Event'}</h2>
+                        <h2 className="event-title">{event.title}</h2>
+                        <p className="event-detail">event Type: {event.eventType}</p>
+                        <p className="event-detail">Number of Guests: {event.guestsCount}</p>
                         <p className="event-detail">Date: {event.date || 'TBD'}</p>
                         <p className="event-detail">Location: {event.location || 'TBD'}</p>
-                        <span className="event-id-badge">ID: {event.id}</span>
                     </div>
                 ))}
             </div>
