@@ -1,4 +1,3 @@
-// components/ModernTable.js
 import React from 'react';
 import {
     flexRender,
@@ -10,7 +9,7 @@ export default function Table({
                                   data,
                                   columns,
                                   pageCount = -1,
-                                  pagination = { pageIndex: 0, pageSize: 10 }, // <-- ערך ברירת מחדל שמונע את הקריסה
+                                  pagination = { pageIndex: 0, pageSize: 10 },
                                   setPagination
                               }) {
     const table = useReactTable({
@@ -58,7 +57,6 @@ export default function Table({
                 </table>
             </div>
 
-            {/* מרנדר את הפגנציה הפנימית רק אם העבירו פונקציית setPagination מבחוץ */}
             {setPagination && (
                 <div className="pagination-controls">
                     <span>
