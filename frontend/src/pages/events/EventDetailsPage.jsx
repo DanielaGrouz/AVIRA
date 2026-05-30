@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import EventService from '../../services/EventService';
@@ -20,15 +20,28 @@ const EventDetailsPage = () => {
     const [guests, setGuests] = useState([]);
     const [guestPageCount, setGuestPageCount] = useState(0);
     const [guestCurrentPage, setGuestCurrentPage] = useState(1);
-    const GUEST_PAGE_SIZE = 1;
+    const GUEST_PAGE_SIZE = 10;
 
     const [tasks, setTasks] = useState([]);
     const [taskPageCount, setTaskPageCount] = useState(0);
     const [taskCurrentPage, setTaskCurrentPage] = useState(1);
-    const TASK_PAGE_SIZE = 1;
+    const TASK_PAGE_SIZE = 10;
 
+    // --- AI & Tools States ---
+    const [isResultModalOpen, setIsResultModalOpen] = useState(false);
+    const [actionResultTitle, setActionResultTitle] = useState('');
+    const [actionResultText, setActionResultText] = useState('');
+    const [actionResultData, setActionResultData] = useState(null);
+    const [actionResultImage, setActionResultImage] = useState(null);
+    const [activeAction, setActiveAction] = useState(null);
+    const [modalActionType, setModalActionType] = useState(null);
+    const [addedSuggestedTasks, setAddedSuggestedTasks] = useState(new Set());
+    const fileInputRef = useRef(null);
+
+    // --- Modal States ---
     const [isGuestModalOpen, setIsGuestModalOpen] = useState(false);
     const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
     const [editingGuestId, setEditingGuestId] = useState(null);
     const [editingTaskId, setEditingTaskId] = useState(null);
@@ -37,19 +50,7 @@ const EventDetailsPage = () => {
     const [taskData, setTaskData] = useState({ title: '', status: 'Pending', priority: 'Medium' });
     const [guestError, setGuestError] = useState('');
 
-    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState(null);
-
-    // --- Delete Handlers ---
-    const promptDeleteGuest = (guestId) => {
-        setItemToDelete({ id: guestId, type: 'guest'});
-        setIsDeleteModalOpen(true);
-    };
-
-    const promptDeleteTask = (taskId) => {
-        setItemToDelete({ id: taskId, type: 'task' });
-        setIsDeleteModalOpen(true);
-    };
 
     // --- Fetchers ---
     useEffect(() => {
@@ -62,7 +63,7 @@ const EventDetailsPage = () => {
             }
         };
         fetchEvent();
-    }, [id]);
+    }, [id, navigate]);
 
     const fetchGuests = async () => {
         try {
@@ -90,6 +91,111 @@ const EventDetailsPage = () => {
 
     useEffect(() => { fetchGuests(); }, [id, guestCurrentPage]);
     useEffect(() => { fetchTasks(); }, [id, taskCurrentPage]);
+
+    // --- Smart Actions Handlers ---
+    const handleSmartAction = async (actionType, title) => {
+        setActiveAction(actionType);
+        setActionResultImage(null);
+        setActionResultText('');
+        setActionResultData(null);
+        setAddedSuggestedTasks(new Set());
+
+        try {
+            let res;
+            if (actionType === 'invite') {
+                res = await EventService.generateInvite(id);
+                const imageUrl = URL.createObjectURL(res.data);
+                setActionResultImage(imageUrl);
+                setActionResultTitle(title);
+                setIsResultModalOpen(true);
+                return;
+            }
+            else if (actionType === 'shopping') res = await EventService.generateShoppingList(id);
+            else if (actionType === 'tasks') res = await EventService.generateTaskList(id);
+            else if (actionType === 'stores') {
+                const location = eventDetails?.location || 'Israel';
+                res = await EventService.findStores(id, location);
+            }
+
+            let resultData = res.data?.data || res.data;
+
+            if (typeof resultData === 'string' && resultData.trim().startsWith('[')) {
+                try { resultData = JSON.parse(resultData); } catch (e) {}
+            }
+
+            setActionResultData(resultData);
+            setActionResultText(typeof resultData === 'object' ? JSON.stringify(resultData, null, 2) : resultData);
+            setActionResultTitle(title);
+            setModalActionType(actionType);
+            setIsResultModalOpen(true);
+
+        } catch (error) {
+            console.error(`Error with ${actionType}:`, error);
+            setActionResultTitle("Error");
+            setActionResultText("Failed to execute this action. Please try again.");
+            setIsResultModalOpen(true);
+        } finally {
+            setActiveAction(null);
+        }
+    };
+
+    // פונקציה חכמה שמוסיפה גם משימה רגילה וגם פריט קניות בתור משימה
+    const handleAddSuggestedTask = async (itemObj, index, isShopping = false) => {
+        try {
+            let titleStr = "New Task";
+
+            // במידה וזה פריט קניות נרכיב כותרת כמו: Buy Orange Juice (0.25 liters)
+            if (isShopping) {
+                const qtyUnit = [itemObj.quantity, itemObj.unit].filter(Boolean).join(' ');
+                titleStr = qtyUnit ? `Buy ${itemObj.item} (${qtyUnit})` : `Buy ${itemObj.item}`;
+            } else {
+                titleStr = itemObj.task || itemObj.title || "New Task";
+            }
+
+            const payload = {
+                eventId: id,
+                title: titleStr,
+                status: 'Pending',
+                priority: 'Medium'
+            };
+
+            await EventService.addTask(payload);
+            fetchTasks();
+            setAddedSuggestedTasks(prev => new Set(prev).add(index));
+        } catch (error) {
+            console.error("Failed to add suggested item as task", error);
+        }
+    };
+
+    const handleUploadClick = () => {
+        fileInputRef.current.click();
+    };
+
+    const handleFileChange = async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        setActiveAction('upload');
+        try {
+            await EventService.saveInvitation(id, file);
+            const res = await EventService.getById(id);
+            setEventDetails(res.data.data);
+
+            setActionResultTitle("Success");
+            setActionResultText("Invitation uploaded and saved successfully!");
+            setActionResultImage(null);
+            setModalActionType('upload');
+            setIsResultModalOpen(true);
+        } catch (error) {
+            console.error("Error uploading invitation", error);
+            setActionResultTitle("Error");
+            setActionResultText("Failed to upload invitation.");
+            setIsResultModalOpen(true);
+        } finally {
+            setActiveAction(null);
+            event.target.value = null;
+        }
+    };
 
     // --- Open Modal Handlers ---
     const openAddGuestModal = () => {
@@ -174,6 +280,16 @@ const EventDetailsPage = () => {
         }
     };
 
+    const promptDeleteGuest = (guestId) => {
+        setItemToDelete({ id: guestId, type: 'guest'});
+        setIsDeleteModalOpen(true);
+    };
+
+    const promptDeleteTask = (taskId) => {
+        setItemToDelete({ id: taskId, type: 'task' });
+        setIsDeleteModalOpen(true);
+    };
+
     const executeDelete = async () => {
         if (!itemToDelete) return;
 
@@ -214,13 +330,11 @@ const EventDetailsPage = () => {
             header: '',
             cell: ({ row }) => {
                 const isManager = row.original.role?.toUpperCase() === 'MANAGER';
-
                 return (
                     <div className="actions-cell">
                         <button onClick={() => openEditGuestModal(row.original)} className="icon-btn edit-btn" title="Edit Guest">
                             <FaEdit />
                         </button>
-
                         {!isManager && (
                             <button onClick={() => promptDeleteGuest(row.original.guestId)} className="icon-btn delete-btn" title="Delete Guest">
                                 <FaTrash />
@@ -263,6 +377,58 @@ const EventDetailsPage = () => {
             <div className="details-header">
                 <h1 className="details-title">{eventDetails.name}</h1>
                 <p className="details-description">{eventDetails.description}</p>
+            </div>
+
+            {/* --- Smart Actions / Event Tools Section --- */}
+            <div className="event-tools-section">
+                <div className="event-tools-buttons">
+                    <button
+                        className={`tool-btn outline-btn ${activeAction === 'invite' ? 'loading-action' : ''}`}
+                        onClick={() => handleSmartAction('invite', 'Generated Invitation')}
+                        disabled={activeAction !== null}
+                    >
+                        ✨ {activeAction === 'invite' ? 'Generating...' : 'Generate Invite'}
+                    </button>
+
+                    <button
+                        className={`tool-btn outline-btn ${activeAction === 'shopping' ? 'loading-action' : ''}`}
+                        onClick={() => handleSmartAction('shopping', 'Shopping List')}
+                        disabled={activeAction !== null}
+                    >
+                        🛒 {activeAction === 'shopping' ? 'Generating...' : 'Shopping List'}
+                    </button>
+
+                    <button
+                        className={`tool-btn outline-btn ${activeAction === 'tasks' ? 'loading-action' : ''}`}
+                        onClick={() => handleSmartAction('tasks', 'Generated Tasks')}
+                        disabled={activeAction !== null}
+                    >
+                        📋 {activeAction === 'tasks' ? 'Generating...' : 'Generate Tasks'}
+                    </button>
+
+                    <button
+                        className={`tool-btn outline-btn ${activeAction === 'stores' ? 'loading-action' : ''}`}
+                        onClick={() => handleSmartAction('stores', 'Nearby Stores')}
+                        disabled={activeAction !== null}
+                    >
+                        📍 {activeAction === 'stores' ? 'Searching...' : 'Find Stores'}
+                    </button>
+
+                    <button
+                        className={`tool-btn primary-btn ${activeAction === 'upload' ? 'loading-action' : ''}`}
+                        onClick={handleUploadClick}
+                        disabled={activeAction !== null}
+                    >
+                        📤 {activeAction === 'upload' ? 'Uploading...' : 'Save Invitation'}
+                    </button>
+                    <input
+                        type="file"
+                        ref={fileInputRef}
+                        style={{ display: 'none' }}
+                        onChange={handleFileChange}
+                        accept="image/*"
+                    />
+                </div>
             </div>
 
             <div className="tables-layout">
@@ -309,7 +475,9 @@ const EventDetailsPage = () => {
                 </div>
             </div>
 
-            <Modal isOpen={isGuestModalOpen} onClose={() => setIsGuestModalOpen(false)} title={editingGuestId ? "Edit Guest" : "Edit Guest"}>
+            {/* --- Modals --- */}
+
+            <Modal isOpen={isGuestModalOpen} onClose={() => setIsGuestModalOpen(false)} title={editingGuestId ? "Edit Guest" : "Add Guest"}>
                 <form onSubmit={handleSaveGuest}>
                     <div className="modal-body">
                         {guestError && (
@@ -427,21 +595,83 @@ const EventDetailsPage = () => {
                     </p>
                 </div>
                 <div className="modal-footer">
-                    <Button
-                        variant="text"
-                        onClick={() => {
-                            setIsDeleteModalOpen(false);
-                            setItemToDelete(null);
-                        }}
-                    >
-                        Cancel
-                    </Button>
+                    <Button variant="text" onClick={() => { setIsDeleteModalOpen(false); setItemToDelete(null); }}>Cancel</Button>
+                    <Button variant="danger" onClick={executeDelete}>Yes, Delete</Button>
+                </div>
+            </Modal>
 
-                    <Button
-                        variant="danger"
-                        onClick={executeDelete}
+            {/* --- AI/Tools Result Modal --- */}
+            <Modal
+                isOpen={isResultModalOpen}
+                onClose={() => setIsResultModalOpen(false)}
+                title={actionResultTitle}
+            >
+                <div className="modal-body">
+                    <div
+                        className="result-content-box"
+                        style={actionResultImage || modalActionType === 'tasks' || modalActionType === 'shopping' ? { backgroundColor: 'transparent', border: 'none', padding: 0 } : {}}
                     >
-                        Yes, Delete
+
+                        {/* 1. תמונה להזמנה */}
+                        {actionResultImage ? (
+                                <div style={{ textAlign: 'center' }}>
+                                    <img src={actionResultImage} alt="Generated Invite" style={{ maxWidth: '100%', maxHeight: '60vh', borderRadius: '8px', objectFit: 'contain' }} />
+                                </div>
+                            )
+
+                            /* 2. רשימת משימות או קניות - רינדור כרטיסיות עם כפתור +Add */
+                            : (modalActionType === 'tasks' || modalActionType === 'shopping') && Array.isArray(actionResultData) ? (
+                                    <div className="suggested-items-container">
+                                        {actionResultData.map((item, index) => {
+                                            const isShopping = modalActionType === 'shopping';
+
+                                            // התאמת הכיתוב הראשי לפי סוג החלון
+                                            const mainText = isShopping ? item.item : (item.task || item.title || "New Task");
+
+                                            // התאמת טקסט עזר (ימים לפני למשימה, וכמות+יחידה לקניות)
+                                            const subText = isShopping
+                                                ? [item.quantity, item.unit].filter(Boolean).join(' ')
+                                                : (item.daysBefore !== undefined ? `${item.daysBefore} days before` : '');
+
+                                            return (
+                                                <div key={index} className="suggested-item-card">
+                                                    <div className="suggested-item-info">
+                                                        <strong>{mainText}</strong>
+                                                        {subText && (
+                                                            <span className="suggested-item-meta">{subText}</span>
+                                                        )}
+                                                    </div>
+                                                    <Button
+                                                        variant={addedSuggestedTasks.has(index) ? "success" : "primary"}
+                                                        onClick={() => handleAddSuggestedTask(item, index, isShopping)}
+                                                        disabled={addedSuggestedTasks.has(index)}
+                                                        style={{ minWidth: '90px' }}
+                                                    >
+                                                        {addedSuggestedTasks.has(index) ? "Added ✓" : "+ Add"}
+                                                    </Button>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                )
+
+                                /* 3. טקסט גולמי / JSON סטנדרטי למצבים אחרים (למשל מציאת חנויות) */
+                                : (
+                                    <div style={{ padding: '1.25rem', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', whiteSpace: 'pre-wrap' }}>
+                                        {actionResultText}
+                                    </div>
+                                )}
+
+                    </div>
+                </div>
+                <div className="modal-footer">
+                    {actionResultImage && (
+                        <a href={actionResultImage} download={`invitation_${id}.png`} style={{ textDecoration: 'none' }}>
+                            <Button variant="success" type="button">Download Image</Button>
+                        </a>
+                    )}
+                    <Button variant="text" onClick={() => setIsResultModalOpen(false)}>
+                        Close
                     </Button>
                 </div>
             </Modal>
