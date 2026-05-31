@@ -21,7 +21,7 @@ const ActionResultModal = ({ isOpen, onClose, modalState, eventId, onEventUpdate
         try {
             const file = new File([blob], `generated_invite_${eventId}.png`, { type: 'image/png' });
             await EventService.saveInvitation(eventId, file);
-            await onEventUpdate(); // Refresh the parent page data
+            if (onEventUpdate) await onEventUpdate(); // Refresh the parent page data
             handleClose();
         } catch (error) {
             console.error("Failed to save generated invite", error);
@@ -44,6 +44,10 @@ const ActionResultModal = ({ isOpen, onClose, modalState, eventId, onEventUpdate
             const payload = { eventId, title: titleStr, status: 'Pending', priority: 'Medium' };
             await EventService.addTask(payload);
             setAddedSuggestedTasks(prev => new Set(prev).add(index));
+
+            if (onEventUpdate) {
+                await onEventUpdate();
+            }
         } catch (error) {
             console.error("Failed to add suggested item as task", error);
         }

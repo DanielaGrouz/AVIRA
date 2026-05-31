@@ -5,19 +5,6 @@ class EventService {
         this.route = '/events';
     }
 
-    // --- Filtered Retrieval ---
-    getByCreator(creatorId) {
-        return apiClient.get(`${this.route}/creator/${creatorId}`);
-    }
-
-    getByGuestName(name) {
-        return apiClient.get(`${this.route}/guest/name/${name}`);
-    }
-
-    getByGuestPhone(phone) {
-        return apiClient.get(`${this.route}/guest/phone/${phone}`);
-    }
-
     // --- Standard CRUD ---
     getAll(page, sortBy, searchQuery, limit) {
         return apiClient.get(this.route, { params: { page, sortBy, searchQuery, limit } });

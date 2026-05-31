@@ -13,6 +13,7 @@ const EventDetailsPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [eventDetails, setEventDetails] = useState(null);
+    const [refreshKey, setRefreshKey] = useState(0);
 
     // Fetch core event details
     const fetchEvent = async () => {
@@ -28,6 +29,11 @@ const EventDetailsPage = () => {
         fetchEvent();
     }, [id, navigate]);
 
+    const handleEventUpdate = async () => {
+        await fetchEvent();
+        setRefreshKey(prevKey => prevKey + 1);
+    };
+
     if (!eventDetails) return <div className="loading-state">Loading Event Details...</div>;
 
     return (
@@ -41,12 +47,12 @@ const EventDetailsPage = () => {
             <EventSmartActions
                 eventId={id}
                 eventLocation={eventDetails?.location}
-                onEventUpdate={fetchEvent}
+                onEventUpdate={handleEventUpdate}
             />
 
             <div className="tables-layout">
                 <GuestManager eventId={id} />
-                <TaskManager eventId={id} />
+                <TaskManager eventId={id} key={`task-manager-${refreshKey}`} />
             </div>
         </div>
     );
