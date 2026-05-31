@@ -110,7 +110,7 @@ export default function Table({
                         ) : (
                             <tr>
                                 <td colSpan={columns.length} className="empty-state">
-                                    No results found.
+                                    No Results found.
                                 </td>
                             </tr>
                         )}
