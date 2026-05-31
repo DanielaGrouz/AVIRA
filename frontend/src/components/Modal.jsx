@@ -2,20 +2,6 @@ import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import '../styles/components/Modal.css';
 
-/**
- * AVIRA Modal
- *
- * Renders via React Portal directly into document.body — this is the ONLY
- * reliable way to guarantee `position: fixed` works correctly when any
- * ancestor has `transform`, `filter`, `backdrop-filter`, `will-change`,
- * or `animation` applied (all of which create new stacking contexts and
- * break fixed positioning).
- *
- * Usage:
- *   <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="Edit Guest">
- *     <p>Modal body content here</p>
- *   </Modal>
- */
 export default function Modal({ isOpen, onClose, title, children, footer }) {
     // Lock body scroll while modal is open
     useEffect(() => {

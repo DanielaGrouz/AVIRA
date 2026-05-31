@@ -8,7 +8,6 @@ import '../styles/Navbar.css';
 export default function Navbar() {
     const { user, forgetUser } = useAuth();
 
-    console.log(user)
     // Helper function to handle the active class neatly
     const getLinkClass = ({ isActive }) => isActive ? "nav-link active" : "nav-link";
 
