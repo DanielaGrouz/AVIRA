@@ -431,16 +431,20 @@ const generateTaskList = async (req, res) => {
 
 const findStores = async (req, res) => {
     try {
-        // Validate that location exists in the request body
-        if (!req.body || !req.body.location) {
+        if (!req.query.lat || !req.query.lon) {
             return res.status(400).json({
                 success: false,
                 data: null,
-                error: { code: "BAD_REQUEST", message: "Location is required", details: {} }
+                error: { code: "BAD_REQUEST", message: "Location (lat and lon) is required", details: {} }
             });
         }
 
-        const storesList = await eventService.findRelevantStores(req.body.location, parseInt(req.params.id));
+        const locationObj = {
+            lat: parseFloat(req.query.lat),
+            lon: parseFloat(req.query.lon)
+        };
+
+        const storesList = await eventService.findRelevantStores(locationObj, parseInt(req.params.id));
 
         if (storesList && storesList.length > 0) {
             res.status(200).json({ success: true, data: storesList, error: null });

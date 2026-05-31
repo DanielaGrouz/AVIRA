@@ -119,15 +119,17 @@ const parseLLMJSON = (str) => {
 
 async function getStoresForEvent(currLocation, tasksList) {
     const { lat, lon } = currLocation;
-    // console.log(lat, lon);
-    const radius = 2500; // Search within a 2.5km radius
+    const radius = 2500; // 2.5km
 
     try {
+        console.log(`--- Starting Store Search for ${tasksList.length} tasks ---`);
+
         const extractionPrompt = `
       You are an event management routing assistant.
       Given this list of tasks: ${JSON.stringify(tasksList)}
       Identify the types of physical stores needed.
-      Return ONLY a raw JSON array of strings matching standard OpenStreetMap "shop" or "amenity" tags (e.g., ["bakery", "florist", "supermarket", "wine"]).
+      Return ONLY a raw JSON array of strings.
+      CRITICAL: You must ONLY use valid standard OpenStreetMap values for the "shop" key (e.g., "bakery", "supermarket", "florist", "party", "alcohol", "butcher", "convenience", "clothes", "gift").
       Do not include any extra text.
     `;
 
@@ -138,8 +140,13 @@ async function getStoresForEvent(currLocation, tasksList) {
         });
 
         const storeTypes = parseLLMJSON(groqResponse1.choices[0]?.message?.content);
+        console.log("1. LLM Extracted Store Types:", storeTypes); // דוגם מה ה-LLM החליט
 
-        if (!storeTypes || storeTypes.length === 0) return [];
+        if (!storeTypes || storeTypes.length === 0) {
+            console.log("Stop: LLM returned no store types.");
+            return [];
+        }
+
         let overpassQuery = `[out:json][timeout:25];\n(\n`;
         storeTypes.forEach(type => {
             overpassQuery += `  nwr["shop"="${type}"](around:${radius},${lat},${lon});\n`;
@@ -148,9 +155,9 @@ async function getStoresForEvent(currLocation, tasksList) {
         overpassQuery += `);\nout center;`;
 
         const overpassEndpoints = [
-            'https://overpass-api.de/api/interpreter',       // Main server
-            'https://overpass.kumi.systems/api/interpreter', // Kumi Systems (Often very fast)
-            'https://overpass.openstreetmap.fr/api/interpreter' // French server
+            'https://overpass-api.de/api/interpreter',
+            'https://overpass.kumi.systems/api/interpreter',
+            'https://overpass.openstreetmap.fr/api/interpreter'
         ];
 
         let osmResponse = null;
@@ -158,7 +165,7 @@ async function getStoresForEvent(currLocation, tasksList) {
 
         for (const url of overpassEndpoints) {
             try {
-                console.log(`Querying Overpass server: ${url}`);
+                // הורדתי את ההדפסה של ה-URL כדי לא להספים, אבל אפשר להחזיר
                 osmResponse = await axios.post(
                     url,
                     `data=${encodeURIComponent(overpassQuery)}`,
@@ -174,29 +181,35 @@ async function getStoresForEvent(currLocation, tasksList) {
 
                 serverSuccess = true;
                 break;
-
             } catch (error) {
-                console.warn(`Server ${url} failed or timed out. Trying the next one...`);
+                console.warn(`Server ${url} failed...`);
             }
         }
 
         if (!serverSuccess || !osmResponse) {
-            console.error("All Overpass servers are currently overloaded.");
+            console.error("All Overpass servers failed.");
             return [];
         }
 
-        // Clean up the OSM data
+        console.log(`2. Overpass API found ${osmResponse.data.elements.length} raw elements.`); // כמה תוצאות גולמיות חזרו
+
+        // Clean up the OSM data (Improved name checking)
         const candidatePlaces = osmResponse.data.elements
-            .filter(el => el.tags && el.tags.name)
+            .filter(el => el.tags && (el.tags.name || el.tags['name:he'] || el.tags['name:en'])) // שיפור: תופס גם שמות בעברית/אנגלית
             .map(el => ({
-                name: el.tags.name,
+                name: el.tags.name || el.tags['name:he'] || el.tags['name:en'] || 'Unnamed Store',
                 category: el.tags.shop || el.tags.amenity,
                 lat: el.lat || el.center?.lat,
                 lon: el.lon || el.center?.lon,
                 address: el.tags['addr:street'] ? `${el.tags['addr:street']} ${el.tags['addr:housenumber'] || ''}`.trim() : 'Address not listed'
             }));
 
-        if (candidatePlaces.length === 0) return [];
+        console.log(`3. Filtered Candidate Places (with names): ${candidatePlaces.length}`);
+
+        if (candidatePlaces.length === 0) {
+            console.log("Stop: No candidate places found in the radius with names.");
+            return [];
+        }
 
         const filteringPrompt = `
       Event tasks: ${JSON.stringify(tasksList)}
@@ -205,6 +218,7 @@ async function getStoresForEvent(currLocation, tasksList) {
       Map the best available stores to the specific tasks. Filter out irrelevant stores.
       Return ONLY a raw JSON array of objects with this format: 
       [{"task": "Buy a 3-tier cake", "storeName": "Sweet Treats Bakery","lat": "...", "lon":"..." ,"address": "...", "reason": "Matches the bakery requirement"}]
+      If no stores match a task, do not include that task.
     `;
 
         const groqResponse2 = await groq.chat.completions.create({
@@ -213,13 +227,15 @@ async function getStoresForEvent(currLocation, tasksList) {
             temperature: 0.2,
         });
 
-        return parseLLMJSON(groqResponse2.choices[0]?.message?.content);
+        const finalMapping = parseLLMJSON(groqResponse2.choices[0]?.message?.content);
+        console.log(`4. Final mapped tasks to stores: ${finalMapping ? finalMapping.length : 0}`);
+
+        return finalMapping || [];
 
     } catch (error) {
         console.error("Failed to fetch event stores:", error);
         throw error;
     }
 }
-
 
 module.exports = { getHumanInvite, getSupermarketList, getEventTaskList, getStoresForEvent };

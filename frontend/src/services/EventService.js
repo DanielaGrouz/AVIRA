@@ -87,7 +87,12 @@ class EventService {
     }
 
     findStores(location, eventId) {
-        return apiClient.get(`${this.route}/${eventId}/find-stores`, { location });
+        return apiClient.get(`${this.route}/${eventId}/find-stores`, {
+            params: {
+                lat: location.lat,
+                lon: location.lon
+            }
+        });
     }
 
     saveInvitation(eventId, file) {

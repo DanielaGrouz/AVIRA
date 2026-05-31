@@ -295,6 +295,7 @@ const findRelevantStores = async (currLocation, eventId) => {
     let tasksList = tasks.filter(task => task.eventId === eventId);
     if (tasksList.length === 0) throw new Error("TASKS_LIST_IS_EMPTY");
     tasksList = tasksList.map(task => task.title);
+    console.log(`curr location is : ${JSON.stringify(currLocation)}`)
     return getStoresForEvent(currLocation, tasksList);
 }
 

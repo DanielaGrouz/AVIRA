@@ -20,7 +20,9 @@ const EventSmartActions = ({ eventId, onEventUpdate }) => {
                         lat: position.coords.latitude,
                         lon: position.coords.longitude
                     };
+
                     try {
+                        console.log(`curr location is: ${JSON.stringify(userLocation)}`);
                         const response = await EventService.findStores(userLocation, eventId);
                         resolve(response);
                     } catch (err) {
