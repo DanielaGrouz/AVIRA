@@ -22,7 +22,6 @@ const EventSmartActions = ({ eventId, onEventUpdate }) => {
                     };
 
                     try {
-                        console.log(`curr location is: ${JSON.stringify(userLocation)}`);
                         const response = await EventService.findStores(userLocation, eventId);
                         resolve(response);
                     } catch (err) {
@@ -66,11 +65,14 @@ const EventSmartActions = ({ eventId, onEventUpdate }) => {
             }
         } catch (error) {
             console.error("Action failed:", error);
-            if (type === 'invite') {
-                setModalState({ isOpen: true, type: 'error', title: 'Error', text: 'You have reached your daily quota.' });
-            } else {
-                setModalState({ isOpen: true, type: 'error', title: 'Error', text: 'You have reached your daily quota.' });
-            }
+
+            // חילוץ הודעת השגיאה מהשרת, ואם היא לא קיימת נציג הודעת גיבוי
+            const errorMessage = error.response?.data?.error?.message
+                || error.response?.data?.message
+                || error.message
+                || 'An unexpected error occurred. Please try again.';
+
+            setModalState({ isOpen: true, type: 'error', title: 'Action Failed', text: errorMessage });
         } finally {
             setActiveAction(null);
         }

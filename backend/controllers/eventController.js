@@ -446,17 +446,10 @@ const findStores = async (req, res) => {
 
         const storesList = await eventService.findRelevantStores(locationObj, parseInt(req.params.id));
 
-        if (storesList && storesList.length > 0) {
-            res.status(200).json({ success: true, data: storesList, error: null });
-        } else {
-            res.status(404).json({
-                success: false,
-                data: null,
-                error: { code: "NOT_FOUND", message: "No relevant stores found for this location", details: {} }
-            });
-        }
+        res.status(200).json({ success: true, data: storesList, error: null });
+
     } catch (error) {
-        console.error("Error in findStores:", error);
+        console.error("Error in findStores:", error.message);
 
         if (error.message === "EVENT_NOT_FOUND") {
             return res.status(404).json({
@@ -470,6 +463,21 @@ const findStores = async (req, res) => {
                 success: false,
                 data: null,
                 error: { code: "BAD_REQUEST", message: "Task list was not generated yet", details: {} }
+            });
+        }
+
+        const mapErrors = [
+            "We couldn't identify the types of stores needed for your tasks.",
+            "Map services are temporarily unavailable. Please try again later.",
+            "No relevant stores were found within a 2.5km radius of your location.",
+            "Stores were found nearby, but none matched your specific event tasks."
+        ];
+
+        if (mapErrors.includes(error.message)) {
+            return res.status(404).json({
+                success: false,
+                data: null,
+                error: { code: "NOT_FOUND", message: error.message, details: {} }
             });
         }
 

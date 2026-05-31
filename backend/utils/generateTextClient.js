@@ -140,11 +140,11 @@ async function getStoresForEvent(currLocation, tasksList) {
         });
 
         const storeTypes = parseLLMJSON(groqResponse1.choices[0]?.message?.content);
-        console.log("1. LLM Extracted Store Types:", storeTypes); // דוגם מה ה-LLM החליט
+        console.log("1. LLM Extracted Store Types:", storeTypes);
 
         if (!storeTypes || storeTypes.length === 0) {
             console.log("Stop: LLM returned no store types.");
-            return [];
+            throw new Error("We couldn't identify the types of stores needed for your tasks.");
         }
 
         let overpassQuery = `[out:json][timeout:25];\n(\n`;
@@ -165,7 +165,6 @@ async function getStoresForEvent(currLocation, tasksList) {
 
         for (const url of overpassEndpoints) {
             try {
-                // הורדתי את ההדפסה של ה-URL כדי לא להספים, אבל אפשר להחזיר
                 osmResponse = await axios.post(
                     url,
                     `data=${encodeURIComponent(overpassQuery)}`,
@@ -188,14 +187,15 @@ async function getStoresForEvent(currLocation, tasksList) {
 
         if (!serverSuccess || !osmResponse) {
             console.error("All Overpass servers failed.");
-            return [];
+            throw new Error("Map services are temporarily unavailable. Please try again later.");
         }
 
-        console.log(`2. Overpass API found ${osmResponse.data.elements.length} raw elements.`); // כמה תוצאות גולמיות חזרו
+        const rawElementsCount = osmResponse.data.elements?.length || 0;
+        console.log(`2. Overpass API found ${rawElementsCount} raw elements.`);
 
         // Clean up the OSM data (Improved name checking)
         const candidatePlaces = osmResponse.data.elements
-            .filter(el => el.tags && (el.tags.name || el.tags['name:he'] || el.tags['name:en'])) // שיפור: תופס גם שמות בעברית/אנגלית
+            .filter(el => el.tags && (el.tags.name || el.tags['name:he'] || el.tags['name:en']))
             .map(el => ({
                 name: el.tags.name || el.tags['name:he'] || el.tags['name:en'] || 'Unnamed Store',
                 category: el.tags.shop || el.tags.amenity,
@@ -208,7 +208,7 @@ async function getStoresForEvent(currLocation, tasksList) {
 
         if (candidatePlaces.length === 0) {
             console.log("Stop: No candidate places found in the radius with names.");
-            return [];
+            throw new Error("No relevant stores were found within a 2.5km radius of your location.");
         }
 
         const filteringPrompt = `
@@ -230,10 +230,14 @@ async function getStoresForEvent(currLocation, tasksList) {
         const finalMapping = parseLLMJSON(groqResponse2.choices[0]?.message?.content);
         console.log(`4. Final mapped tasks to stores: ${finalMapping ? finalMapping.length : 0}`);
 
-        return finalMapping || [];
+        if (!finalMapping || finalMapping.length === 0) {
+            throw new Error("Stores were found nearby, but none matched your specific event tasks.");
+        }
+
+        return finalMapping;
 
     } catch (error) {
-        console.error("Failed to fetch event stores:", error);
+        console.error("Failed to fetch event stores:", error.message);
         throw error;
     }
 }

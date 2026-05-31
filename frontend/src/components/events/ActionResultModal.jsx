@@ -21,7 +21,7 @@ const ActionResultModal = ({ isOpen, onClose, modalState, eventId, onEventUpdate
         try {
             const file = new File([blob], `generated_invite_${eventId}.png`, { type: 'image/png' });
             await EventService.saveInvitation(eventId, file);
-            if (onEventUpdate) await onEventUpdate(); // Refresh the parent page data
+            if (onEventUpdate) await onEventUpdate();
             handleClose();
         } catch (error) {
             console.error("Failed to save generated invite", error);
@@ -58,7 +58,7 @@ const ActionResultModal = ({ isOpen, onClose, modalState, eventId, onEventUpdate
             <div className="modal-body">
                 <div
                     className="result-content-box"
-                    style={(image || type === 'tasks' || type === 'shopping') ? { backgroundColor: 'transparent', border: 'none', padding: 0 } : {}}
+                    style={(image || type === 'tasks' || type === 'shopping' || type === 'stores') ? { backgroundColor: 'transparent', border: 'none', padding: 0 } : {}}
                 >
                     {/* 1. Image Render */}
                     {image ? (
@@ -67,42 +67,101 @@ const ActionResultModal = ({ isOpen, onClose, modalState, eventId, onEventUpdate
                             </div>
                         )
 
-                        /* 2. Tasks / Shopping Lists Render */
-                        : (type === 'tasks' || type === 'shopping') && Array.isArray(data) ? (
-                                <div className="suggested-items-container">
-                                    {data.map((item, index) => {
-                                        const isShopping = type === 'shopping';
-                                        const mainText = isShopping ? item.item : (item.task || item.title || "New Task");
-                                        const subText = isShopping
-                                            ? [item.quantity, item.unit].filter(Boolean).join(' ')
-                                            : (item.daysBefore !== undefined ? `${item.daysBefore} days before` : '');
+                        /* 2. Stores Map Render (COMPACT DESIGN) */
+                        : type === 'stores' && Array.isArray(data) ? (
+                                <div className="stores-container" style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                                    {data.map((store, index) => {
+                                        // Calculate a small bounding box around the store for the OSM iframe zoom level
+                                        const sLat = parseFloat(store.lat);
+                                        const sLon = parseFloat(store.lon);
+                                        const bbox = `${sLon - 0.005},${sLat - 0.005},${sLon + 0.005},${sLat + 0.005}`;
 
                                         return (
-                                            <div key={index} className="suggested-item-card" style={{ display: 'flex', justifyContent: 'space-between', padding: '10px', borderBottom: '1px solid #eee' }}>
-                                                <div className="suggested-item-info">
-                                                    <strong>{mainText}</strong> <br/>
-                                                    {subText && <span className="suggested-item-meta" style={{ color: '#666', fontSize: '0.85em' }}>{subText}</span>}
+                                            <div key={index} className="store-card" style={{ border: '1px solid #e2e8f0', borderRadius: '12px', padding: '12px', backgroundColor: '#fff', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                                    <div>
+                                                        <h3 style={{ margin: '0 0 6px 0', color: '#1a202c', fontSize: '1.1rem' }}>🏪 {store.storeName}</h3>
+                                                        <div style={{ color: '#4a5568', fontSize: '0.9rem', lineHeight: '1.4' }}>
+                                                            <strong>For Task:</strong> <span style={{ backgroundColor: '#edf2f7', padding: '2px 6px', borderRadius: '4px' }}>{store.task}</span><br/>
+
+                                                            {store.address !== "Address not listed" && (
+                                                                <>
+                                                                    <strong>Address:</strong> {store.address}<br/>
+                                                                </>
+                                                            )}
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <Button
-                                                    variant={addedSuggestedTasks.has(index) ? "success" : "primary"}
-                                                    onClick={() => handleAddSuggestedTask(item, index, isShopping)}
-                                                    disabled={addedSuggestedTasks.has(index)}
-                                                    style={{ minWidth: '90px', height: '40px' }}
-                                                >
-                                                    {addedSuggestedTasks.has(index) ? "Added ✓" : "+ Add"}
-                                                </Button>
+
+                                                {/* OpenStreetMap Embedded Map */}
+                                                <div style={{ marginTop: '10px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0', height: '140px' }}>
+                                                    <iframe
+                                                        title={`map-${index}`}
+                                                        width="100%"
+                                                        height="100%"
+                                                        frameBorder="0"
+                                                        scrolling="no"
+                                                        marginHeight="0"
+                                                        marginWidth="0"
+                                                        src={`https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${sLat},${sLon}`}
+                                                    ></iframe>
+                                                </div>
+
+                                                {/* Google Maps Navigation Link */}
+                                                <div style={{ marginTop: '10px', textAlign: 'right' }}>
+                                                    <a
+                                                        href={`https://www.google.com/maps/dir/?api=1&destination=${sLat},${sLon}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', backgroundColor: '#3182ce', color: '#fff', padding: '6px 14px', borderRadius: '6px', textDecoration: 'none', fontSize: '0.85rem', fontWeight: '500', transition: 'background-color 0.2s' }}
+                                                        onMouseOver={(e) => e.target.style.backgroundColor = '#2b6cb0'}
+                                                        onMouseOut={(e) => e.target.style.backgroundColor = '#3182ce'}
+                                                    >
+                                                        📍 Navigate
+                                                    </a>
+                                                </div>
                                             </div>
                                         );
                                     })}
                                 </div>
                             )
 
-                            /* 3. Raw Text / Success Messages Render */
-                            : (
-                                <div style={{ padding: '1.25rem', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', whiteSpace: 'pre-wrap' }}>
-                                    {text}
-                                </div>
-                            )}
+                            /* 3. Tasks / Shopping Lists Render */
+                            : (type === 'tasks' || type === 'shopping') && Array.isArray(data) ? (
+                                    <div className="suggested-items-container">
+                                        {data.map((item, index) => {
+                                            const isShopping = type === 'shopping';
+                                            const mainText = isShopping ? item.item : (item.task || item.title || "New Task");
+                                            const subText = isShopping
+                                                ? [item.quantity, item.unit].filter(Boolean).join(' ')
+                                                : (item.daysBefore !== undefined ? `${item.daysBefore} days before` : '');
+
+                                            return (
+                                                <div key={index} className="suggested-item-card" style={{ display: 'flex', justifyContent: 'space-between', padding: '10px', borderBottom: '1px solid #eee' }}>
+                                                    <div className="suggested-item-info">
+                                                        <strong>{mainText}</strong> <br/>
+                                                        {subText && <span className="suggested-item-meta" style={{ color: '#666', fontSize: '0.85em' }}>{subText}</span>}
+                                                    </div>
+                                                    <Button
+                                                        variant={addedSuggestedTasks.has(index) ? "success" : "primary"}
+                                                        onClick={() => handleAddSuggestedTask(item, index, isShopping)}
+                                                        disabled={addedSuggestedTasks.has(index)}
+                                                        style={{ minWidth: '90px', height: '40px' }}
+                                                    >
+                                                        {addedSuggestedTasks.has(index) ? "Added ✓" : "+ Add"}
+                                                    </Button>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                )
+
+                                /* 4. Raw Text / Success Messages Render */
+                                : (
+                                    <div style={{ padding: '1.25rem', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', whiteSpace: 'pre-wrap' }}>
+                                        {text}
+                                    </div>
+                                )}
                 </div>
             </div>
 
