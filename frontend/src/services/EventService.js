@@ -52,7 +52,7 @@ class EventService {
         return apiClient.delete(`${this.route}/${eventId}/guests/${guestId}`);
     }
 
-    confirmGuestAttendance(eventId, guestId, status) {
+    updateGuestAttendance(eventId, guestId, status) {
         return apiClient.patch(`${this.route}/${eventId}/guests/${guestId}/rsvp`, { status });
     }
 

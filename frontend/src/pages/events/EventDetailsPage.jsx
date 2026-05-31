@@ -51,7 +51,7 @@ const EventDetailsPage = () => {
             />
 
             <div className="tables-layout">
-                <GuestManager eventId={id} />
+                <GuestManager eventId={id} eventDetails={eventDetails} />
                 <TaskManager eventId={id} key={`task-manager-${refreshKey}`} />
             </div>
         </div>

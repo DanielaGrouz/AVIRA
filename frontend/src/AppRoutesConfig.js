@@ -12,6 +12,11 @@ export default class AppRoutes {
 
     // Dynamic Route Definitions (used in <Route path={...} />)
     static EVENT_DETAILS = '/events/:id';
+    static RSVP = '/rsvp/:eventId/:guestId';
+
+    static getRsvpLink(eventId, guestId) {
+        return `/rsvp/${eventId}/${guestId}`;
+    }
 
     // Route Generators (used for navigation, e.g., navigate(AppRoutes.getEventDetails(5)))
     static getEventDetails(id) {

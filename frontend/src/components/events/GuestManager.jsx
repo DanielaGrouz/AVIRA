@@ -1,10 +1,9 @@
-// src/components/events/GuestManager.jsx
 import React from 'react';
 import EventService from '../../services/EventService';
 import GenericTableManager from './GenericTableManager';
 import GuestModal from './GuestModal';
 
-const GuestManager = ({ eventId }) => {
+const GuestManager = ({ eventId, eventDetails }) => {
     const columns = [
         { accessorKey: 'name', header: 'Name' },
         { accessorKey: 'phone', header: 'Phone' },
@@ -12,13 +11,58 @@ const GuestManager = ({ eventId }) => {
         {
             accessorKey: 'status',
             header: 'RSVP',
-            cell: info => (
-                <span style={{ color: info.getValue() === 'Confirmed' ? '#10b981' : '#64748b' }}>
-                    {info.getValue()}
-                </span>
-            )
+            cell: info => {
+                const status = info.getValue() || 'Pending';
+                let color = '#64748b'; // אפור לברירת מחדל (Pending)
+                if (status.toLowerCase() === 'confirmed') color = '#10b981'; // ירוק לאישור
+                if (status.toLowerCase() === 'declined' || status.toLowerCase() === 'cancelled') color = '#ef4444'; // אדום לביטול
+
+                return <span style={{ color, fontWeight: '500' }}>{status}</span>;
+            }
         }
     ];
+
+    const handleAddGuest = async (payload) => {
+        const { sendWhatsapp, ...guestData } = payload;
+
+        const response = await EventService.addGuest({ eventId, ...guestData });
+
+        const savedGuest = response.data?.data;
+
+        if (sendWhatsapp && savedGuest && savedGuest.phone) {
+            let cleanPhone = savedGuest.phone.replace(/\D/g, '');
+            if (cleanPhone.startsWith('0')) {
+                cleanPhone = '972' + cleanPhone.substring(1);
+            }
+
+            const frontendUrl = 'http://localhost:5000';
+            const rsvpLink = `${frontendUrl}/rsvp/${eventId}/${savedGuest.guestId}`;
+
+            let formattedDate = eventDetails?.date;
+            if (formattedDate && formattedDate !== 'TBD') {
+                const dateObj = new Date(formattedDate);
+                if (!isNaN(dateObj)) {
+                    formattedDate = dateObj.toLocaleDateString('en-US', {
+                        month: 'long',
+                        day: 'numeric',
+                        year: 'numeric'
+                    });
+                }
+            }
+            const eventName = eventDetails?.title || 'our event';
+            const eventDate = eventDetails?.date && eventDetails.date !== 'TBD' ? `\n📅 Date: ${formattedDate}` : '';
+            const eventTime = eventDetails?.time && eventDetails.time !== 'TBD' ? `\n⏰ Time: ${eventDetails.time}` : '';
+            const eventLocation = eventDetails?.location && eventDetails.location !== 'TBD' ? `\n📍 Location: ${eventDetails.location}` : '';
+
+            const message = encodeURIComponent(
+                `Hi ${savedGuest.name}! 🌟\nWe are excited to invite you to ${eventName}!${eventDate}${eventTime}${eventLocation}\n\nPlease let us know if you can make it by clicking the link below:\n${rsvpLink}`
+            );
+
+            window.open(`https://wa.me/${cleanPhone}?text=${message}`, '_blank');
+        }
+
+        return response;
+    };
 
     return (
         <GenericTableManager
@@ -31,7 +75,7 @@ const GuestManager = ({ eventId }) => {
             canDelete={(row) => row.role?.toUpperCase() !== 'MANAGER'}
             // API Wrappers
             fetchItems={(page, sort, search, size) => EventService.getGuests(eventId, page, sort, search, size)}
-            addItem={(payload) => EventService.addGuest({ eventId, ...payload })}
+            addItem={handleAddGuest}
             updateItem={(id, payload) => EventService.updateGuest(id, { eventId, ...payload })}
             deleteItem={(id) => EventService.deleteGuest(eventId, id)}
         />

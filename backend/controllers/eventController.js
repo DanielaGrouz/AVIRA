@@ -350,13 +350,12 @@ const updateGuestInEvent = (req, res) => {
     }
 };
 
-// Confirm guest attendance
-const confirmGuestAttendance = (req, res) => {
+const updateGuestRSVP = (req, res) => {
     try {
         const eventId = parseInt(req.params.id);
         const guestId = parseInt(req.params.guestId);
         const { status } = req.body;
-        const updatedGuest = eventService.confirmGuestAttendanceLogic(eventId, guestId, status);
+        const updatedGuest = eventService.updateGuestRSVPLogic(eventId, guestId, status);
         res.status(200).json({ success: true, data: updatedGuest, error: null });
     } catch (error) {
         if (error.message === "EVENT_NOT_FOUND" || error.message === "GUEST_NOT_FOUND_IN_EVENT" || error.message === "GUEST_NOT_FOUND") {
@@ -365,7 +364,6 @@ const confirmGuestAttendance = (req, res) => {
         res.status(500).json({ success: false, data: null, error: { code: "Internal Server Error", message: "Internal Server Error", details: {} } });
     }
 };
-
 
 
 const generateInvite = async (req, res) => {
@@ -549,5 +547,5 @@ module.exports = {
     addGuestToEvent,
     removeGuestFromEvent,
     updateGuestInEvent,
-    confirmGuestAttendance
+    updateGuestRSVP
 };

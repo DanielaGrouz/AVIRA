@@ -249,13 +249,15 @@ const updateGuestInEventLogic = (eventId, guestId, updateData) => {
     return guestService.updateGuestLogic(guestId, updateData);
 };
 
-// Confirm guest attendance
-const confirmGuestAttendanceLogic = (eventId, guestId, rsvpStatus) => {
+// update guest attendance
+const updateGuestRSVPLogic = (eventId, guestId, rsvpStatus) => {
     const eventIndex = events.findIndex(e => e.eventId === eventId);
     if (eventIndex === -1) throw new Error("EVENT_NOT_FOUND");
     const guest = guestService.getGuestByIdLogic(guestId);
     if (!guest || guest.eventId !== eventId) throw new Error("GUEST_NOT_FOUND_IN_EVENT");
-    // Update only the status field
+    if (!['Confirmed', 'Cancelled'].includes(rsvpStatus)) {
+        return res.status(400).json({ error: "Invalid status" });
+    }
     return guestService.updateGuestLogic(guestId, { status: rsvpStatus });
 };
 
@@ -321,5 +323,5 @@ module.exports = {
     addGuestToEventLogic,
     removeGuestFromEventLogic,
     updateGuestInEventLogic,
-    confirmGuestAttendanceLogic
+    updateGuestRSVPLogic
 };

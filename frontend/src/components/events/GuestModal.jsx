@@ -6,10 +6,12 @@ import CustomSelect from '../CustomSelect';
 const GuestModal = ({ isOpen, onClose, onSave, initialData, isEditing }) => {
     const [formData, setFormData] = useState(initialData);
     const [error, setError] = useState('');
+    const [sendWhatsapp, setSendWhatsapp] = useState(true);
 
     useEffect(() => {
         setFormData(initialData);
         setError('');
+        setSendWhatsapp(true); // איפוס ל-true בכל פתיחה
     }, [initialData, isOpen]);
 
     const handleSubmit = async (e) => {
@@ -29,7 +31,7 @@ const GuestModal = ({ isOpen, onClose, onSave, initialData, isEditing }) => {
         }
 
         try {
-            await onSave({ ...formData, phone: cleanPhone });
+            await onSave({ ...formData, phone: cleanPhone, sendWhatsapp });
         } catch (err) {
             setError('Failed to save guest. Please try again.');
         }
@@ -73,6 +75,20 @@ const GuestModal = ({ isOpen, onClose, onSave, initialData, isEditing }) => {
                             ]}
                         />
                     </div>
+
+                    {!isEditing && (
+                        <div className="form-group" style={{ marginTop: '1.5rem' }}>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.95rem', color: '#334155' }}>
+                                <input
+                                    type="checkbox"
+                                    checked={sendWhatsapp}
+                                    onChange={(e) => setSendWhatsapp(e.target.checked)}
+                                    style={{ width: '1.1rem', height: '1.1rem', accentColor: '#2563eb' }}
+                                />
+                                Send RSVP invitation via WhatsApp?
+                            </label>
+                        </div>
+                    )}
                 </div>
                 <div className="modal-footer">
                     <Button variant="text" type="button" onClick={onClose}>Cancel</Button>

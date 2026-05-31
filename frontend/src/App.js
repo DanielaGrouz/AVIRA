@@ -13,6 +13,7 @@ import AppRoutes from "./AppRoutesConfig";
 import CreateEventPage from "./pages/events/CreateEventPage";
 import ResetPassword from "./pages/auth/ResetPassword";
 import NotFoundPage from "./pages/NotFoundPage";
+import GuestRSVP from "./pages/events/GuestRSVP";
 
 function AppContent() {
     const {isAuthenticated} = useAuth();
@@ -26,35 +27,24 @@ function AppContent() {
             <main>
                 <Routes>
                     {/* User Routes */}
-
                     <Route path={AppRoutes.LOGIN} element={<Login/>}/>
                     <Route path={AppRoutes.SIGNUP} element={<Signup/>}/>
                     <Route path={AppRoutes.FORGOT_PASSWORD} element={<ForgotPassword/>}/>
                     <Route path={AppRoutes.VERIFY_EMAIL} element={<VerifyEmail/>}/>
                     <Route path={AppRoutes.RESET_PASSWORD} element={<ResetPassword/>}/>
 
+                    <Route path={AppRoutes.RSVP} element={<GuestRSVP />} />
 
                     {/* Events Routes */}
-                    <Route
-                        path={AppRoutes.HOME}
-                        element={makeProtected(<EventHomePage/>)}
-                    />
-                    <Route
-                        path={AppRoutes.EVENT_DETAILS}
-                        element={isAuthenticated ? <EventDetailsPage/> : <Navigate to={AppRoutes.LOGIN}/>}
-                    />
-                    <Route
-                        path={AppRoutes.CREATE_EVENT}
-                        element={isAuthenticated ? <CreateEventPage/> : <Navigate to={AppRoutes.LOGIN}/>}
-                    />
+                    <Route path={AppRoutes.HOME} element={makeProtected(<EventHomePage/>)}/>
+                    <Route path={AppRoutes.EVENT_DETAILS} element={isAuthenticated ? <EventDetailsPage/> : <Navigate to={AppRoutes.LOGIN}/>}/>
+                    <Route path={AppRoutes.CREATE_EVENT} element={isAuthenticated ? <CreateEventPage/> : <Navigate to={AppRoutes.LOGIN}/>}/>
 
+                    <Route path={AppRoutes.SETTINGS} element={isAuthenticated ? <Settings/> : <Navigate to={AppRoutes.LOGIN}/>}/>
 
-                    <Route
-                        path={AppRoutes.SETTINGS}
-                        element={isAuthenticated ? <Settings/> : <Navigate to={AppRoutes.LOGIN}/>}
-                    />
                     <Route path={AppRoutes.NOT_FOUND} element={<NotFoundPage/>}/>
 
+                    <Route path="*" element={<Navigate to={AppRoutes.NOT_FOUND} replace />} />
                 </Routes>
             </main>
             {/*{isAuthenticated && <Footer/>}*/}
