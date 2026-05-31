@@ -8,7 +8,14 @@ const TaskManager = ({ eventId }) => {
     const columns = [
         { accessorKey: 'title', header: 'Task' },
         { accessorKey: 'priority', header: 'Priority' },
-        { accessorKey: 'status', header: 'Status' }
+        { accessorKey: 'status', header: 'Status', cell: info => {
+                const status = info.getValue() || 'pending';
+                let color = '#64748b';
+                if (status.toLowerCase() === 'in progress') color = '#cf3fdf';
+                if (status.toLowerCase() === 'completed') color = '#10b981';
+
+                return <span style={{ color, fontWeight: '500' }}>{status}</span>;
+            } }
     ];
 
     return (

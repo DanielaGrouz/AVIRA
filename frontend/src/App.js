@@ -14,6 +14,7 @@ import CreateEventPage from "./pages/events/CreateEventPage";
 import ResetPassword from "./pages/auth/ResetPassword";
 import NotFoundPage from "./pages/NotFoundPage";
 import GuestRSVP from "./pages/events/GuestRSVP";
+import Footer from "./components/Footer";
 
 function AppContent() {
     const {isAuthenticated} = useAuth();
@@ -47,7 +48,7 @@ function AppContent() {
                     <Route path="*" element={<Navigate to={AppRoutes.NOT_FOUND} replace />} />
                 </Routes>
             </main>
-            {/*{isAuthenticated && <Footer/>}*/}
+            {isAuthenticated && <Footer/>}
         </div>
     );
 }

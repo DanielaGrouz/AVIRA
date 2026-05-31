@@ -41,7 +41,7 @@ const ActionResultModal = ({ isOpen, onClose, modalState, eventId, onEventUpdate
                 titleStr = itemObj.task || itemObj.title || "New Task";
             }
 
-            const payload = { eventId, title: titleStr, status: 'Pending', priority: 'Medium' };
+            const payload = { eventId, title: titleStr, status: 'pending', priority: 'medium' };
             await EventService.addTask(payload);
             setAddedSuggestedTasks(prev => new Set(prev).add(index));
 

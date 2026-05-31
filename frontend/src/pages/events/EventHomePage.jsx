@@ -182,6 +182,7 @@ const EventHomePage = () => {
                     <CustomSelect
                         value={sortBy}
                         onChange={handleSortChange}
+                        placement={"top"}
                         options={[
                             { value: 'date', label: 'Sort by Date' },
                             { value: 'title', label: 'Sort by Title' },

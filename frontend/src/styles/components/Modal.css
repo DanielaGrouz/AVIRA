@@ -3,7 +3,7 @@
    Modal Stylesheet  ·  Pastel Luxury Edition
    ───────────────────────────────────────────────────────── */
 
-/* ── Design Tokens (mirrors full system) ───────────────── */
+/* ── Design Tokens ──────────────────────────────────────── */
 :root {
     --color-blush:        #f0dbd8;
     --color-blush-deep:   #e8c8c4;
@@ -33,7 +33,7 @@
             0 2px 4px   rgba(58, 53, 48, 0.05);
     --shadow-primary:
             0 2px 8px  rgba(156, 191, 176, 0.35),
-            0 1px 2px  rgba(58,  53,  48,  0.10);
+            0 1px 2px  rgba(58, 53, 48, 0.10);
 
     --font-display: 'Cormorant Garamond', Georgia, serif;
     --font-body:    'Jost', 'Helvetica Neue', sans-serif;
@@ -42,27 +42,19 @@
 }
 
 /* =========================================
-   Overlay  —  fixed, full viewport, centered
+   Overlay
    ========================================= */
 .modal-overlay {
-    /* Positioning: cover the entire viewport regardless of scroll */
     position: fixed;
-    inset: 0;                  /* shorthand for top/right/bottom/left: 0 */
-
-    /* Centering the child modal */
+    inset: 0;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 1.25rem;          /* prevents the modal touching screen edges on small screens */
-
-    /* Stacking: above navbar (z-100), dropdowns (z-9999), everything */
+    padding: 1.25rem;
     z-index: 99999;
-
-    /* Backdrop */
     background: rgba(58, 53, 48, 0.38);
     backdrop-filter: blur(10px) saturate(1.2);
     -webkit-backdrop-filter: blur(10px) saturate(1.2);
-
     animation: fadeIn 0.2s ease-out both;
 }
 
@@ -73,20 +65,13 @@
     background: var(--color-card-bg);
     backdrop-filter: blur(24px) saturate(1.4);
     -webkit-backdrop-filter: blur(24px) saturate(1.4);
-
     border: 1px solid var(--color-card-border);
     border-radius: var(--radius-card);
     box-shadow: var(--shadow-modal);
-
     width: 100%;
     max-width: 460px;
-
-    /* Allow dropdowns (CustomSelect) to overflow without clipping */
     overflow: visible;
-
-    /* Relative so the gold top bar positions correctly */
     position: relative;
-
     animation: slideUp 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
@@ -132,7 +117,7 @@
     color: var(--color-ink);
 }
 
-/* ── Close Button ───────────────────────────────────────── */
+/* Close Button */
 .close-btn {
     background: transparent;
     border: none;
@@ -158,19 +143,15 @@
 }
 
 /* =========================================
-   Modal Body
+   Modal Body & Footer
    ========================================= */
 .modal-body {
     padding: 1.5rem;
 }
 
-/* =========================================
-   Modal Footer
-   ========================================= */
 .modal-footer {
     padding: 1.1rem 1.5rem;
     border-top: 1px solid var(--color-rule);
-    /* Soft sage-to-cream gradient footer — lifts it from the body */
     background: linear-gradient(
             to bottom,
             rgba(221, 238, 232, 0.25) 0%,
@@ -222,7 +203,6 @@
     -webkit-appearance: none;
 }
 
-/* Custom select arrow in sage */
 .form-select {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%239cbfb0'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z' clip-rule='evenodd'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
@@ -246,6 +226,60 @@
             0 2px 8px rgba(58, 53, 48, 0.06);
 }
 
+/* ── Checkbox Styling ───────────────────────────────────── */
+.form-checkbox-group {
+    display: flex;
+    align-items: center; /* Ensures perfect vertical alignment */
+    gap: 0.6rem;
+    margin-bottom: 1.1rem;
+    cursor: pointer;
+}
+
+.form-checkbox-group .form-label {
+    margin-bottom: 0;
+    cursor: pointer;
+    font-size: 0.75rem;
+    color: var(--color-ink-light);
+    line-height: 1.2; /* Tighter line-height to center properly with the box */
+}
+
+.form-checkbox {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 1.15rem;
+    height: 1.15rem;
+    flex-shrink: 0; /* Prevents the box from squishing into an oval */
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(184, 207, 196, 0.6);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    margin: 0;
+}
+
+.form-checkbox:hover {
+    border-color: var(--color-sage-deep);
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.form-checkbox:focus {
+    outline: none;
+    border-color: var(--color-sage-deep);
+    box-shadow:
+            0 0 0 3px rgba(156, 191, 176, 0.2),
+            0 2px 4px rgba(58, 53, 48, 0.04);
+}
+
+.form-checkbox:checked {
+    background-color: var(--color-sage-deep);
+    border-color: var(--color-sage-deep);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+    background-size: 70%;
+    background-position: center;
+    background-repeat: no-repeat;
+    animation: checkPop 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 /* =========================================
    Animations
    ========================================= */
@@ -257,4 +291,10 @@
 @keyframes slideUp {
     from { opacity: 0; transform: translateY(20px) scale(0.97); }
     to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+
+@keyframes checkPop {
+    0% { transform: scale(0.9); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
 }

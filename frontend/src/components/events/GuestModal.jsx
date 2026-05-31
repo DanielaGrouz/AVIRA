@@ -41,11 +41,22 @@ const GuestModal = ({ isOpen, onClose, onSave, initialData, isEditing }) => {
         <Modal isOpen={isOpen} onClose={onClose} title={isEditing ? "Edit Guest" : "Add Guest"}>
             <form onSubmit={handleSubmit}>
                 <div className="modal-body">
+                    {/* Error message styled to match the pastel theme tokens */}
                     {error && (
-                        <div style={{ color: '#b91c1c', backgroundColor: '#fef2f2', padding: '0.75rem', borderRadius: '8px', fontSize: '0.875rem', marginBottom: '1rem', border: '1px solid #f87171' }}>
+                        <div style={{
+                            color: 'var(--color-error-text, #9b4040)',
+                            backgroundColor: 'var(--color-error-bg, #fdf0ef)',
+                            padding: '0.85rem 1.25rem',
+                            borderRadius: '10px',
+                            fontSize: '0.85rem',
+                            marginBottom: '1.25rem',
+                            border: '1px solid var(--color-error-line, #d4837a)',
+                            letterSpacing: '0.02em'
+                        }}>
                             {error}
                         </div>
                     )}
+
                     <div className="form-group">
                         <label className="form-label">Full Name</label>
                         <input
@@ -54,6 +65,7 @@ const GuestModal = ({ isOpen, onClose, onSave, initialData, isEditing }) => {
                             onChange={(e) => { setFormData({...formData, name: e.target.value}); setError(''); }}
                         />
                     </div>
+
                     <div className="form-group">
                         <label className="form-label">Phone Number</label>
                         <input
@@ -62,6 +74,7 @@ const GuestModal = ({ isOpen, onClose, onSave, initialData, isEditing }) => {
                             onChange={(e) => { setFormData({...formData, phone: e.target.value}); setError(''); }}
                         />
                     </div>
+
                     <div className="form-group">
                         <label className="form-label">Status</label>
                         <CustomSelect
@@ -78,14 +91,15 @@ const GuestModal = ({ isOpen, onClose, onSave, initialData, isEditing }) => {
 
                     {!isEditing && (
                         <div className="form-group" style={{ marginTop: '1.5rem' }}>
-                            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.95rem', color: '#334155' }}>
+                            {/* Replaced inline styles with the correct theme classes */}
+                            <label className="form-checkbox-group">
                                 <input
                                     type="checkbox"
+                                    className="form-checkbox"
                                     checked={sendWhatsapp}
                                     onChange={(e) => setSendWhatsapp(e.target.checked)}
-                                    style={{ width: '1.1rem', height: '1.1rem', accentColor: '#2563eb' }}
                                 />
-                                Send RSVP invitation via WhatsApp?
+                                <span className="form-label">Send RSVP invitation via WhatsApp?</span>
                             </label>
                         </div>
                     )}

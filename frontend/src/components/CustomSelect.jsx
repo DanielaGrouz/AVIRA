@@ -29,7 +29,6 @@ const CustomSelect = ({
     };
 
     const selectedOption = options.find(opt => opt.value === value);
-    console.log(options, value);
     return (
         <div className="custom-select-container" ref={dropdownRef}>
             <button
