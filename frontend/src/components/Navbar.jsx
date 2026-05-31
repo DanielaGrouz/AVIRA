@@ -41,7 +41,14 @@ export default function Navbar() {
 
                     <div className="navbar-profile">
                         <ProfileImage
-                            src={user?.avatarUrl}
+                            src={
+                                user?.picturePath
+                                    ? (user.picturePath.startsWith('blob') || user.picturePath.startsWith('http')
+                                        ? user.picturePath
+                                        : `http://localhost:3000${user.picturePath}`)
+                                    : null
+                            }
+                            key={user?.picturePath}
                             fallbackText={user?.firstName || 'User'}
                             size="36px"
                         />

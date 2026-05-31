@@ -4,15 +4,17 @@ import { useAuth } from '../hooks/useAuth';
 import UserService from '../services/UserService';
 import Button from '../components/Button';
 import InputField from '../components/InputField';
-import ProfileImage from '../components/ProfileImage';
+//import ProfileImage from '../components/ProfileImage';
+import ProfileImageUploader from '../components/ProfileImageUploader';
 
 const Settings = () => {
     const navigate = useNavigate();
     const {user,updateUserContext} = useAuth();
-
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState(null);
     const [avatarUrl, setAvatarUrl] = useState('');
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [randomAvatarUrl, setRandomAvatarUrl] = useState(null);
 
     // State for the inputs
     const [formData, setFormData] = useState({
@@ -108,6 +110,9 @@ const Settings = () => {
             if (formData.lastName !== originalData.lastName) changedFields.push('Last Name');
             if (formData.phoneNumber !== originalData.phoneNumber) changedFields.push('Phone Number');
         }
+        if (selectedFile) {
+            changedFields.push('Profile Image');
+        }
 
         // Prevent unnecessary server requests if data hasn't changed at all
         if (changedFields.length === 0) {
@@ -120,21 +125,41 @@ const Settings = () => {
 
         try {
             const currentId = user?.userId || user?.id || user?._id;
-            await UserService.updateSettings(currentId, formData);
+
+            // Build a FormData object to handle both text and files
+            const submitData = new FormData();
+            submitData.append('firstName', formData.firstName);
+            submitData.append('lastName', formData.lastName);
+            submitData.append('phoneNumber', formData.phoneNumber);
+
+            // Append the file only if the user select new one
+            if (selectedFile) {
+                submitData.append('picture', selectedFile);
+            }
+
+            // Capture the response from the server update
+            const response = await UserService.updateSettings(currentId, submitData);
+            // Get the new updated user from response
+            const updatedUser = response.data?.data;
+
+            // Create a unique URL to force the browser to ignore cache (using timestamp)
+            const newPictureUrl = updatedUser.picturePath ? `${updatedUser.picturePath}?t=${new Date().getTime()}` : avatarUrl;
 
             // Update the global context so the Navbar refreshes immediately
             updateUserContext({
                 firstName: formData.firstName,
                 lastName: formData.lastName,
-                picturePath: avatarUrl
+                picturePath: newPictureUrl
             });
 
-            // Build a dynamic success message showing exactly what was updated
             const successText = `Profile updated successfully! (Changes: ${changedFields.join(', ')})`;
             setMessage({ type: 'success', text: successText });
 
             // Update the original data state to the newly saved data
             setOriginalData({ ...formData });
+
+            if (selectedFile) setAvatarUrl(newPictureUrl); // Update local avatar state
+            setSelectedFile(null); // Reset file selection
         } catch (err) {
             console.error("Error updating profile:", err);
             const errorMsg = err.data?.error?.message || err.message || 'Failed to update profile. Please try again.';
@@ -160,11 +185,22 @@ const Settings = () => {
 
                 <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Profile Settings</h2>
 
-                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '30px' }}>
-                    <ProfileImage
-                        src={avatarUrl && !avatarUrl.startsWith('..') ? avatarUrl : null}
-                        fallbackText={formData.firstName || '?'}
-                        size="120px"
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '30px'}}>
+                    <ProfileImageUploader
+                        onImageSelected={(file) => {
+                            setSelectedFile(file);
+                            setRandomAvatarUrl(null);
+                        }}
+                        onImageRemoved={(randomImgStr) => {
+                            setSelectedFile(null);
+                            setRandomAvatarUrl(randomImgStr);
+                            setAvatarUrl(null);
+                        }}
+                        initialImage={
+                            avatarUrl
+                                ? (avatarUrl.startsWith('blob') || avatarUrl.startsWith('http') ? avatarUrl : `http://localhost:3000${avatarUrl}`)
+                                : null
+                        }
                     />
                 </div>
 

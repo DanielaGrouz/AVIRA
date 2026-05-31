@@ -1,9 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-export default function ProfileImageUploader({ onImageSelected }) {
+export default function ProfileImageUploader({ onImageSelected, initialImage, onImageRemoved }) {
     const [previewUrl, setPreviewUrl] = useState(null);
     const [isHovering, setIsHovering] = useState(false);
     const fileInputRef = useRef(null);
+
+    useEffect(() => {
+        if (initialImage) {
+            setPreviewUrl(initialImage);
+        }
+    }, [initialImage]);
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
@@ -21,10 +27,20 @@ export default function ProfileImageUploader({ onImageSelected }) {
         fileInputRef.current.click();
     };
 
+    // Function to handle the removal of the image
+    const handleRemoveClick = (e) => {
+        e.stopPropagation(); // Prevent opening the file dialog
+        setPreviewUrl(null); // Clear local preview
+        if (fileInputRef.current) fileInputRef.current.value = ''; // Reset input
+        onImageRemoved(); // Notify parent component (Settings)
+    };
+
     // Cleanup the object URL to avoid memory leaks
     useEffect(() => {
         return () => {
-            if (previewUrl) URL.revokeObjectURL(previewUrl);
+            if (previewUrl && previewUrl.startsWith('blob:')) {
+                URL.revokeObjectURL(previewUrl);
+            }
         };
     }, [previewUrl]);
 
