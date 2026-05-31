@@ -36,7 +36,6 @@ const GuestManager = ({ eventId, eventDetails }) => {
             }
 
             const frontendUrl = 'http://localhost:5000';
-            const rsvpLink = `${frontendUrl}/rsvp/${eventId}/${savedGuest.guestId}`;
 
             let formattedDate = eventDetails?.date;
             if (formattedDate && formattedDate !== 'TBD') {
@@ -49,13 +48,24 @@ const GuestManager = ({ eventId, eventDetails }) => {
                     });
                 }
             }
-            const eventName = eventDetails?.title || 'our event';
-            const eventDate = eventDetails?.date && eventDetails.date !== 'TBD' ? `\n📅 Date: ${formattedDate}` : '';
-            const eventTime = eventDetails?.time && eventDetails.time !== 'TBD' ? `\n⏰ Time: ${eventDetails.time}` : '';
-            const eventLocation = eventDetails?.location && eventDetails.location !== 'TBD' ? `\n📍 Location: ${eventDetails.location}` : '';
 
+            // 2. These are the human-readable variables for the text message body
+            const eventName = eventDetails?.title || 'our event';
+            const eventDate = eventDetails?.date && eventDetails.date !== 'TBD' ? `\n Date: ${formattedDate}` : '';
+            const eventTime = eventDetails?.time && eventDetails.time !== 'TBD' ? `\n Time: ${eventDetails.time}` : '';
+            const eventLocation = eventDetails?.location && eventDetails.location !== 'TBD' ? `\n Location: ${eventDetails.location}` : '';
+
+            // 3. These are the encoded variables specifically for the react-router URL
+            const safeTitle = encodeURIComponent(eventDetails?.title || 'TBD');
+            const safeDate = encodeURIComponent(eventDetails?.date || 'TBD');
+            const safeTime = encodeURIComponent(eventDetails?.time || 'TBD');
+            const safeLocation = encodeURIComponent(eventDetails?.location || 'TBD');
+
+            const rsvpLink = `${frontendUrl}/rsvp/${eventId}/${safeTitle}/${safeDate}/${safeTime}/${safeLocation}/${savedGuest.guestId}`;
+
+            // 4. Combine the human-readable text with the safe link, then encode the entire message for WhatsApp
             const message = encodeURIComponent(
-                `Hi ${savedGuest.name}! 🌟\nWe are excited to invite you to ${eventName}!${eventDate}${eventTime}${eventLocation}\n\nPlease let us know if you can make it by clicking the link below:\n${rsvpLink}`
+                `Hi ${savedGuest.name}! \nWe are excited to invite you to ${eventName}!${eventDate}${eventTime}${eventLocation}\n\nPlease let us know if you can make it by clicking the link below:\n${rsvpLink}`
             );
 
             window.open(`https://wa.me/${cleanPhone}?text=${message}`, '_blank');

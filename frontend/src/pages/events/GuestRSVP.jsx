@@ -1,28 +1,11 @@
-import React, {useEffect, useState} from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import '../../styles/events/GuestRSVP.css';
 import eventService from "../../services/EventService";
 
 const GuestRSVP = () => {
-    const { eventId, guestId } = useParams();
+    const { eventId, title, date, time, location, guestId } = useParams();
     const [status, setStatus] = useState(null);
-    const [eventDetails, setEventDetails] = useState(null);
-    const [pageLoading, setPageLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchEventDetails = async () => {
-            try {
-                const response = await eventService.getById(eventId);
-                setEventDetails(response.data.data);
-            } catch (error) {
-                console.error("Failed to load event details:", error);
-            } finally {
-                setPageLoading(false);
-            }
-        };
-
-        fetchEventDetails();
-    }, [eventId]);
 
     const handleResponse = async (rsvpStatus) => {
         setStatus('loading');
@@ -72,35 +55,31 @@ const GuestRSVP = () => {
                         <h1>You're Invited! 🥂</h1>
                         <p>We would love for you to join us.</p>
 
-                        {/* Event Details Display */}
-                        {pageLoading ? (
-                            <div className="rsvp-loading" style={{ padding: '1rem' }}>Loading details...</div>
-                        ) : eventDetails ? (
-                            <div className="rsvp-event-details">
-                                <h3>{eventDetails.title || 'Our Event'}</h3>
+                        {/* Directly use the URL params here instead of state */}
+                        <div className="rsvp-event-details">
+                            <h3>{title && title !== 'TBD' ? title : 'Our Event'}</h3>
 
-                                {eventDetails.date && eventDetails.date !== 'TBD' && (
-                                    <div className="detail-item">
-                                        <span className="detail-icon">📅</span>
-                                        <span>{formatFriendlyDate(eventDetails.date)}</span>
-                                    </div>
-                                )}
+                            {date && date !== 'TBD' && (
+                                <div className="detail-item">
+                                    <span className="detail-icon">📅</span>
+                                    <span>{formatFriendlyDate(date)}</span>
+                                </div>
+                            )}
 
-                                {eventDetails.time && eventDetails.time !== 'TBD' && (
-                                    <div className="detail-item">
-                                        <span className="detail-icon">⏰</span>
-                                        <span>{formatFriendlyTime(eventDetails.time)}</span>
-                                    </div>
-                                )}
+                            {time && time !== 'TBD' && (
+                                <div className="detail-item">
+                                    <span className="detail-icon">⏰</span>
+                                    <span>{formatFriendlyTime(time)}</span>
+                                </div>
+                            )}
 
-                                {eventDetails.location && eventDetails.location !== 'TBD' && (
-                                    <div className="detail-item">
-                                        <span className="detail-icon">📍</span>
-                                        <span>{eventDetails.location}</span>
-                                    </div>
-                                )}
-                            </div>
-                        ) : null}
+                            {location && location !== 'TBD' && (
+                                <div className="detail-item">
+                                    <span className="detail-icon">📍</span>
+                                    <span>{location}</span>
+                                </div>
+                            )}
+                        </div>
 
                         <div className="rsvp-buttons">
                             <button
