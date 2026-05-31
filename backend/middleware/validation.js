@@ -347,7 +347,7 @@ const validateUserExists = (req, res, next) => {
  * Only validates fields if they are provided in the request body.
  */
 const validateOptionalEventFields = (req, res, next) => {
-    const { title, date, time, location, eventType, guestsCount } = req.body;
+    const { title, date, time, location } = req.body;
     let errors = [];
     const isProvided = (value) => value !== undefined && value !== null && value !== "";
 
@@ -364,12 +364,6 @@ const validateOptionalEventFields = (req, res, next) => {
     }
     if (isProvided(location) && (typeof location !== 'string' || location.trim().length < 2)) {
         errors.push("location must be a string (min 2 chars)");
-    }
-    if (isProvided(eventType) && (typeof eventType !== 'string' || eventType.trim().length < 2)) {
-        errors.push("eventType must be a string (min 2 chars)");
-    }
-    if (isProvided(guestsCount) && (typeof guestsCount !== 'number' || guestsCount < 0)) {
-        errors.push("guestsCount must be a non-negative number");
     }
 
     if (errors.length > 0) {

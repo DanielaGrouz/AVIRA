@@ -1,83 +1,244 @@
+/* =========================================
+   Base Layout & Typography
+   ========================================= */
 .home-container {
-    padding: 2rem;
+    padding: 2.5rem 2rem;
     min-height: 100vh;
     position: relative;
-    font-family: sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f0f4f8; /* Restored professional background color */
 }
 
+/* =========================================
+   Header & Top Controls
+   ========================================= */
 .home-header {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+    margin-bottom: 2.5rem;
+}
+
+.header-top-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
+    border-bottom: 1px solid #dcdfe4;
+    padding-bottom: 1.25rem;
 }
 
-.home-header h1 {
-    font-size: 2rem;
-    color: #111827;
+.header-top-row h1 {
     margin: 0;
+    font-size: 2.25rem;
+    color: #0f172a;
+    font-weight: 800;
+    letter-spacing: -0.025em;
 }
 
+/* --- Container for Search and Sort --- */
 .home-controls {
     display: flex;
-    gap: 1rem;
+    gap: 1.5rem;
+    align-items: center;
+    width: 100%; /* Ensures the row takes up full width */
 }
 
-.search-input, .sort-select {
-    padding: 0.5rem;
-    border: 1px solid #d1d5db;
-    border-radius: 4px;
+/* 1. FORCE SORT DROPDOWN TO BE SMALL (Left side) */
+/* This safely targets your CustomSelect component even without a className */
+.home-controls > *:not(.search-input) {
+    order: 1;
+    flex: 0 0 220px !important; /* Locks width to exactly 220px */
+    min-width: 220px;
+    background-color: #ffffff;
+}
+
+/* 2. FORCE SEARCH INPUT TO BE LONG (Right side) */
+.search-input {
+    order: 2;
+    flex: 1; /* Stretches to fill all remaining space */
+    padding: 0.75rem 1rem 0.75rem 2.5rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
     font-size: 1rem;
+    background-color: #ffffff;
+    color: #0f172a;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+
+    /* Embedded Magnifying Glass Icon */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%2364748b'%3E%3Cpath fill-rule='evenodd' d='M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z' clip-rule='evenodd' /%3E%3C/svg%3E");
+    background-position: 0.85rem center;
+    background-repeat: no-repeat;
+    background-size: 1.15rem;
 }
 
+.search-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+}
+
+/* --- Modern Create Button --- */
+.modern-create-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #2563eb;
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 0.75rem 1.25rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2), 0 2px 4px -1px rgba(37, 99, 235, 0.1);
+    transition: all 0.2s ease;
+}
+
+.modern-create-btn:hover {
+    background-color: #1d4ed8;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 8px -1px rgba(37, 99, 235, 0.3), 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+}
+
+.modern-create-btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px -1px rgba(37, 99, 235, 0.2);
+}
+
+.btn-icon {
+    stroke-width: 2.5;
+}
+
+/* =========================================
+   Event Cards Grid Layout
+   ========================================= */
 .events-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+    gap: 1.75rem;
+    padding-bottom: 2rem;
 }
 
+/* --- The Modern Event Card --- */
 .event-card {
-    background-color: #ffffff;
-    padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    position: relative;
+    background: #ffffff;
+    padding: 1.75rem;
+    border-radius: 12px; /* Sharper, more professional corners */
+    border: 1px solid #e2e8f0;
+
+    /* Clean, premium shadow */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
     cursor: pointer;
-    transition: box-shadow 0.2s ease, transform 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
+/* Premium Hover Effect */
 .event-card:hover {
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    transform: translateY(-2px);
+    transform: translateY(-4px); /* Gentle lift */
+    border-color: #cbd5e1;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08); /* Deeper shadow on hover */
 }
 
+/* Typography inside the card */
 .event-title {
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin: 0 0 0.5rem 0;
-    color: #1f2937;
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin: 0 0 1.25rem 0;
+    color: #0f172a;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
 }
 
+/* Details container styling */
 .event-detail {
-    color: #4b5563;
-    margin: 0 0 0.25rem 0;
+    color: #475569;
+    font-size: 0.95rem;
+    margin: 0 0 0.6rem 0;
+    display: flex;
+    align-items: center;
+    font-weight: 500;
 }
 
-.event-id-badge {
-    display: inline-block;
-    margin-top: 1rem;
-    font-size: 0.8rem;
-    color: #9ca3af;
+.event-detail::before {
+    content: '•';
+    color: #94a3b8;
+    margin-right: 0.5rem;
+    font-size: 1.2rem;
+    line-height: 1;
 }
 
+/* --- Event Actions (Bottom of Card) --- */
+.event-actions {
+    margin-top: auto;
+    padding-top: 1.25rem;
+    border-top: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
-/* --- Pagination Styles --- */
+/* Modernized Google Calendar Button */
+.google-calendar-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #3b82f6;
+    background-color: #eff6ff;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.google-calendar-btn:hover {
+    background-color: #3b82f6;
+    color: #ffffff;
+}
+
+/* Card Edit/Delete Icon Buttons */
+.card-icon-actions {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.icon-btn {
+    background: transparent;
+    border: none;
+    padding: 0.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.icon-btn.edit-btn:hover {
+    background-color: #eff6ff;
+    color: #3b82f6;
+}
+
+.icon-btn.delete-btn:hover {
+    background-color: #fef2f2;
+    color: #ef4444;
+}
+
+/* =========================================
+   Pagination Styles
+   ========================================= */
 .pagination-container {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 0.5rem;
-    margin-top: 2.5rem;
-    margin-bottom: 4rem; /* Give space for the FAB */
+    margin-top: 3rem;
 }
 
 .pagination-btn {
@@ -87,156 +248,181 @@
     min-width: 40px;
     height: 40px;
     padding: 0 0.5rem;
-    border: 1px solid #e2e8f0;
+    border: 1px solid #e5e7eb;
     border-radius: 8px;
-    background-color: white;
-    color: #4a5568;
+    background-color: #ffffff;
+    color: #4b5563;
     font-size: 0.95rem;
-    font-weight: 500;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .pagination-btn:hover:not(:disabled) {
-    background-color: #edf2f7;
-    border-color: #cbd5e0;
+    background-color: #f9fafb;
+    border-color: #cbd5e1;
+    color: #0f172a;
 }
 
-/* The active page styling */
 .pagination-btn.active {
-    background-color: #3182ce; /* Your brand primary color */
+    background-color: #2563eb;
     color: white;
-    border-color: #3182ce;
-    box-shadow: 0 2px 4px rgba(49, 130, 206, 0.2);
+    border-color: #2563eb;
+    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
 }
 
 .pagination-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-    background-color: #f7fafc;
+    background-color: #f1f5f9;
 }
 
-.pagination-ellipsis {
-    color: #a0aec0;
+/* =========================================
+   Modal Overlay & Content
+   ========================================= */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 1rem;
+    animation: fadeIn 0.2s ease-out forwards;
+}
+
+.modal-content {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 440px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    animation: scaleUp 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    color: #0f172a;
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+}
+
+.modal-content p {
+    color: #475569;
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+}
+
+/* --- Modal Form Layout --- */
+.modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.modal-form label {
+    display: block;
+    font-size: 0.875rem;
     font-weight: 600;
-    padding: 0 0.25rem;
-    letter-spacing: 2px;
+    color: #475569;
+    margin-bottom: 0.4rem;
 }
 
-/* Optional: Make arrows look cleaner */
-.pagination-btn.icon-btn {
+/* Professional Input Styling */
+.modal-form input {
+    background-color: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    color: #0f172a;
+    width: 100%;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+.modal-form input:hover {
+    border-color: #94a3b8;
+}
+
+.modal-form input:focus {
+    outline: none;
+    background-color: #ffffff;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+/* Styling Native Date/Time Picker Icons */
+input[type="time"]::-webkit-calendar-picker-indicator,
+input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.2s ease;
+}
+
+input[type="time"]::-webkit-calendar-picker-indicator:hover,
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+}
+
+/* --- WhatsApp Toggle --- */
+.whatsapp-toggle {
+    margin: 1.5rem 0 0 0;
     padding: 0;
 }
 
-
-/* --- Header Layout --- */
-.home-header {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem; /* Space between title row and controls */
-    margin-bottom: 2rem;
-}
-
-.header-top-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #e2e8f0;
-    padding-bottom: 1rem;
-}
-
-.header-top-row h1 {
-    margin: 0;
-    font-size: 2rem;
-    color: #2d3748;
-}
-
-/* --- Modern Create Button --- */
-.modern-create-btn {
+.whatsapp-toggle label {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    background-color: #3182ce; /* Primary brand color */
-    color: white;
-    font-size: 1rem;
-    font-weight: 600;
-    padding: 0.6rem 1.25rem;
-    border: none;
-    border-radius: 8px; /* Modern rounded corners */
     cursor: pointer;
-    box-shadow: 0 4px 6px -1px rgba(49, 130, 206, 0.2), 0 2px 4px -1px rgba(49, 130, 206, 0.1);
-    transition: all 0.2s ease;
-}
-
-.modern-create-btn:hover {
-    background-color: #2b6cb0;
-    transform: translateY(-1px); /* Slight lift effect */
-    box-shadow: 0 6px 8px -1px rgba(49, 130, 206, 0.3), 0 4px 6px -1px rgba(49, 130, 206, 0.2);
-}
-
-.modern-create-btn:active {
-    transform: translateY(1px); /* Click depression effect */
-    box-shadow: 0 2px 4px -1px rgba(49, 130, 206, 0.2);
-}
-
-.btn-icon {
-    stroke-width: 2.5; /* Makes the plus sign a bit bolder */
-}
-
-/* --- Home Controls (Search & Sort) --- */
-.home-controls {
-    display: flex;
-    gap: 1rem;
-}
-
-.search-input {
-    flex: 1; /* Makes search bar take up remaining space */
-    padding: 0.75rem 1rem;
-    border: 1px solid #cbd5e0;
-    border-radius: 8px;
-    font-size: 1rem;
-    transition: border-color 0.2s;
-}
-
-.search-input:focus {
-    outline: none;
-    border-color: #3182ce;
-    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
-}
-
-.sort-select {
-    padding: 0.75rem 1rem;
-    border: 1px solid #cbd5e0;
-    border-radius: 8px;
-    background-color: white;
-    font-size: 1rem;
-    cursor: pointer;
-}
-
-/* --- Event Actions & Google Calendar Button --- */
-.event-actions {
-    margin-top: 1.25rem;
-    padding-top: 1rem;
-    border-top: 1px solid #f3f4f6;
-    display: flex;
-    justify-content: flex-start;
-}
-
-.google-calendar-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: #4b5563;
-    background-color: #f3f4f6;
-    padding: 0.5rem 0.75rem;
-    border-radius: 6px;
-    font-size: 0.875rem;
     font-weight: 500;
-    text-decoration: none;
-    transition: all 0.2s ease;
+    color: #334155;
+    font-size: 0.95rem;
 }
 
-.google-calendar-btn:hover {
-    background-color: #3182ce;
-    color: white;
+.whatsapp-toggle input[type="checkbox"] {
+    width: 1.15rem;
+    height: 1.15rem;
+    cursor: pointer;
+    margin: 0;
+    border-radius: 4px;
+    border: 1px solid #cbd5e1;
+    accent-color: #2563eb;
+}
+
+/* --- Modal Action Buttons Layout --- */
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 2rem;
+}
+
+/* =========================================
+   Animations
+   ========================================= */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
 }

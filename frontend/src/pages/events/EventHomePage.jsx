@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import EventService from '../../services/EventService';
-import Button from '../../components/Button';
 import Pagination from '../../components/Pagination';
+import InputField from '../../components/InputField';
+import Button from '../../components/Button'; // <-- Added Button Import
 import '../../styles/events/EventHomePage.css';
 import AppRoutes from "../../AppRoutesConfig";
-import { FiPlus, FiCalendar } from "react-icons/fi";
+import { FiPlus, FiCalendar, FiEdit, FiTrash2 } from "react-icons/fi";
 import CustomSelect from "../../components/CustomSelect";
 
 const EventHomePage = () => {
@@ -15,6 +16,20 @@ const EventHomePage = () => {
 
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPageCount, setTotalPageCount] = useState(0);
+
+    // Modal & Action States
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedEvent, setSelectedEvent] = useState(null);
+    const [actionType, setActionType] = useState('');
+    const [notifyWhatsapp, setNotifyWhatsapp] = useState(false);
+
+    // Form State for Editing
+    const [editFormData, setEditFormData] = useState({
+        title: '',
+        date: '',
+        time: '',
+        location: ''
+    });
 
     const navigate = useNavigate();
     const PAGE_SIZE = 8;
@@ -33,6 +48,12 @@ const EventHomePage = () => {
         fetchEvents();
     }, [currentPage, searchQuery, sortBy]);
 
+    const openWhatsApp = (phone, message) => {
+        const formattedPhone = phone.replace(/\D/g, '');
+        const url = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
+        window.open(url, '_blank');
+    };
+
     const handleSearchChange = (e) => {
         setSearchQuery(e.target.value);
         setCurrentPage(1);
@@ -43,6 +64,59 @@ const EventHomePage = () => {
         setCurrentPage(1);
     };
 
+    // --- Action Handlers ---
+    const openModal = (e, event, type) => {
+        e.stopPropagation();
+        setSelectedEvent(event);
+        setActionType(type);
+        setNotifyWhatsapp(false);
+
+        if (type === 'edit') {
+            setEditFormData({
+                title: event.title || '',
+                date: event.date !== 'TBD' ? event.date : '',
+                time: event.time !== 'TBD' ? event.time : '',
+                location: event.location || ''
+            });
+        }
+
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+        setSelectedEvent(null);
+        setActionType('');
+        setNotifyWhatsapp(false);
+    };
+
+    const handleEditFormChange = (e) => {
+        const { name, value } = e.target;
+        setEditFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    const handleConfirmAction = async () => {
+        if (!selectedEvent) return;
+        try {
+            if (actionType === 'delete') {
+                await EventService.delete(selectedEvent.eventId, { notifyWhatsapp });
+            } else if (actionType === 'edit') {
+                await EventService.update(selectedEvent.eventId, {
+                    ...editFormData,
+                    notifyWhatsapp
+                });
+            }
+            fetchEvents(); // Refresh the list
+            closeModal();
+        } catch (error) {
+            console.error(`Failed to ${actionType} event:`, error);
+        }
+    };
+
+    // --- Google Calendar Logic ---
     const generateGoogleCalendarLink = (event) => {
         const title = encodeURIComponent(event.title || 'New Event');
         const location = encodeURIComponent(event.location || '');
@@ -65,7 +139,6 @@ const EventHomePage = () => {
                 const startDateTime = new Date(`${event.date}T${event.time}`);
                 if (!isNaN(startDateTime.getTime())) {
                     const endDateTime = new Date(startDateTime.getTime() + 2 * 60 * 60 * 1000);
-
                     const startStr = formatLocalObjToGoogle(startDateTime);
                     const endStr = formatLocalObjToGoogle(endDateTime);
                     datesStr = `&dates=${startStr}/${endStr}`;
@@ -75,7 +148,6 @@ const EventHomePage = () => {
                 if (!isNaN(startDate.getTime())) {
                     const endDate = new Date(startDate);
                     endDate.setDate(endDate.getDate() + 1);
-
                     const startStr = formatDateOnly(startDate);
                     const endStr = formatDateOnly(endDate);
                     datesStr = `&dates=${startStr}/${endStr}`;
@@ -129,10 +201,9 @@ const EventHomePage = () => {
                             onClick={() => navigate(AppRoutes.getEventDetails(event.eventId))}
                         >
                             <h2 className="event-title">{event.title}</h2>
-                            <p className="event-detail">Type: {event.eventType}</p>
-                            <p className="event-detail">Guests: {event.guestsCount}</p>
                             <p className="event-detail">Date: {event.date || 'TBD'}</p>
                             <p className="event-detail">Time: {event.time || 'TBD'}</p>
+                            <p className="event-detail">Guests: {event.guestsCount}</p>
                             <p className="event-detail">Location: {event.location || 'TBD'}</p>
 
                             <div className="event-actions" onClick={(e) => e.stopPropagation()}>
@@ -145,6 +216,23 @@ const EventHomePage = () => {
                                     <FiCalendar size={16} />
                                     Add to Calendar
                                 </a>
+
+                                <div className="card-icon-actions">
+                                    <button
+                                        className="icon-btn edit-btn"
+                                        onClick={(e) => openModal(e, event, 'edit')}
+                                        title="Edit Event"
+                                    >
+                                        <FiEdit size={18} />
+                                    </button>
+                                    <button
+                                        className="icon-btn delete-btn"
+                                        onClick={(e) => openModal(e, event, 'delete')}
+                                        title="Delete Event"
+                                    >
+                                        <FiTrash2 size={18} />
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     ))
@@ -158,6 +246,84 @@ const EventHomePage = () => {
                 totalPageCount={totalPageCount}
                 onPageChange={setCurrentPage}
             />
+
+            {isModalOpen && (
+                <div className="modal-overlay" onClick={closeModal}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <h2>{actionType === 'edit' ? 'Edit Event' : 'Delete Event'}</h2>
+
+                        {actionType === 'edit' ? (
+                            <div className="modal-form">
+                                <InputField
+                                    id="edit-title"
+                                    label="Event Title"
+                                    type="text"
+                                    name="title"
+                                    value={editFormData.title}
+                                    onChange={handleEditFormChange}
+                                    placeholder="Enter event title"
+                                />
+                                <InputField
+                                    id="edit-date"
+                                    label="Date"
+                                    type="date"
+                                    name="date"
+                                    value={editFormData.date}
+                                    onChange={handleEditFormChange}
+                                />
+                                <InputField
+                                    id="edit-time"
+                                    label="Time"
+                                    type="time"
+                                    name="time"
+                                    value={editFormData.time}
+                                    onChange={handleEditFormChange}
+                                />
+                                <InputField
+                                    id="edit-location"
+                                    label="Location"
+                                    type="text"
+                                    name="location"
+                                    value={editFormData.location}
+                                    onChange={handleEditFormChange}
+                                    placeholder="Enter event location"
+                                />
+                            </div>
+                        ) : (
+                            <p>Are you sure you want to delete <strong>{selectedEvent?.title}</strong>?</p>
+                        )}
+
+                        <div className="whatsapp-toggle">
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    checked={notifyWhatsapp}
+                                    onChange={(e) => setNotifyWhatsapp(e.target.checked)}
+                                />
+                                Send WhatsApp notification to all guests?
+                            </label>
+                        </div>
+
+                        {/* Updated Modal Actions utilizing the custom Button component */}
+                        <div className="modal-actions">
+                            <Button
+                                variant="secondary"
+                                className="cancel-btn"
+                                onClick={closeModal}
+                            >
+                                {actionType === 'delete' ? 'No' : 'Cancel'}
+                            </Button>
+                            <Button
+                                variant={actionType === 'delete' ? 'danger' : 'primary'}
+                                className={`confirm-btn ${actionType === 'delete' ? 'danger' : 'primary'}`}
+                                onClick={handleConfirmAction}
+                            >
+                                {actionType === 'delete' ? 'Yes' : 'Save Changes'}
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
