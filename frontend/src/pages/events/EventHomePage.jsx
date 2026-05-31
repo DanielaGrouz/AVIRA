@@ -3,10 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import EventService from '../../services/EventService';
 import Pagination from '../../components/Pagination';
 import InputField from '../../components/InputField';
-import Button from '../../components/Button'; // <-- Added Button Import
+import Button from '../../components/Button';
 import '../../styles/events/EventHomePage.css';
 import AppRoutes from "../../AppRoutesConfig";
-import { FiPlus, FiCalendar, FiEdit, FiTrash2 } from "react-icons/fi";
+import { FiPlus, FiCalendar, FiEdit, FiTrash2, FiMapPin, FiClock, FiUsers } from "react-icons/fi";
 import CustomSelect from "../../components/CustomSelect";
 
 const EventHomePage = () => {
@@ -47,12 +47,6 @@ const EventHomePage = () => {
     useEffect(() => {
         fetchEvents();
     }, [currentPage, searchQuery, sortBy]);
-
-    const openWhatsApp = (phone, message) => {
-        const formattedPhone = phone.replace(/\D/g, '');
-        const url = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
-        window.open(url, '_blank');
-    };
 
     const handleSearchChange = (e) => {
         setSearchQuery(e.target.value);
@@ -109,11 +103,31 @@ const EventHomePage = () => {
                     notifyWhatsapp
                 });
             }
-            fetchEvents(); // Refresh the list
+            fetchEvents();
             closeModal();
         } catch (error) {
             console.error(`Failed to ${actionType} event:`, error);
         }
+    };
+
+    // --- Formatting Helpers ---
+    const getBadgeDate = (dateStr) => {
+        if (!dateStr || dateStr === 'TBD') return { month: 'TBD', day: '' };
+        const d = new Date(dateStr);
+        if (isNaN(d)) return { month: 'TBD', day: '' };
+        return {
+            month: d.toLocaleString('en-US', { month: 'short' }).toUpperCase(),
+            day: d.getDate(),
+            year: d.getFullYear()
+        };
+    };
+
+    const formatFriendlyTime = (timeStr) => {
+        if (!timeStr || timeStr === 'TBD') return 'TBD';
+        const [hour, minute] = timeStr.split(':');
+        const d = new Date();
+        d.setHours(hour, minute);
+        return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
     };
 
     // --- Google Calendar Logic ---
@@ -123,7 +137,6 @@ const EventHomePage = () => {
         const details = encodeURIComponent(`Type: ${event.eventType}\nGuests: ${event.guestsCount}`);
 
         let datesStr = '';
-
         if (event.date && event.date !== 'TBD') {
             const formatLocalObjToGoogle = (d) => {
                 const pad = (n) => String(n).padStart(2, '0');
@@ -139,22 +152,17 @@ const EventHomePage = () => {
                 const startDateTime = new Date(`${event.date}T${event.time}`);
                 if (!isNaN(startDateTime.getTime())) {
                     const endDateTime = new Date(startDateTime.getTime() + 2 * 60 * 60 * 1000);
-                    const startStr = formatLocalObjToGoogle(startDateTime);
-                    const endStr = formatLocalObjToGoogle(endDateTime);
-                    datesStr = `&dates=${startStr}/${endStr}`;
+                    datesStr = `&dates=${formatLocalObjToGoogle(startDateTime)}/${formatLocalObjToGoogle(endDateTime)}`;
                 }
             } else {
                 const startDate = new Date(event.date);
                 if (!isNaN(startDate.getTime())) {
                     const endDate = new Date(startDate);
                     endDate.setDate(endDate.getDate() + 1);
-                    const startStr = formatDateOnly(startDate);
-                    const endStr = formatDateOnly(endDate);
-                    datesStr = `&dates=${startStr}/${endStr}`;
+                    datesStr = `&dates=${formatDateOnly(startDate)}/${formatDateOnly(endDate)}`;
                 }
             }
         }
-
         return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&location=${location}${datesStr}`;
     };
 
@@ -163,10 +171,7 @@ const EventHomePage = () => {
             <header className="home-header">
                 <div className="header-top-row">
                     <h1>My Events</h1>
-                    <button
-                        className="modern-create-btn"
-                        onClick={() => navigate(AppRoutes.CREATE_EVENT)}
-                    >
+                    <button className="modern-create-btn" onClick={() => navigate(AppRoutes.CREATE_EVENT)}>
                         <FiPlus size={20} className="btn-icon" />
                         Create Event
                     </button>
@@ -194,59 +199,84 @@ const EventHomePage = () => {
 
             <div className="events-grid">
                 {events.length > 0 ? (
-                    events.map(event => (
-                        <div
-                            key={event.eventId}
-                            className="event-card"
-                            onClick={() => navigate(AppRoutes.getEventDetails(event.eventId))}
-                        >
-                            <h2 className="event-title">{event.title}</h2>
-                            <p className="event-detail">Date: {event.date || 'TBD'}</p>
-                            <p className="event-detail">Time: {event.time || 'TBD'}</p>
-                            <p className="event-detail">Guests: {event.guestsCount}</p>
-                            <p className="event-detail">Location: {event.location || 'TBD'}</p>
+                    events.map(event => {
+                        const { month, day, year } = getBadgeDate(event.date);
 
-                            <div className="event-actions" onClick={(e) => e.stopPropagation()}>
-                                <a
-                                    href={generateGoogleCalendarLink(event)}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="google-calendar-btn"
-                                >
-                                    <FiCalendar size={16} />
-                                    Add to Calendar
-                                </a>
+                        return (
+                            <div key={event.eventId} className="event-card" onClick={() => navigate(AppRoutes.getEventDetails(event.eventId))}>
 
-                                <div className="card-icon-actions">
-                                    <button
-                                        className="icon-btn edit-btn"
-                                        onClick={(e) => openModal(e, event, 'edit')}
-                                        title="Edit Event"
-                                    >
-                                        <FiEdit size={18} />
-                                    </button>
-                                    <button
-                                        className="icon-btn delete-btn"
-                                        onClick={(e) => openModal(e, event, 'delete')}
-                                        title="Delete Event"
-                                    >
-                                        <FiTrash2 size={18} />
-                                    </button>
+                                {/* Card Header: Title and Date Badge */}
+                                <div className="event-card-header">
+                                    <div className="event-date-badge">
+                                        <span className="badge-month">{month}</span>
+                                        <span className="badge-day">{day}</span>
+                                        {year && <span className="badge-year">{year}</span>}
+                                    </div>
+                                    <div className="event-title-area">
+                                        <h2 className="event-title">{event.title}</h2>
+                                        <div className="event-time-guests">
+                                            <span><FiClock /> {formatFriendlyTime(event.time)}</span>
+                                            <span><FiUsers /> {event.guestsCount || 0} Guests</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Card Body: Location & Map */}
+                                <div className="event-card-body">
+                                    {event.location && event.location !== 'TBD' ? (
+                                        <a
+                                            href={`https://maps.google.com/?q=${encodeURIComponent(event.location)}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="event-map-container"
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
+                                            <div className="map-overlay-text">
+                                                <FiMapPin /> {event.location}
+                                            </div>
+                                            <iframe
+                                                title={`map-${event.eventId}`}
+                                                width="100%"
+                                                height="100%"
+                                                style={{ border: 0, pointerEvents: 'none' }}
+                                                loading="lazy"
+                                                src={`https://maps.google.com/maps?q=${encodeURIComponent(event.location)}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
+                                            ></iframe>
+                                        </a>
+                                    ) : (
+                                        <div className="no-location-box">
+                                            <FiMapPin /> No Location Set
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Card Footer: Actions */}
+                                <div className="event-actions" onClick={(e) => e.stopPropagation()}>
+                                    <a href={generateGoogleCalendarLink(event)} target="_blank" rel="noopener noreferrer" className="google-calendar-btn">
+                                        <FiCalendar size={16} />
+                                        Add to Calendar
+                                    </a>
+
+                                    <div className="card-icon-actions">
+                                        <button className="icon-btn edit-btn" onClick={(e) => openModal(e, event, 'edit')} title="Edit Event">
+                                            <FiEdit size={18} />
+                                        </button>
+                                        <button className="icon-btn delete-btn" onClick={(e) => openModal(e, event, 'delete')} title="Delete Event">
+                                            <FiTrash2 size={18} />
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    ))
+                        );
+                    })
                 ) : (
                     <div className="empty-state">No events found.</div>
                 )}
             </div>
 
-            <Pagination
-                currentPage={currentPage}
-                totalPageCount={totalPageCount}
-                onPageChange={setCurrentPage}
-            />
+            <Pagination currentPage={currentPage} totalPageCount={totalPageCount} onPageChange={setCurrentPage} />
 
+            {/* Modal - Unchanged Logic */}
             {isModalOpen && (
                 <div className="modal-overlay" onClick={closeModal}>
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -254,40 +284,10 @@ const EventHomePage = () => {
 
                         {actionType === 'edit' ? (
                             <div className="modal-form">
-                                <InputField
-                                    id="edit-title"
-                                    label="Event Title"
-                                    type="text"
-                                    name="title"
-                                    value={editFormData.title}
-                                    onChange={handleEditFormChange}
-                                    placeholder="Enter event title"
-                                />
-                                <InputField
-                                    id="edit-date"
-                                    label="Date"
-                                    type="date"
-                                    name="date"
-                                    value={editFormData.date}
-                                    onChange={handleEditFormChange}
-                                />
-                                <InputField
-                                    id="edit-time"
-                                    label="Time"
-                                    type="time"
-                                    name="time"
-                                    value={editFormData.time}
-                                    onChange={handleEditFormChange}
-                                />
-                                <InputField
-                                    id="edit-location"
-                                    label="Location"
-                                    type="text"
-                                    name="location"
-                                    value={editFormData.location}
-                                    onChange={handleEditFormChange}
-                                    placeholder="Enter event location"
-                                />
+                                <InputField id="edit-title" label="Event Title" type="text" name="title" value={editFormData.title} onChange={handleEditFormChange} placeholder="Enter event title" />
+                                <InputField id="edit-date" label="Date" type="date" name="date" value={editFormData.date} onChange={handleEditFormChange} />
+                                <InputField id="edit-time" label="Time" type="time" name="time" value={editFormData.time} onChange={handleEditFormChange} />
+                                <InputField id="edit-location" label="Location" type="text" name="location" value={editFormData.location} onChange={handleEditFormChange} placeholder="Enter event location" />
                             </div>
                         ) : (
                             <p>Are you sure you want to delete <strong>{selectedEvent?.title}</strong>?</p>
@@ -295,29 +295,16 @@ const EventHomePage = () => {
 
                         <div className="whatsapp-toggle">
                             <label>
-                                <input
-                                    type="checkbox"
-                                    checked={notifyWhatsapp}
-                                    onChange={(e) => setNotifyWhatsapp(e.target.checked)}
-                                />
+                                <input type="checkbox" checked={notifyWhatsapp} onChange={(e) => setNotifyWhatsapp(e.target.checked)} />
                                 Send WhatsApp notification to all guests?
                             </label>
                         </div>
 
-                        {/* Updated Modal Actions utilizing the custom Button component */}
                         <div className="modal-actions">
-                            <Button
-                                variant="secondary"
-                                className="cancel-btn"
-                                onClick={closeModal}
-                            >
+                            <Button variant="secondary" className="cancel-btn" onClick={closeModal}>
                                 {actionType === 'delete' ? 'No' : 'Cancel'}
                             </Button>
-                            <Button
-                                variant={actionType === 'delete' ? 'danger' : 'primary'}
-                                className={`confirm-btn ${actionType === 'delete' ? 'danger' : 'primary'}`}
-                                onClick={handleConfirmAction}
-                            >
+                            <Button variant={actionType === 'delete' ? 'danger' : 'primary'} className="confirm-btn" onClick={handleConfirmAction}>
                                 {actionType === 'delete' ? 'Yes' : 'Save Changes'}
                             </Button>
                         </div>

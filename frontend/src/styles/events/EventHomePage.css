@@ -6,7 +6,16 @@
     min-height: 100vh;
     position: relative;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background-color: #f0f4f8; /* Restored professional background color */
+
+    /* --- Premium Mesh Gradient Background --- */
+    background-color: #f8fafc;
+    background-image:
+            radial-gradient(at 0% 0%, rgba(219, 234, 254, 0.7) 0px, transparent 50%),
+            radial-gradient(at 100% 0%, rgba(224, 231, 255, 0.7) 0px, transparent 50%),
+            radial-gradient(at 100% 100%, rgba(207, 250, 254, 0.5) 0px, transparent 50%),
+            radial-gradient(at 0% 100%, rgba(243, 232, 255, 0.6) 0px, transparent 50%);
+    background-attachment: fixed;
+    background-size: cover;
 }
 
 /* =========================================
@@ -23,7 +32,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #dcdfe4;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.6); /* Slightly more transparent line to blend with background */
     padding-bottom: 1.25rem;
 }
 
@@ -35,37 +44,33 @@
     letter-spacing: -0.025em;
 }
 
-/* --- Container for Search and Sort --- */
 .home-controls {
     display: flex;
     gap: 1.5rem;
     align-items: center;
-    width: 100%; /* Ensures the row takes up full width */
+    width: 100%;
 }
 
-/* 1. FORCE SORT DROPDOWN TO BE SMALL (Left side) */
-/* This safely targets your CustomSelect component even without a className */
 .home-controls > *:not(.search-input) {
     order: 1;
-    flex: 0 0 220px !important; /* Locks width to exactly 220px */
+    flex: 0 0 220px !important;
     min-width: 220px;
-    background-color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(8px);
 }
 
-/* 2. FORCE SEARCH INPUT TO BE LONG (Right side) */
 .search-input {
     order: 2;
-    flex: 1; /* Stretches to fill all remaining space */
+    flex: 1;
     padding: 0.75rem 1rem 0.75rem 2.5rem;
     border: 1px solid #cbd5e1;
     border-radius: 8px;
     font-size: 1rem;
-    background-color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(8px);
     color: #0f172a;
     transition: all 0.2s ease;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-
-    /* Embedded Magnifying Glass Icon */
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%2364748b'%3E%3Cpath fill-rule='evenodd' d='M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z' clip-rule='evenodd' /%3E%3C/svg%3E");
     background-position: 0.85rem center;
     background-repeat: no-repeat;
@@ -76,9 +81,9 @@
     outline: none;
     border-color: #3b82f6;
     box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+    background-color: #ffffff;
 }
 
-/* --- Modern Create Button --- */
 .modern-create-btn {
     display: flex;
     align-items: center;
@@ -101,95 +106,179 @@
     box-shadow: 0 6px 8px -1px rgba(37, 99, 235, 0.3), 0 4px 6px -1px rgba(37, 99, 235, 0.2);
 }
 
-.modern-create-btn:active {
-    transform: translateY(1px);
-    box-shadow: 0 2px 4px -1px rgba(37, 99, 235, 0.2);
-}
-
-.btn-icon {
-    stroke-width: 2.5;
-}
-
 /* =========================================
-   Event Cards Grid Layout
+   Premium Event Cards Grid
    ========================================= */
 .events-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
-    gap: 1.75rem;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 2rem;
     padding-bottom: 2rem;
 }
 
-/* --- The Modern Event Card --- */
 .event-card {
-    position: relative;
-    background: #ffffff;
-    padding: 1.75rem;
-    border-radius: 12px; /* Sharper, more professional corners */
-    border: 1px solid #e2e8f0;
-
-    /* Clean, premium shadow */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px); /* Creates a very subtle glassmorphism effect over the background */
+    border-radius: 16px;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
     cursor: pointer;
     display: flex;
     flex-direction: column;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    overflow: hidden;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Premium Hover Effect */
 .event-card:hover {
-    transform: translateY(-4px); /* Gentle lift */
+    transform: translateY(-5px);
     border-color: #cbd5e1;
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08); /* Deeper shadow on hover */
+    box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
-/* Typography inside the card */
-.event-title {
-    font-size: 1.35rem;
+/* --- Card Header: Badge & Title --- */
+.event-card-header {
+    display: flex;
+    padding: 1.5rem;
+    gap: 1.25rem;
+    align-items: flex-start;
+}
+
+/* Calendar Date Badge */
+.event-date-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #f1f5f9;
+    border-radius: 12px;
+    min-width: 65px;
+    height: 70px;
+    border: 1px solid #e2e8f0;
+}
+
+.badge-month {
+    font-size: 0.75rem;
     font-weight: 700;
-    margin: 0 0 1.25rem 0;
+    color: #ef4444;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.badge-day {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.1;
+}
+
+.badge-year {
+    font-size: 0.7rem;
+    color: #64748b;
+    font-weight: 600;
+}
+
+.event-title-area {
+    flex: 1;
+}
+
+.event-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
     color: #0f172a;
     line-height: 1.3;
-    letter-spacing: -0.01em;
 }
 
-/* Details container styling */
-.event-detail {
-    color: #475569;
-    font-size: 0.95rem;
-    margin: 0 0 0.6rem 0;
+.event-time-guests {
     display: flex;
-    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    color: #64748b;
+    font-size: 0.9rem;
     font-weight: 500;
 }
 
-.event-detail::before {
-    content: '•';
-    color: #94a3b8;
-    margin-right: 0.5rem;
-    font-size: 1.2rem;
-    line-height: 1;
+.event-time-guests span {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
 }
 
-/* --- Event Actions (Bottom of Card) --- */
+/* --- Card Body: Map Location --- */
+.event-card-body {
+    padding: 0 1.5rem;
+    flex-grow: 1;
+}
+
+.event-map-container {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 120px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    background-color: #f8fafc;
+    text-decoration: none;
+    transition: filter 0.2s;
+}
+
+.event-map-container:hover {
+    filter: brightness(0.95);
+}
+
+.map-overlay-text {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(15, 23, 42, 0.85) 0%, rgba(15, 23, 42, 0) 100%);
+    color: white;
+    padding: 2rem 0.75rem 0.5rem 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    z-index: 2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.no-location-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 120px;
+    background-color: #f8fafc;
+    border-radius: 12px;
+    border: 1px dashed #cbd5e1;
+    color: #94a3b8;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* --- Card Footer: Actions --- */
 .event-actions {
-    margin-top: auto;
-    padding-top: 1.25rem;
+    margin-top: 1.25rem;
+    padding: 1.25rem 1.5rem;
     border-top: 1px solid #f1f5f9;
+    background-color: #fdfdfd;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-/* Modernized Google Calendar Button */
 .google-calendar-btn {
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    color: #3b82f6;
+    color: #2563eb;
     background-color: #eff6ff;
-    padding: 0.5rem 0.75rem;
-    border-radius: 6px;
+    padding: 0.5rem 0.85rem;
+    border-radius: 8px;
     font-size: 0.85rem;
     font-weight: 600;
     text-decoration: none;
@@ -197,11 +286,10 @@
 }
 
 .google-calendar-btn:hover {
-    background-color: #3b82f6;
+    background-color: #2563eb;
     color: #ffffff;
 }
 
-/* Card Edit/Delete Icon Buttons */
 .card-icon-actions {
     display: flex;
     gap: 0.25rem;
@@ -211,7 +299,7 @@
     background: transparent;
     border: none;
     padding: 0.5rem;
-    border-radius: 6px;
+    border-radius: 8px;
     cursor: pointer;
     color: #94a3b8;
     display: flex;
@@ -250,7 +338,8 @@
     padding: 0 0.5rem;
     border: 1px solid #e5e7eb;
     border-radius: 8px;
-    background-color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(8px);
     color: #4b5563;
     font-size: 0.95rem;
     font-weight: 600;
@@ -322,7 +411,6 @@
     margin-bottom: 1.5rem;
 }
 
-/* --- Modal Form Layout --- */
 .modal-form {
     display: flex;
     flex-direction: column;
@@ -337,44 +425,6 @@
     margin-bottom: 0.4rem;
 }
 
-/* Professional Input Styling */
-.modal-form input {
-    background-color: #f8fafc;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    padding: 0.75rem 1rem;
-    font-size: 1rem;
-    color: #0f172a;
-    width: 100%;
-    box-sizing: border-box;
-    transition: all 0.2s ease;
-}
-
-.modal-form input:hover {
-    border-color: #94a3b8;
-}
-
-.modal-form input:focus {
-    outline: none;
-    background-color: #ffffff;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
-}
-
-/* Styling Native Date/Time Picker Icons */
-input[type="time"]::-webkit-calendar-picker-indicator,
-input[type="date"]::-webkit-calendar-picker-indicator {
-    cursor: pointer;
-    opacity: 0.5;
-    transition: opacity 0.2s ease;
-}
-
-input[type="time"]::-webkit-calendar-picker-indicator:hover,
-input[type="date"]::-webkit-calendar-picker-indicator:hover {
-    opacity: 1;
-}
-
-/* --- WhatsApp Toggle --- */
 .whatsapp-toggle {
     margin: 1.5rem 0 0 0;
     padding: 0;
@@ -400,7 +450,6 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
     accent-color: #2563eb;
 }
 
-/* --- Modal Action Buttons Layout --- */
 .modal-actions {
     display: flex;
     justify-content: flex-end;
@@ -408,21 +457,12 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
     margin-top: 2rem;
 }
 
-/* =========================================
-   Animations
-   ========================================= */
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
 }
 
 @keyframes scaleUp {
-    from {
-        opacity: 0;
-        transform: scale(0.95) translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
+    from { opacity: 0; transform: scale(0.95) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
 }
