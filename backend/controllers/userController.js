@@ -92,9 +92,20 @@ const createUser = async (req, res) => {
 const updateUser = (req, res) => {
     const id = parseInt(req.params.id);
     try {
-        userService.updateUserLogic(id, req.body);
+        // Check if a new file was uploaded
+        let picture = null;
+        if (req.file){
+            picture = `/uploads/${req.file.filename}`;
+        }
+        // Merge body data with the new picture path (if any)
+        const updateData = { ...req.body };
+        if (picture) {
+            updateData.picture = picture;
+        }
 
-        res.status(200).json({ success: true, data: { userId: id }, error: null });
+        const updatedUser = userService.updateUserLogic(id, updateData);
+        res.status(200).json({ success: true, data: updatedUser, error: null });
+
     } catch (error) {
         if (error.message === "USER_NOT_FOUND") {
             return res.status(404).json({ success: false, data: null,
