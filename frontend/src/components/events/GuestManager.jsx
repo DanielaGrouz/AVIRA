@@ -74,7 +74,7 @@ const GuestManager = ({ eventId, eventDetails }) => {
             FormModal={GuestModal}
             canDelete={(row) => row.role?.toUpperCase() !== 'MANAGER'}
             // API Wrappers
-            fetchItems={(page, sort, search, size) => EventService.getGuests(eventId, page, sort, search, size)}
+            fetchItems={(page, sort, search, size, sortDirection) => EventService.getGuests(eventId, page, sort, search, size, sortDirection)}
             addItem={handleAddGuest}
             updateItem={(id, payload) => EventService.updateGuest(id, { eventId, ...payload })}
             deleteItem={(id) => EventService.deleteGuest(eventId, id)}

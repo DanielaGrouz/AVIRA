@@ -33,7 +33,7 @@ const TaskManager = ({ eventId }) => {
                 priority: row.priority || 'Medium'
             })}
             // API Wrappers
-            fetchItems={(page, sort, search, size) => EventService.getTasks(eventId, page, sort, search, size)}
+            fetchItems={(page, sort, search, size, sortDirection) => EventService.getTasks(eventId, page, sort, search, size, sortDirection)}
             addItem={(payload) => EventService.addTask({ eventId, ...payload })}
             updateItem={(id, payload) => EventService.updateTask(id, { eventId, ...payload })}
             deleteItem={(id) => EventService.deleteTask(eventId, id)}

@@ -39,8 +39,13 @@ const GenericTableManager = ({
     // --- Data Fetching ---
     const loadData = async () => {
         try {
-            const activeSortBy = sorting.length > 0 ? sorting[0].id : null;
-            const res = await fetchItems(currentPage, activeSortBy, searchQuery, PAGE_SIZE);
+            let activeSortBy = null;
+            let sortDirection = 1;
+            if (sorting.length > 0){
+                activeSortBy = sorting[0].id;
+                sortDirection = sorting[0].desc ? -1 : 1;
+            }
+            const res = await fetchItems(currentPage, activeSortBy, searchQuery, PAGE_SIZE, sortDirection);
             setData(res.data.data.data);
             setPageCount(res.data.data.totalPages);
         } catch (error) {

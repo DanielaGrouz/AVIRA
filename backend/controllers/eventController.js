@@ -140,9 +140,11 @@ const getAllGuestsByEvent = (req, res) => {
         const limit = req.query.limit || 5;
         const page = parseInt(req.query.page) || 1;
         const sortBy = req.query.sortBy || 'id';
+        const sortDirection = req.query.sortDirection || 1;
+
         const searchQuery = req.query.searchQuery || null;
 
-        const result = eventService.getAllGuestsByEventLogic(eventId, page, limit, sortBy, searchQuery);
+        const result = eventService.getAllGuestsByEventLogic(eventId, page, limit, sortBy, searchQuery, sortDirection);
 
         res.status(200).json({
             success: true,
@@ -176,8 +178,9 @@ const getTasksByEventId = (req, res) => {
         const limit = req.query.limit || 5;
         const page = parseInt(req.query.page) || 1;
         const sortBy = req.query.sortBy || 'id';
+        const sortDirection = req.query.sortDirection || 1;
         const searchQuery = req.query.searchQuery || null;
-        const result = eventService.getTasksByEventIdLogic(eventId, page, limit, sortBy, searchQuery);
+        const result = eventService.getTasksByEventIdLogic(eventId, page, limit, sortBy, sortDirection, searchQuery);
 
         res.status(200).json({ success: true, data: result, error: null });
     } catch (error) {

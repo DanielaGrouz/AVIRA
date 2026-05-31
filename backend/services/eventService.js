@@ -93,7 +93,7 @@ const updateEventLogic = (id, updateData) => {
 };
 
 
-const processListData = (data, { page, limit, sortBy, searchQuery, searchFields }) => {
+const processListData = (data, { page, limit, sortBy, searchQuery, sortDirection, searchFields }) => {
     if (!data || data.length === 0) {
         return { page: 1, totalPages: 0, data: [] };
     }
@@ -119,8 +119,8 @@ const processListData = (data, { page, limit, sortBy, searchQuery, searchFields 
     // 2. Sort the Data
     if (sortBy) {
         processedData = processedData.sort((a, b) => {
-            if (a[sortBy] < b[sortBy]) return -1;
-            if (a[sortBy] > b[sortBy]) return 1;
+            if (a[sortBy] < b[sortBy]) return -1 * sortDirection;
+            if (a[sortBy] > b[sortBy]) return 1 * sortDirection;
             return 0;
         });
     }
@@ -138,7 +138,7 @@ const processListData = (data, { page, limit, sortBy, searchQuery, searchFields 
 };
 
 // Get a list of all guests invited to a specific event
-const getAllGuestsByEventLogic = (eventId, page, limit, sortBy, searchQuery) => {
+const getAllGuestsByEventLogic = (eventId, page, limit, sortBy, searchQuery, sortDirection) => {
     const eventIndex = events.findIndex(e => e.eventId === eventId);
     if (eventIndex === -1) throw new Error("EVENT_NOT_FOUND");
 
@@ -149,12 +149,13 @@ const getAllGuestsByEventLogic = (eventId, page, limit, sortBy, searchQuery) => 
         limit,
         sortBy,
         searchQuery,
+        sortDirection,
         searchFields: ["name", "phone"]
     });
 };
 
 // Get all tasks associated with a specific event ID
-const getTasksByEventIdLogic = (eventId, page, limit, sortBy, searchQuery) => {
+const getTasksByEventIdLogic = (eventId, page, limit, sortBy, sortDirection, searchQuery) => {
     const eventIndex = events.findIndex(e => e.eventId === eventId);
     if (eventIndex === -1) throw new Error("EVENT_NOT_FOUND");
 
@@ -165,6 +166,7 @@ const getTasksByEventIdLogic = (eventId, page, limit, sortBy, searchQuery) => {
         limit,
         sortBy,
         searchQuery,
+        sortDirection,
         searchFields: ["title"]
     });
 };

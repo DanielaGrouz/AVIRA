@@ -13,21 +13,6 @@ router.post('/', authorize(['user', 'admin']), validateEventFields, eventControl
 router.put('/:id', authorize(['user', 'admin']), validateId, validateEventId, validateOptionalEventFields, eventController.updateEvent);
 router.delete('/:id', authorize(['user', 'admin']), validateId, validateEventId, eventController.deleteEvent);
 
-router.get('/:id/guests', authorize(['user', 'admin']), validateId, validateEventId, eventController.getAllGuestsByEvent);
-router.post('/:id/guests', authorize(['user', 'admin']), validateId, validateEventId, validateGuestFields, eventController.addGuestToEvent);
-router.delete('/:id/guests/:guestId', authorize(['user', 'admin']), validateId, validateEventId, eventController.removeGuestFromEvent);
-router.put('/:id/guests/:guestId', authorize(['user', 'admin']), validateId, validateEventId, validateGuestFields, eventController.updateGuestInEvent);
-router.patch('/:id/guests/:guestId/rsvp', validateId, eventController.updateGuestRSVP);
-
-router.get('/:id/tasks', authorize(['user', 'admin']), validateId, validateEventId, eventController.getTasksByEventId);
-router.post('/:id/tasks', authorize(['user', 'admin']), validateId, validateEventId, eventController.addTaskToEvent);
-router.put('/:id/tasks/:taskId', authorize(['user', 'admin']), validateId, validateEventId, eventController.updateTaskInEvent);
-router.delete('/:id/tasks/:taskId', authorize(['user', 'admin']), validateId, validateEventId, eventController.removeTaskFromEvent);
-
-router.get('/:id/generate-invite', authorize(['user', 'admin']), validateId, validateEventId, eventController.generateInvite);
-router.get('/:id/shopping-list', authorize(['user', 'admin']), validateId, validateEventId, eventController.generateShoppingList);
-router.get('/:id/task-list', authorize(['user', 'admin']),validateId, validateEventId, eventController.generateTaskList);
-router.get('/:id/find-stores', authorize(['user', 'admin']), validateId, validateEventId, eventController.findStores);
 router.put('/:id/save-invitation', authorize(['user', 'admin']), upload.single('picture'), validateId, validateEventId, eventController.saveInvitation);
 
 module.exports = router;

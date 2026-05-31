@@ -36,8 +36,8 @@ class EventService {
     }
 
     // --- Guest Sub-resources ---
-    getGuests(eventId, page, sortBy, searchQuery, limit) {
-        return apiClient.get(`${this.route}/${eventId}/guests`, { params: { page, sortBy, searchQuery, limit } });
+    getGuests(eventId, page, sortBy, searchQuery, limit, sortDirection) {
+        return apiClient.get(`${this.route}/${eventId}/guests`, { params: { page, sortBy, searchQuery, limit, sortDirection } });
     }
 
     addGuest(guestData) {
@@ -57,8 +57,8 @@ class EventService {
     }
 
     // --- Task Sub-resources ---
-    getTasks(eventId, page, sortBy, searchQuery, limit ) {
-        return apiClient.get(`${this.route}/${eventId}/tasks`, { params: { page, sortBy, searchQuery, limit } });
+    getTasks(eventId, page, sortBy, searchQuery, limit, sortDirection) {
+        return apiClient.get(`${this.route}/${eventId}/tasks`, { params: { page, sortBy, searchQuery, limit, sortDirection } });
     }
 
     addTask(taskData) {

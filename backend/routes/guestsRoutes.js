@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const guestController = require('../controllers/guestController');
-const { validateId, validateEventExists} = require('../middleware/validation');
-const {authorize} = require("../middleware/auth");
+const {validateId} = require('../middleware/validation');
+const {authorize, validateEventId} = require("../middleware/auth");
 const {validateGuestFields} = require("../middleware/validation");
+const eventController = require("../controllers/eventController");
 
-// router.get('/', authorize(['admin']), guestController.getAllGuests);
-// router.get('/:id', validateId, guestController.getGuestById);
-// router.post('/', validateEventExists, validateGuestFields, guestController.createGuest);
-// router.put('/:id', validateId, validateGuestFields, guestController.updateGuest);
-// router.delete('/:id', validateId, guestController.deleteGuest);
+router.get('/:id/guests', authorize(['user', 'admin']), validateId, validateEventId, eventController.getAllGuestsByEvent);
+router.post('/:id/guests', authorize(['user', 'admin']), validateId, validateEventId, validateGuestFields, eventController.addGuestToEvent);
+router.delete('/:id/guests/:guestId', authorize(['user', 'admin']), validateId, validateEventId, eventController.removeGuestFromEvent);
+router.put('/:id/guests/:guestId', authorize(['user', 'admin']), validateId, validateEventId, validateGuestFields, eventController.updateGuestInEvent);
+router.patch('/:id/guests/:guestId/rsvp', validateId, eventController.updateGuestRSVP);
 
 module.exports = router;

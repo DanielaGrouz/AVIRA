@@ -5,6 +5,8 @@ const userRoutes = require('./routes/userRoutes');
 const guestsRoutes = require('./routes/guestsRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const taskRoutes = require('./routes/tasksRoutes');
+const aiRoutes = require('./routes/aiRoutes');
+
 const {uploadDir} = require("./middleware/fileUpload");
 const app = express();
 const port = 3000;
@@ -14,10 +16,11 @@ app.use('/uploads', express.static(uploadDir));
 app.use(express.json());
 app.use(logger);
 
+app.use('/events', aiRoutes);
 app.use('/users', userRoutes);
 app.use('/events', eventRoutes);
-app.use('/tasks', taskRoutes);
-app.use('/guests', guestsRoutes);
+app.use('/events', taskRoutes);
+app.use('/events', guestsRoutes);
 
 
 //default
