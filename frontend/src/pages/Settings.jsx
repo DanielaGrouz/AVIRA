@@ -8,7 +8,7 @@ import ProfileImage from '../components/ProfileImage';
 
 const Settings = () => {
     const navigate = useNavigate();
-    const { user } = useAuth();
+    const {user,updateUserContext} = useAuth();
 
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState(null);
@@ -121,6 +121,13 @@ const Settings = () => {
         try {
             const currentId = user?.userId || user?.id || user?._id;
             await UserService.updateSettings(currentId, formData);
+
+            // Update the global context so the Navbar refreshes immediately
+            updateUserContext({
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                picturePath: avatarUrl
+            });
 
             // Build a dynamic success message showing exactly what was updated
             const successText = `Profile updated successfully! (Changes: ${changedFields.join(', ')})`;

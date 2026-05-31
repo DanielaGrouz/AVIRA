@@ -16,6 +16,21 @@ export function AuthProvider({ children }) {
         setUser(userData.user);
     };
 
+    const updateUserContext = (newDetails) => {
+        const storedData = JSON.parse(localStorage.getItem('avira_user'));
+        if (storedData && storedData.user) {
+            // Merge existing user data with the new details
+            const updatedUser = { ...storedData.user, ...newDetails };
+
+            // Save the complete updated object back to storage
+            const updatedStorage = { ...storedData, user: updatedUser };
+            localStorage.setItem('avira_user', JSON.stringify(updatedStorage));
+
+            // Update the React state
+            setUser(updatedUser);
+        }
+    };
+
     const forgetUser = () => {
         localStorage.removeItem('avira_user');
         setUser(null);
@@ -26,6 +41,7 @@ export function AuthProvider({ children }) {
             user,
             isAuthenticated: !!user,
             saveUser,
+            updateUserContext,
             forgetUser
         }}>
             {children}
