@@ -255,7 +255,7 @@ const updateGuestRSVPLogic = (eventId, guestId, rsvpStatus) => {
     if (eventIndex === -1) throw new Error("EVENT_NOT_FOUND");
     const guest = guestService.getGuestByIdLogic(guestId);
     if (!guest || guest.eventId !== eventId) throw new Error("GUEST_NOT_FOUND_IN_EVENT");
-    if (!['Confirmed', 'Cancelled'].includes(rsvpStatus)) {
+    if (!['confirmed', 'cancelled'].includes(rsvpStatus)) {
         return res.status(400).json({ error: "Invalid status" });
     }
     return guestService.updateGuestLogic(guestId, { status: rsvpStatus });

@@ -13,9 +13,9 @@ const GuestManager = ({ eventId, eventDetails }) => {
             header: 'RSVP',
             cell: info => {
                 const status = info.getValue() || 'Pending';
-                let color = '#64748b'; // אפור לברירת מחדל (Pending)
-                if (status.toLowerCase() === 'confirmed') color = '#10b981'; // ירוק לאישור
-                if (status.toLowerCase() === 'declined' || status.toLowerCase() === 'cancelled') color = '#ef4444'; // אדום לביטול
+                let color = '#64748b';
+                if (status.toLowerCase() === 'confirmed') color = '#10b981';
+                if (status.toLowerCase() === 'cancelled') color = '#ef4444';
 
                 return <span style={{ color, fontWeight: '500' }}>{status}</span>;
             }

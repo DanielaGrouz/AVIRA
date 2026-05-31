@@ -11,7 +11,7 @@ const users = [
         phoneNumber: '0545368889',
         email: 'danielagrouz@gmail.com',
         originalPassword: '123456',
-        picturePath: "../sources/avatar1.png",
+        picturePath: "../uploads/avatar/avatar1.png",
         isEmailVerified: true,
     },
     {

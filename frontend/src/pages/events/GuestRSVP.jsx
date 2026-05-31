@@ -105,13 +105,13 @@ const GuestRSVP = () => {
                         <div className="rsvp-buttons">
                             <button
                                 className="rsvp-btn confirm"
-                                onClick={() => handleResponse('Confirmed')}
+                                onClick={() => handleResponse('confirmed')}
                             >
                                 Yes, I'll be there ✓
                             </button>
                             <button
                                 className="rsvp-btn decline"
-                                onClick={() => handleResponse('Declined')}
+                                onClick={() => handleResponse('cancelled')}
                             >
                                 No, I can't make it ✕
                             </button>
