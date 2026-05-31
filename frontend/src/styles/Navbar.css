@@ -1,19 +1,75 @@
-/* src/styles/Navbar.css */
+/* ─────────────────────────────────────────────────────────
+   AVIRA — A Boutique Event System
+   Navbar Stylesheet  ·  Pastel Luxury Edition
+   ───────────────────────────────────────────────────────── */
 
+/* ── Design Tokens (mirrors full system) ───────────────── */
+:root {
+    --color-blush:        #f0dbd8;
+    --color-blush-deep:   #e8c8c4;
+    --color-sage:         #b8cfc4;
+    --color-sage-deep:    #9cbfb0;
+    --color-sage-light:   #ddeee8;
+    --color-cream:        #faf8f5;
+    --color-gold:         #c9a96e;
+    --color-gold-light:   #dfc08a;
+
+    --color-ink:          #3a3530;
+    --color-ink-light:    #5a534d;
+    --color-muted:        #8a8078;
+    --color-subtle:       #b0a89e;
+    --color-rule:         rgba(184, 207, 196, 0.35);
+
+    --font-display: 'Cormorant Garamond', Georgia, serif;
+    --font-body:    'Jost', 'Helvetica Neue', sans-serif;
+
+    --transition-base: 0.22s ease;
+}
+
+/* =========================================
+   Navbar Shell
+   ========================================= */
 .navbar {
     width: 100%;
-    background-color: #ffffff;
-    border-bottom: 1px solid #eaeaea;
-    padding: 0.75rem 0;
+    /* Frosted glass — consistent with cards, modals, dropdown */
+    background: rgba(250, 248, 245, 0.82);
+    backdrop-filter: blur(20px) saturate(1.4);
+    -webkit-backdrop-filter: blur(20px) saturate(1.4);
+    border-bottom: 1px solid var(--color-rule);
+    padding: 0.7rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
+/* Thin gold shimmer line at the very top of the navbar */
+.navbar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(
+            90deg,
+            transparent              0%,
+            var(--color-blush-deep) 20%,
+            var(--color-gold)       50%,
+            var(--color-blush-deep) 80%,
+            transparent             100%
+    );
+    opacity: 0.7;
+}
+
+/* =========================================
+   Layout
+   ========================================= */
 .navbar-container {
     display: flex;
-    justify-content: space-between; /* This pushes children to opposite corners */
-    align-items: center; /* Vertically centers everything */
+    justify-content: space-between;
+    align-items: center;
 }
 
-/* Grouping the right-side elements */
 .navbar-actions {
     display: flex;
     align-items: center;
@@ -22,58 +78,95 @@
 
 .navbar-links {
     display: flex;
-    gap: 1rem;
+    gap: 0.25rem;
 }
 
-/* src/styles/Navbar.css */
-
-.nav-link {
+/* =========================================
+   Brand / Logo
+   ========================================= */
+.navbar-brand {
+    margin-left: 5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
     text-decoration: none;
-    color: #888888; /* Softer color for inactive links */
-    font-weight: 500;
-    padding-bottom: 4px;
+}
 
-    /* Transparent border reserves space so the layout doesn't jump when active */
+.brand-name {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 300;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-ink);
+    text-decoration: none;
+
+    /* Subtle gold shimmer on the brand word */
+    background: linear-gradient(
+            135deg,
+            var(--color-ink)   0%,
+            var(--color-ink)   40%,
+            var(--color-gold)  60%,
+            var(--color-ink)   80%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    transition: background-position 0.6s ease;
+}
+
+.navbar-brand:hover .brand-name {
+    background-position: right center;
+}
+
+/* =========================================
+   Nav Links
+   ========================================= */
+.nav-link {
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--color-subtle);
+    padding: 6px 10px;
+    border-radius: 8px;
     border-bottom: 2px solid transparent;
-    transition: color 0.2s ease, border-color 0.2s ease;
+    transition:
+            color      var(--transition-base),
+            background var(--transition-base);
 }
 
 .nav-link:hover {
-    color: #4a4a4a;
+    color: var(--color-ink-light);
+    background: rgba(184, 207, 196, 0.15);
 }
 
-/* The active state applied by NavLink */
+/* Active state — gold underline, consistent with brand accent */
 .nav-link.active {
-    color: #333333;
-    font-weight: 600;
-    /* Uses the muted dusty-rose tone from your profile image fallback */
-    border-bottom: 2px solid #7a6069;
+    color: var(--color-ink);
+    font-weight: 500;
+    background: rgba(184, 207, 196, 0.18);
+    border-bottom: 2px solid var(--color-gold);
 }
 
+/* =========================================
+   Divider
+   ========================================= */
 .navbar-divider {
     width: 1px;
-    height: 24px;
-    background-color: #eaeaea;
+    height: 22px;
+    background: var(--color-rule);
 }
 
+/* =========================================
+   Profile Section
+   ========================================= */
 .navbar-profile {
     margin-right: 50px;
     display: flex;
     align-items: center;
     gap: 12px;
-}
-
-.brand-name {
-    font-weight: 600;
-    font-size: 1.25rem;
-    color: #333;
-    text-decoration: none;
-    margin-left: 8px;
-}
-.navbar-brand {
-    margin-left: 5px;
-    display: flex;
-    align-items: center;
-    gap: 8px; /* Adjust the space between the image and the text */
-    text-decoration: none;
 }

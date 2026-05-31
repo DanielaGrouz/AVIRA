@@ -11,7 +11,7 @@ const GuestModal = ({ isOpen, onClose, onSave, initialData, isEditing }) => {
     useEffect(() => {
         setFormData(initialData);
         setError('');
-        setSendWhatsapp(true); // איפוס ל-true בכל פתיחה
+        setSendWhatsapp(true);
     }, [initialData, isOpen]);
 
     const handleSubmit = async (e) => {

@@ -21,7 +21,6 @@ const EventHomePage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [actionType, setActionType] = useState('');
-    const [notifyWhatsapp, setNotifyWhatsapp] = useState(false);
 
     // Form State for Editing
     const [editFormData, setEditFormData] = useState({
@@ -32,7 +31,7 @@ const EventHomePage = () => {
     });
 
     const navigate = useNavigate();
-    const PAGE_SIZE = 8;
+    const PAGE_SIZE = 6;
 
     const fetchEvents = async () => {
         try {
@@ -63,7 +62,6 @@ const EventHomePage = () => {
         e.stopPropagation();
         setSelectedEvent(event);
         setActionType(type);
-        setNotifyWhatsapp(false);
 
         if (type === 'edit') {
             setEditFormData({
@@ -81,7 +79,6 @@ const EventHomePage = () => {
         setIsModalOpen(false);
         setSelectedEvent(null);
         setActionType('');
-        setNotifyWhatsapp(false);
     };
 
     const handleEditFormChange = (e) => {
@@ -96,12 +93,9 @@ const EventHomePage = () => {
         if (!selectedEvent) return;
         try {
             if (actionType === 'delete') {
-                await EventService.delete(selectedEvent.eventId, { notifyWhatsapp });
+                await EventService.delete(selectedEvent.eventId);
             } else if (actionType === 'edit') {
-                await EventService.update(selectedEvent.eventId, {
-                    ...editFormData,
-                    notifyWhatsapp
-                });
+                await EventService.update(selectedEvent.eventId, {...editFormData});
             }
             fetchEvents();
             closeModal();
@@ -292,13 +286,6 @@ const EventHomePage = () => {
                         ) : (
                             <p>Are you sure you want to delete <strong>{selectedEvent?.title}</strong>?</p>
                         )}
-
-                        <div className="whatsapp-toggle">
-                            <label>
-                                <input type="checkbox" checked={notifyWhatsapp} onChange={(e) => setNotifyWhatsapp(e.target.checked)} />
-                                Send WhatsApp notification to all guests?
-                            </label>
-                        </div>
 
                         <div className="modal-actions">
                             <Button variant="secondary" className="cancel-btn" onClick={closeModal}>

@@ -1,68 +1,164 @@
-/* --- Reusable Button Styles --- */
+/* ─────────────────────────────────────────────────────────
+   AVIRA — A Boutique Event System
+   Button Stylesheet  ·  Pastel Luxury Edition
+   ───────────────────────────────────────────────────────── */
 
+/* ── Design Tokens (mirrors full system) ───────────────── */
+:root {
+    --color-blush:        #f0dbd8;
+    --color-blush-deep:   #e8c8c4;
+    --color-blush-light:  #f7eeec;
+    --color-sage:         #b8cfc4;
+    --color-sage-deep:    #9cbfb0;
+    --color-sage-light:   #ddeee8;
+    --color-cream:        #faf8f5;
+    --color-gold:         #c9a96e;
+
+    --color-ink:          #3a3530;
+    --color-ink-light:    #5a534d;
+    --color-muted:        #8a8078;
+    --color-subtle:       #b0a89e;
+
+    --color-error-text:   #9b4040;
+    --color-error-bg:     #fdf0ef;
+    --color-error-deep:   #f2d5d2;
+
+    --radius-btn:         10px;
+
+    --shadow-primary:
+            0 2px 8px  rgba(156, 191, 176, 0.35),
+            0 1px 2px  rgba(58,  53,  48,  0.10);
+    --shadow-primary-hover:
+            0 4px 14px rgba(156, 191, 176, 0.45),
+            0 2px 4px  rgba(58,  53,  48,  0.12);
+
+    --font-body:    'Jost', 'Helvetica Neue', sans-serif;
+    --transition-base: 0.22s ease;
+}
+
+/* =========================================
+   Base
+   ========================================= */
 .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 8px 16px;
-    font-size: 14px;
-    font-weight: 600;
-    border-radius: 8px;
+    gap: 0.4rem;
+    padding: 9px 18px;
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    border-radius: var(--radius-btn);
     border: none;
     cursor: pointer;
-    transition: all 0.2s ease;
-    font-family: inherit;
     outline: none;
+    position: relative;
+    overflow: hidden;
+    transition:
+            opacity     var(--transition-base),
+            transform   var(--transition-base),
+            box-shadow  var(--transition-base),
+            background  var(--transition-base),
+            color       var(--transition-base);
+}
+
+/* Shimmer sweep — available to all variants that opt in */
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 55%;
+    height: 100%;
+    background: linear-gradient(
+            120deg,
+            transparent               0%,
+            rgba(255, 255, 255, 0.22) 50%,
+            transparent               100%
+    );
+    transition: left 0.45s ease;
+    pointer-events: none;
 }
 
 .btn:active:not(:disabled) {
-    transform: scale(0.97);
+    transform: scale(0.975);
 }
 
 .btn:disabled {
-    opacity: 0.6;
+    opacity: 0.55;
     cursor: not-allowed;
 }
 
-/* Variants */
+/* =========================================
+   Primary  —  sage → blush gradient
+   ========================================= */
 .btn-primary {
-    background-color: #5469d4;
-    color: white;
-    box-shadow: 0 2px 5px rgba(84, 105, 212, 0.3);
+    background: linear-gradient(
+            135deg,
+            var(--color-sage)       0%,
+            var(--color-sage-deep)  55%,
+            var(--color-blush-deep) 100%
+    );
+    color: #ffffff;
+    box-shadow: var(--shadow-primary);
+}
+
+.btn-primary:hover:not(:disabled)::before {
+    left: 160%;
 }
 
 .btn-primary:hover:not(:disabled) {
-    background-color: #4a5ece;
-    box-shadow: 0 4px 10px rgba(84, 105, 212, 0.4);
+    opacity: 0.92;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-primary-hover);
 }
 
+/* =========================================
+   Secondary  —  translucent cream
+   ========================================= */
 .btn-secondary {
-    background-color: #f3f4f6;
-    color: #374151;
+    background: rgba(250, 248, 245, 0.75);
+    color: var(--color-ink-light);
+    border: 1px solid rgba(184, 207, 196, 0.45);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 }
 
 .btn-secondary:hover:not(:disabled) {
-    background-color: #e5e7eb;
+    background: var(--color-sage-light);
+    border-color: rgba(156, 191, 176, 0.6);
+    color: var(--color-ink);
 }
 
+/* =========================================
+   Danger  —  soft blush with dark-rose text
+   ========================================= */
 .btn-danger {
-    background-color: #fee2e2;
-    color: #ef4444;
+    background: var(--color-error-bg);
+    color: var(--color-error-text);
+    border: 1px solid rgba(212, 131, 122, 0.25);
 }
 
 .btn-danger:hover:not(:disabled) {
-    background-color: #fecaca;
-    color: #dc2626;
+    background: var(--color-error-deep);
+    border-color: rgba(212, 131, 122, 0.45);
+    color: #7a2f2f;
 }
 
-/* Optional Ghost/Text Variant for Nav Links */
+/* =========================================
+   Ghost  —  transparent, muted text
+   ========================================= */
 .btn-ghost {
-    background-color: transparent;
-    color: #6b7280;
-    padding: 8px 12px;
+    background: transparent;
+    color: var(--color-subtle);
+    padding: 9px 12px;
+    border: 1px solid transparent;
 }
 
 .btn-ghost:hover:not(:disabled) {
-    background-color: #f3f4f6;
-    color: #111827;
+    background: rgba(184, 207, 196, 0.15);
+    border-color: rgba(184, 207, 196, 0.3);
+    color: var(--color-ink-light);
 }
