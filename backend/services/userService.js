@@ -102,13 +102,28 @@ const createUserLogic = async (userData) => {
     let finalPicture = picturePath;
     if (!picturePath) {
         try {
-            // Try to generate the cool AI avatar
-            throw Error("");
-            finalPicture = await generateAvatarPicture(firstName, lastName);
+            const avatarFolder = path.join(__dirname, '../uploads/avatar');
+            const files = await fs.readdir(avatarFolder);
+            const imageFiles = files.filter(file => /\.(jpg|jpeg|png|gif)$/i.test(file));
+            if (imageFiles.length > 0) {
+                const randomFile = imageFiles[Math.floor(Math.random() * imageFiles.length)];
+                finalPicture = path.join(avatarFolder, randomFile);
+            } else {
+                finalPicture = path.join(avatarFolder, 'avatar1.png');
+            }
         } catch (error) {
-            // If AI fails, use a default placeholder instead of crashing the registration
-            finalPicture = path.join(__dirname, '../uploads', 'default_avatar.jpg');
+            console.error("Error picking random avatar:", error);
+            finalPicture = path.join(__dirname, '../uploads/avatar', 'avatar1.png');
         }
+
+        // try {
+        //     // Try to generate the cool AI avatar
+        //     throw Error("");
+        //     // finalPicture = await generateAvatarPicture(firstName, lastName);
+        // } catch (error) {
+            // If AI fails, use a default placeholder instead of crashing the registration
+            // finalPicture = path.join(__dirname, '../uploads/avatar', 'default_avatar.jpg');
+        // }
     }
 
     const newUser = {

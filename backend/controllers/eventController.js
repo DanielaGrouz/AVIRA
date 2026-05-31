@@ -431,10 +431,29 @@ const generateTaskList = async (req, res) => {
 
 const findStores = async (req, res) => {
     try {
+        // Validate that location exists in the request body
+        if (!req.body || !req.body.location) {
+            return res.status(400).json({
+                success: false,
+                data: null,
+                error: { code: "BAD_REQUEST", message: "Location is required", details: {} }
+            });
+        }
+
         const storesList = await eventService.findRelevantStores(req.body.location, parseInt(req.params.id));
-        res.status(200).json({ success: true, data: storesList, error: null });
+
+        if (storesList && storesList.length > 0) {
+            res.status(200).json({ success: true, data: storesList, error: null });
+        } else {
+            res.status(404).json({
+                success: false,
+                data: null,
+                error: { code: "NOT_FOUND", message: "No relevant stores found for this location", details: {} }
+            });
+        }
     } catch (error) {
-        console.error(error);
+        console.error("Error in findStores:", error);
+
         if (error.message === "EVENT_NOT_FOUND") {
             return res.status(404).json({
                 success: false,
@@ -446,13 +465,19 @@ const findStores = async (req, res) => {
             return res.status(400).json({
                 success: false,
                 data: null,
-                error: { code: "BAD_REQUEST", message: "task list was not generated yet", details: {} }
+                error: { code: "BAD_REQUEST", message: "Task list was not generated yet", details: {} }
             });
         }
-        res.status(500).json({ success: false, data: null,
+
+        res.status(500).json({
+            success: false,
+            data: null,
             error: {
-                code: "Internal Server Error", message: "Internal Server Error", details: {}
-            }});
+                code: "INTERNAL_SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
+        });
     }
 };
 
