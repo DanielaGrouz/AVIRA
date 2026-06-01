@@ -50,7 +50,7 @@ const getEventByIdLogic = (id) => {
 
 // Create a new event and add it to the database
 const createEventLogic = (creatorId, eventData) => {
-    const { title, date, time, location, eventType, guestsCount } = eventData;
+    const { title, date, time, location, eventType } = eventData;
     const newEvent = {
         eventId: events.length > 0 ? Math.max(...events.map(e => e.eventId)) + 1 : 1,
         creatorId: creatorId,
@@ -59,7 +59,6 @@ const createEventLogic = (creatorId, eventData) => {
         time,
         location,
         eventType,
-        guestsCount: guestsCount || 0
     };
     events.push(newEvent);
     return newEvent;

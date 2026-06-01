@@ -463,7 +463,7 @@ const findStores = async (req, res) => {
             return res.status(400).json({
                 success: false,
                 data: null,
-                error: { code: "BAD_REQUEST", message: "Task list was not generated yet", details: {} }
+                error: { code: "BAD_REQUEST", message: "There are no tasks for this event" , details: {} }
             });
         }
 

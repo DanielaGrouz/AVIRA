@@ -21,7 +21,6 @@ const CreateEventPage = () => {
         datetime: null, // Initialized as null for the DatePicker
         location: '',
         eventType: '',
-        guestsCount: ''
     });
 
     const handleChange = (fieldName, value) => {
@@ -44,7 +43,7 @@ const CreateEventPage = () => {
         setError(null);
 
         try {
-            const { title, datetime, location, eventType, guestsCount } = formData;
+            const { title, datetime, location, eventType } = formData;
 
             // Frontend validation checks
             if (!datetime) {
@@ -75,7 +74,6 @@ const CreateEventPage = () => {
                 timePart,
                 location,
                 eventType,
-                parseInt(guestsCount, 10) || 0
             );
 
             navigate('/');
@@ -160,18 +158,6 @@ const CreateEventPage = () => {
                             />
                         </div>
 
-                        <div style={{ flex: 1 }}>
-                            <InputField
-                                label="Estimated Guests"
-                                id="guestsCount"
-                                name="guestsCount"
-                                type="number"
-                                min="1"
-                                value={formData.guestsCount}
-                                onChange={(e) => handleChange("guestsCount", e.target.value)}
-                                required
-                            />
-                        </div>
                     </div>
 
                     <Button variant="primary" type="submit" disabled={loading} className="submit-btn">

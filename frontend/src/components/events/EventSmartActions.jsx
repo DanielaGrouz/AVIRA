@@ -34,7 +34,11 @@ const EventSmartActions = ({ eventId, onEventUpdate }) => {
     };
 
     const handleAction = async (type, title) => {
-        setActiveAction(type);
+        setActiveAction(type); // Starts the loading phase
+
+        // 1. OPEN MODAL IMMEDIATELY: Clear old data and show the spinner
+        setModalState({ isOpen: true, type, title, data: null, image: null, text: '', blob: null });
+
         try {
             let res;
             if (type === 'invite') {
@@ -47,6 +51,7 @@ const EventSmartActions = ({ eventId, onEventUpdate }) => {
                 res = await executeFindStores(eventId);
             }
 
+            // 2. UPDATE MODAL STATE: AI finished, populate the data
             if (type === 'invite') {
                 const imageUrl = URL.createObjectURL(res.data);
                 setModalState({ isOpen: true, type, title, image: imageUrl, blob: res.data });
@@ -66,7 +71,6 @@ const EventSmartActions = ({ eventId, onEventUpdate }) => {
         } catch (error) {
             console.error("Action failed:", error);
 
-            // חילוץ הודעת השגיאה מהשרת, ואם היא לא קיימת נציג הודעת גיבוי
             const errorMessage = error.response?.data?.error?.message
                 || error.response?.data?.message
                 || error.message
@@ -74,6 +78,7 @@ const EventSmartActions = ({ eventId, onEventUpdate }) => {
 
             setModalState({ isOpen: true, type: 'error', title: 'Action Failed', text: errorMessage });
         } finally {
+            // 3. STOP LOADING: This will tell the modal to stop spinning
             setActiveAction(null);
         }
     };
@@ -95,6 +100,9 @@ const EventSmartActions = ({ eventId, onEventUpdate }) => {
             event.target.value = null;
         }
     };
+
+    // Calculate if an AI action is currently loading (excluding normal file uploads)
+    const isAiLoading = activeAction !== null && activeAction !== 'upload';
 
     return (
         <div className="event-tools-section">
@@ -124,6 +132,7 @@ const EventSmartActions = ({ eventId, onEventUpdate }) => {
                 modalState={modalState}
                 eventId={eventId}
                 onEventUpdate={onEventUpdate}
+                isLoading={isAiLoading} // <--- Added the new prop here
             />
         </div>
     );
