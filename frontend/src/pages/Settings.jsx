@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import UserService from '../services/UserService';
 import Button from '../components/Button';
 import InputField from '../components/InputField';
-//import ProfileImage from '../components/ProfileImage';
 import ProfileImageUploader from '../components/ProfileImageUploader';
+import AppRoutes from "../AppRoutesConfig";
+import {FiUsers} from "react-icons/fi";
 
 const Settings = () => {
     const navigate = useNavigate();
-    const {user,updateUserContext} = useAuth();
+    const {user,updateUserContext, isAdmin} = useAuth();
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState(null);
     const [avatarUrl, setAvatarUrl] = useState('');
@@ -245,6 +246,15 @@ const Settings = () => {
                         {loading ? 'Saving...' : 'Save Changes'}
                     </Button>
                 </form>
+                {isAdmin && (
+                    <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+                        <Link to={AppRoutes.ADMIN_MANAGE_USERS} className="admin-manage-link">
+                            <FiUsers className="admin-link-icon" />
+                            Users Management
+                        </Link>
+                    </div>
+
+                )}
             </div>
         </div>
     );

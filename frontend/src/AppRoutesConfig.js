@@ -9,6 +9,7 @@ export default class AppRoutes {
     // Main Routes
     static HOME = '/';
     static SETTINGS = '/settings';
+    static ADMIN_MANAGE_USERS = '/admin-users';
 
     // Dynamic Route Definitions (used in <Route path={...} />)
     static EVENT_DETAILS = '/events/:id';

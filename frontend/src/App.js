@@ -15,9 +15,10 @@ import ResetPassword from "./pages/auth/ResetPassword";
 import NotFoundPage from "./pages/NotFoundPage";
 import GuestRSVP from "./pages/events/GuestRSVP";
 import Footer from "./components/Footer";
+import UsersManagementPage from "./pages/UsersManagementPage";
 
 function AppContent() {
-    const {isAuthenticated} = useAuth();
+    const {isAuthenticated, isAdmin} = useAuth();
     const makeProtected = (element) => {
         return isAuthenticated ? element : <Navigate to={AppRoutes.LOGIN} replace/>;
     };
@@ -42,6 +43,7 @@ function AppContent() {
                     <Route path={AppRoutes.CREATE_EVENT} element={isAuthenticated ? <CreateEventPage/> : <Navigate to={AppRoutes.LOGIN}/>}/>
 
                     <Route path={AppRoutes.SETTINGS} element={isAuthenticated ? <Settings/> : <Navigate to={AppRoutes.LOGIN}/>}/>
+                    <Route path={AppRoutes.ADMIN_MANAGE_USERS} element={isAdmin ? <UsersManagementPage/> : <Navigate to={AppRoutes.SETTINGS}/>}/>
 
                     <Route path={AppRoutes.NOT_FOUND} element={<NotFoundPage/>}/>
 

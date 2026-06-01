@@ -40,6 +40,7 @@ export function AuthProvider({ children }) {
         <AuthContext.Provider value={{
             user,
             isAuthenticated: !!user,
+            isAdmin: user && user.userRole === 'admin',
             saveUser,
             updateUserContext,
             forgetUser

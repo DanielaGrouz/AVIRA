@@ -9,8 +9,8 @@ class UserService {
         return apiClient.post(`${this.route}/login`, { email, password });
     }
 
-    getAll() {
-        return apiClient.get(this.route);
+    getAll(page, limit) {
+        return apiClient.get(this.route, { params: { page, limit } });
     }
 
     getById(id) {
