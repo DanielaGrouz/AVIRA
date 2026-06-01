@@ -22,9 +22,9 @@ async function generateAvatar(userData) {
             inputs: prompt,
             parameters: {
                 guidance_scale: 3.5,
-                num_inference_steps: 4, // Keep at 4 for 'schnell'
-                width: 96,  // Smaller size is better for avatars and faster to generate
-                height: 96,
+                num_inference_steps: 4,
+                width: 512,
+                height: 512,
             },
         });
 

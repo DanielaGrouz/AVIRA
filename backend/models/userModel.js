@@ -9,7 +9,7 @@ const users = [
         userRole: 'admin',
         password: '$2b$10$5h3ulsTQMjik8LbUZVVzU.5ClNVKy9VcFZ34lrHXF4qS4bv2R.mZe',
         phoneNumber: '0545368889',
-        email: 'danielagrouz@gmail.com',
+        email: 'danielagrou11z@gmail.com',
         originalPassword: '123456',
         picturePath: "/uploads/avatar/avatar1.png",
         isEmailVerified: true,
