@@ -1,70 +1,70 @@
-# Getting Started with Create React App
+# 🥂✨️ AVIRA - Boutique Event Management System
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+**AVIRA** is a specialized frontend web application designed for organizing and managing boutique events like birthdays, bridal showers, and small social gatherings. This React-based interface provides an elegant, user-friendly experience, focusing on clean UI architecture, protected routing, and seamless integration with the AVIRA backend API.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 🚀 Getting Started - How to Run
 
-### `npm start`
+### Prerequisites
+- **Node.js** (v14.0.0 or higher)
+- **npm** (comes with Node.js)
+- **Backend Server**: Ensure the AVIRA backend server is currently running before operating the frontend.
+    ```bash
+    node server.js
+    ```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Installation
+Navigate to the frontend project directory in your terminal and install all required packages by running:
+```bash
+npm install
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### Start the Development Server
+Once the installation is complete, run the following command to start the React application:
+```bash
+npm start
+```
+The application will automatically open in your default browser at http://localhost:5000.
 
-### `npm test`
+---
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 🔗 API Base URL
 
-### `npm run build`
+The frontend application relies on the backend API to function correctly and fetch data. All client-side services (e.g., API requests made from `src/services/`) are explicitly configured to communicate with the backend server at the following target address:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+**Target URL:** `http://localhost:3000`
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+*(Note: While the React frontend runs on port 5000, all data requests are routed to this backend API on port 3000).*
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+---
 
-### `npm run eject`
+## ✨ Key Features & Screens
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+AVIRA provides a seamless and secure interface built around the following core features:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- **Secure Authentication System:** Access to the platform is protected, requiring users to log in. The system includes a full registration flow with secure email verification, as well as a complete password reset process for account recovery.
+- **Centralized Dashboard:** The main hub of the application where authenticated users can view, manage, and organize all boutique events (such as birthdays, bridal showers, and dinners) in one clean interface.
+- **AI-Powered Event Tools:** Elevate the planning experience with built-in artificial intelligence integrations. The system can automatically generate custom event invitations and intelligently suggest relevant local stores based on the event's specific task lists.
+- **Profile Settings:** A dedicated configuration page allowing users to update their personal information. This includes a custom **Profile Image Uploader** that enables users to seamlessly upload a new photo, updating the UI instantly.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+---
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## 🛠 Project Structure & Logic
 
-## Learn More
+The project follows a modular structure to ensure maintainability and a seamless user experience:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- **src/components/** – Reusable UI elements (Buttons, InputFields, ProfileImageUploader, Navbar).
+- **src/pages/** – Main application views (Login, Signup, ResetPassword, Settings, Dashboard).
+- **src/services/** – API communication layer (e.g., UserService.js) handling HTTP requests to the backend.
+- **src/hooks/** – Custom React hooks (e.g., useAuth) for global state management and session persistence.
+- **src/styles/** – Global CSS and component-specific stylesheets maintaining the system's pastel luxury aesthetic.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+---
 
-### Code Splitting
+## ✒️ Author
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+**Daniela Grouz & Rinat Hadad**
 
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+3rd Year Information Systems and Software Engineering Students  
+Ben-Gurion University
