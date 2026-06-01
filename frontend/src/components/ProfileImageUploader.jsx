@@ -76,6 +76,7 @@ export default function ProfileImageUploader({ onImageSelected, initialImage, on
                         src={previewUrl}
                         alt="Profile Preview"
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        onError={() => setPreviewUrl(null)}
                     />
                 ) : (
                     // Default User Icon (SVG)

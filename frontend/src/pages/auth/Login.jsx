@@ -18,8 +18,12 @@ export default function Login() {
         e.preventDefault();
 
         // Basic Client-Side Validation
-        if (!email || password.length < 6) {
-            setError('Email is required and password must be at least 6 characters.');
+        if (!email.trim()) {
+            setError('Email address is required.');
+            return;
+        }
+        if (password.length < 6) {
+            setError('Password must be at least 6 characters long.');
             return;
         }
 

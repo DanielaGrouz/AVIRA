@@ -194,3 +194,17 @@
     margin-left: 0.2rem;
     vertical-align: baseline;
 }
+
+/* =========================================
+   Logout Confirmation Popup
+   ========================================= */
+.cancel-btn {
+    background-color: var(--color-cream);
+    color: var(--color-ink);
+    transition: background-color var(--transition-base), color var(--transition-base);
+}
+
+.cancel-btn:hover {
+    background-color: #e2e8f0; /* Soft gray/slate color */
+    color: var(--color-ink);
+}
