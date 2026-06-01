@@ -41,7 +41,7 @@ const GuestModal = ({ isOpen, onClose, onSave, initialData, isEditing }) => {
         <Modal isOpen={isOpen} onClose={onClose} title={isEditing ? "Edit Guest" : "Add Guest"}>
             <form onSubmit={handleSubmit}>
                 <div className="modal-body">
-                    {/* Error message styled to match the pastel theme tokens */}
+                    {/* Error message */}
                     {error && (
                         <div style={{
                             color: 'var(--color-error-text, #9b4040)',
@@ -91,16 +91,42 @@ const GuestModal = ({ isOpen, onClose, onSave, initialData, isEditing }) => {
 
                     {!isEditing && (
                         <div className="form-group" style={{ marginTop: '1.5rem' }}>
-                            {/* Replaced inline styles with the correct theme classes */}
-                            <label className="form-checkbox-group">
-                                <input
-                                    type="checkbox"
-                                    className="form-checkbox"
-                                    checked={sendWhatsapp}
-                                    onChange={(e) => setSendWhatsapp(e.target.checked)}
-                                />
-                                <span className="form-label">Send RSVP invitation via WhatsApp?</span>
-                            </label>
+                            {/* CUSTOM UI CHECKBOX (No native input issues) */}
+                            <div
+                                onClick={() => setSendWhatsapp(!sendWhatsapp)}
+                                style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', userSelect: 'none' }}
+                            >
+                                <div style={{
+                                    width: '22px',
+                                    height: '22px',
+                                    borderRadius: '6px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    transition: 'all 0.2s ease',
+                                    // Uses your CSS token colors based on state
+                                    backgroundColor: sendWhatsapp ? 'var(--color-sage-deep, #9cbfb0)' : 'transparent',
+                                    border: `2px solid ${sendWhatsapp ? 'var(--color-sage-deep, #9cbfb0)' : 'var(--color-sage, #b8cfc4)'}`
+                                }}>
+                                    {/* Only show the checkmark SVG if sendWhatsapp is true */}
+                                    {sendWhatsapp && (
+                                        <svg width="14" height="10" viewBox="0 0 14 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M1 5L4.5 8.5L13 1" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                        </svg>
+                                    )}
+                                </div>
+                                <span style={{
+                                    margin: 0,
+                                    fontFamily: 'var(--font-body)',
+                                    fontSize: '0.85rem',
+                                    fontWeight: '500',
+                                    letterSpacing: '0.04em',
+                                    textTransform: 'uppercase',
+                                    color: 'var(--color-ink-light)'
+                                }}>
+                                    Send RSVP invitation via WhatsApp?
+                                </span>
+                            </div>
                         </div>
                     )}
                 </div>
