@@ -18,7 +18,7 @@ export default function Signup() {
     const navigate = useNavigate();
 
     const isStrongPassword = (pass) => {
-        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
         return regex.test(pass);
     };
 
@@ -46,7 +46,7 @@ export default function Signup() {
         }
 
         if (!isStrongPassword(password)) {
-            return setError('Password must be at least 8 characters long, include uppercase and lowercase letters, a number, and a special character.');
+            return setError('Password must be at least 6 characters long, include uppercase and lowercase letters, a number, and a special character.');
         }
 
         setLoading(true);
