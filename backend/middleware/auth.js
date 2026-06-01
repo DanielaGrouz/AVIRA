@@ -68,4 +68,24 @@ const validateEventId = (req, res, next) => {
     next();
 }
 
-module.exports = {authorize, validateEventId};
+
+const validateOwmUserId = (req, res, next) => {
+    if (!req.user) return res.status(401).json({ error: 'missing middleware of authorize before this action.' });
+    const userId = parseInt(req.params.id);
+    if (req.user.userRole !== "admin"){
+        if (req.user.userId !== userId){
+            return res.status(401).json({
+                success: false,
+                data: null,
+                error: {
+                    code: "FORBIDDEN",
+                    message: "You do not have permission to perform this action.",
+                    details: 'this user is not you'
+                }
+            });
+        }
+    }
+    next();
+}
+
+module.exports = {authorize, validateEventId, validateOwmUserId};
