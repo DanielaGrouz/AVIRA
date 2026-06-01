@@ -36,10 +36,6 @@ class UserService {
         });
     }
 
-    update(id, data) {
-        return apiClient.put(`${this.route}/${id}`, data);
-    }
-
     delete(id) {
         return apiClient.delete(`${this.route}/${id}`);
     }
