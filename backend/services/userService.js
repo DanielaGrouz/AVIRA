@@ -98,24 +98,25 @@ const createUserLogic = async (userData) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Dynamic Avatar: Generate AI picture if no picture was uploaded
     let finalPicture = picturePath;
     if (!picturePath) {
         try {
             const avatarFolder = path.join(__dirname, '../uploads/avatar');
             const files = await fs.readdir(avatarFolder);
             const imageFiles = files.filter(file => /\.(jpg|jpeg|png|gif)$/i.test(file));
+
             if (imageFiles.length > 0) {
                 const randomFile = imageFiles[Math.floor(Math.random() * imageFiles.length)];
-                finalPicture = path.join(avatarFolder, randomFile);
+
+                finalPicture = `/uploads/avatar/${randomFile}`;
             } else {
-                finalPicture = path.join(avatarFolder, 'avatar1.png');
+                finalPicture = `/uploads/avatar/avatar1.png`;
             }
         } catch (error) {
             console.error("Error picking random avatar:", error);
-            finalPicture = path.join(__dirname, '../uploads/avatar', 'avatar1.png');
+            finalPicture = `/uploads/avatar/avatar1.png`;
         }
-
+    }
         // try {
         //     // Try to generate the cool AI avatar
         //     throw Error("");
@@ -124,7 +125,6 @@ const createUserLogic = async (userData) => {
             // If AI fails, use a default placeholder instead of crashing the registration
             // finalPicture = path.join(__dirname, '../uploads/avatar', 'default_avatar.jpg');
         // }
-    }
 
     const newUser = {
         userId: users.length > 0 ? Math.max(...users.map(u => u.userId)) + 1 : 1,
