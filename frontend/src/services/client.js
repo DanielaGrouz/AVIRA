@@ -28,6 +28,16 @@ apiClient.interceptors.response.use(
         console.error(error);
         if (error.response) {
             console.log(error.response);
+
+            if (error.response.status === 401) { // expired token
+                // Clean up local storage
+                localStorage.removeItem('avira_user');
+
+                // Redirect the user to the login page
+                window.location.href = '/login';
+                return;
+            }
+
             // The server responded with a status outside the 2xx range
             const errorMessage =
                 error.response.data?.error?.message ||

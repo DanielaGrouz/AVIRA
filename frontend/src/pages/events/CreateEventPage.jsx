@@ -58,6 +58,18 @@ const CreateEventPage = () => {
                 return;
             }
 
+            if (title.trim().length < 2) {
+                setError("Event title must be at least 2 characters long.");
+                setLoading(false);
+                return;
+            }
+
+            if (location.trim().length < 2) {
+                setError("Location must be at least 2 characters long.");
+                setLoading(false);
+                return;
+            }
+
             // Manually extract local YYYY-MM-DD and HH:mm to avoid UTC timezone shifts
             const year = datetime.getFullYear();
             const month = String(datetime.getMonth() + 1).padStart(2, '0');
@@ -134,6 +146,7 @@ const CreateEventPage = () => {
                         name="location"
                         value={formData.location}
                         onChange={(e) => handleChange("location", e.target.value)}
+                        placeholder="e.g., Rothschild Blvd 12, Tel Aviv"
                         required
                     />
 
