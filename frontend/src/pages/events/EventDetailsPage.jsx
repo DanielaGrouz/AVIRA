@@ -21,7 +21,11 @@ const EventDetailsPage = () => {
             const res = await EventService.getById(id);
             setEventDetails(res.data.data);
         } catch (error) {
-            navigate(AppRoutes.NOT_FOUND);
+            if (error.statusCode === 403) {
+                navigate(AppRoutes.UNAUTHORIZED);
+            } else {
+                navigate(AppRoutes.NOT_FOUND);
+            }
         }
     };
 

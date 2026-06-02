@@ -12,7 +12,7 @@ import EventDetailsPage from "./pages/events/EventDetailsPage";
 import AppRoutes from "./AppRoutesConfig";
 import CreateEventPage from "./pages/events/CreateEventPage";
 import ResetPassword from "./pages/auth/ResetPassword";
-import NotFoundPage from "./pages/NotFoundPage";
+import ErrorPage from "./pages/ErrorPage";
 import GuestRSVP from "./pages/events/GuestRSVP";
 import Footer from "./components/Footer";
 import UsersManagementPage from "./pages/UsersManagementPage";
@@ -43,9 +43,10 @@ function AppContent() {
                     <Route path={AppRoutes.CREATE_EVENT} element={isAuthenticated ? <CreateEventPage/> : <Navigate to={AppRoutes.LOGIN}/>}/>
 
                     <Route path={AppRoutes.SETTINGS} element={isAuthenticated ? <Settings/> : <Navigate to={AppRoutes.LOGIN}/>}/>
-                    <Route path={AppRoutes.ADMIN_MANAGE_USERS} element={isAdmin ? <UsersManagementPage/> : <Navigate to={AppRoutes.SETTINGS}/>}/>
+                    <Route path={AppRoutes.ADMIN_MANAGE_USERS} element={isAdmin ? <UsersManagementPage/> : <ErrorPage code={403} />}/>
 
-                    <Route path={AppRoutes.NOT_FOUND} element={<NotFoundPage/>}/>
+                    <Route path={AppRoutes.NOT_FOUND} element={<ErrorPage code={404} />}/>
+                    <Route path={AppRoutes.UNAUTHORIZED} element={<ErrorPage code={403} />} />
 
                     <Route path="*" element={<Navigate to={AppRoutes.NOT_FOUND} replace />} />
                 </Routes>
