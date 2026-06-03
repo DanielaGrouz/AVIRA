@@ -70,6 +70,12 @@ const CreateEventPage = () => {
                 return;
             }
 
+            if (!eventType) {
+                setError("Please select an event type.");
+                setLoading(false);
+                return;
+            }
+
             // Manually extract local YYYY-MM-DD and HH:mm to avoid UTC timezone shifts
             const year = datetime.getFullYear();
             const month = String(datetime.getMonth() + 1).padStart(2, '0');

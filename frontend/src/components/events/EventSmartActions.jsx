@@ -111,7 +111,7 @@ const EventSmartActions = ({ eventId, onEventUpdate }) => {
                     ✨ {activeAction === 'invite' ? 'Generating...' : 'Generate Invite'}
                 </button>
                 <button className="tool-btn outline-btn" onClick={() => handleAction('shopping', 'Shopping List')} disabled={activeAction !== null}>
-                    🛒 {activeAction === 'shopping' ? 'Generating...' : 'Shopping List'}
+                    🛒 {activeAction === 'shopping' ? 'Generating...' : 'Generate Shopping List'}
                 </button>
                 <button className="tool-btn outline-btn" onClick={() => handleAction('tasks', 'Generated Tasks')} disabled={activeAction !== null}>
                     📋 {activeAction === 'tasks' ? 'Generating...' : 'Generate Tasks'}

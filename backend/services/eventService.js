@@ -1,6 +1,7 @@
 let events = require('../models/eventModel');
 let guests = require('../models/guestModel');
 let tasks = require('../models/taskModel');
+const users = require('../models/userModel');
 const guestService = require('./guestService');
 const {getSupermarketList, getEventTaskList, getStoresForEvent} = require("../utils/generateTextClient");
 const {generateEventInvite} = require("../utils/generateImageClient");
@@ -59,8 +60,22 @@ const createEventLogic = (creatorId, eventData) => {
         time,
         location,
         eventType,
+        guestsCount: 1
     };
     events.push(newEvent);
+
+    // Auto-add the creator as a manager to the guest list
+    const creator = users.find(u => u.userId === creatorId);
+    if (creator) {
+        guestService.createGuestLogic({
+            eventId: newEvent.eventId,
+            name: `${creator.firstName} ${creator.lastName}`,
+            phone: creator.phoneNumber,
+            role: 'manager',
+            status: 'confirmed'
+        });
+    }
+
     return newEvent;
 };
 

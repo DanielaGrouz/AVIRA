@@ -1,4 +1,5 @@
 let users = require('../models/userModel');
+let guests = require('../models/guestModel');
 const bcrypt = require("bcrypt");
 const verificationCodes = require("../models/authVerification");
 const { sendMail } = require("../utils/emailClient");
@@ -153,6 +154,8 @@ const updateUserLogic = (id, updateData) => {
     const userIndex = users.findIndex(u => u.userId === id);
     if (userIndex === -1) throw new Error("USER_NOT_FOUND");
 
+    const oldPhone = users[userIndex].phoneNumber;
+
     const { firstName, lastName, userRole, phoneNumber, email, picture } = updateData;
 
     users[userIndex] = {
@@ -165,7 +168,18 @@ const updateUserLogic = (id, updateData) => {
         email: email || users[userIndex].email,
         picturePath: picture || users[userIndex].picturePath
     };
-    return users[userIndex];
+    const updatedUser = users[userIndex];
+
+    // TEMPORARY SYNC: Update all guest records that belong to this user
+    // We match by phone number assuming it acts as a unique identifier for guests
+    guests.forEach(guest => {
+        if (guest.phone === oldPhone) {
+            guest.name = `${updatedUser.firstName} ${updatedUser.lastName}`;
+            guest.phone = updatedUser.phoneNumber;
+        }
+    });
+
+    return updatedUser;
 };
 
 /**
