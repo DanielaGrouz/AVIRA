@@ -22,5 +22,5 @@ export default class AppRoutes {
     static CREATE_EVENT = "/events/create";
     static NOT_FOUND = "/not-found";
     static UNAUTHORIZED = "/unauthorized";
-
+    static SERVER_ERROR = "/server-error";
 }

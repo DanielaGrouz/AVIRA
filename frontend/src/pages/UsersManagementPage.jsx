@@ -2,9 +2,13 @@ import React, {useState, useEffect} from 'react';
 import {FiSearch, FiMail, FiShield, FiEdit2, FiTrash2} from 'react-icons/fi';
 import UserService from '../services/UserService';
 import Pagination from "../components/Pagination";
+import { useAuth } from '../hooks/useAuth';
 
 const UsersManagementPage = () => {
+    const { user: currentUser, updateUserContext } = useAuth();
     const [users, setUsers] = useState([]);
+    const [modalMessage, setModalMessage] = useState(null);
+    const [originalData, setOriginalData] = useState(null);
     // Edit Modal State
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
@@ -35,6 +39,23 @@ const UsersManagementPage = () => {
         setIsLoading(true);
         try {
             const response = await UserService.getAll(currentPage, 'id');
+            let fetchedUsers = response.data.data.data;
+
+            // TEMPORARY SYNC: Sync logged-in user with Navbar data to bypass server resets ---
+            if (currentUser) {
+                fetchedUsers = fetchedUsers.map(u => {
+                    if (u.userId === currentUser.userId) {
+                        return {
+                            ...u,
+                            firstName: currentUser.firstName || u.firstName,
+                            lastName: currentUser.lastName || u.lastName,
+                            email: currentUser.email || u.email
+                        };
+                    }
+                    return u;
+                });
+            }
+
             setUsers(response.data.data.data);
             setTotalPageCount(response.data.data.totalPages);
         } catch (error) {
@@ -72,32 +93,82 @@ const UsersManagementPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!editingUser) return;
+        setModalMessage(null);
+
+        let hasChanges = false;
+        if (originalData) {
+            if (formData.firstName !== originalData.firstName) hasChanges = true;
+            if (formData.lastName !== originalData.lastName) hasChanges = true;
+            if (formData.email !== originalData.email) hasChanges = true;
+            if (formData.userRole !== originalData.userRole) hasChanges = true;
+        }
+
+        if (!hasChanges) {
+            setModalMessage({ type: 'info', text: 'No changes detected. Update cancelled.' });
+            return;
+        }
+
+        if (formData.firstName.trim().length < 2) {
+            setModalMessage({ type: 'error', text: 'First Name must be at least 2 characters long.' });
+            return;
+        }
+        if (formData.lastName.trim().length < 2) {
+            setModalMessage({ type: 'error', text: 'Last Name must be at least 2 characters long.' });
+            return;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(formData.email)) {
+            setModalMessage({ type: 'error', text: 'Please enter a valid email address.' });
+            return;
+        }
 
         const targetId = editingUser.userId;
 
         try {
             await UserService.updateSettings(targetId, formData);
-            handleCloseModal();
+            setModalMessage({ type: 'success', text: 'User updated successfully!' });
+
+            // TEMPORARY SYNC: Update Navbar if the Admin edited their own profile ---
+            if (currentUser && currentUser.userId === targetId) {
+                updateUserContext({
+                    firstName: formData.firstName,
+                    lastName: formData.lastName,
+                    email: formData.email
+                });
+            }
+
             await fetchUsers();
+            setTimeout(() => {
+                handleCloseModal();
+            }, 1500);
         } catch (error) {
             console.error('Failed to update user:', error);
+            const errorMsg = error.response?.data?.error?.message || error.message || 'Failed to update user.';
+            setModalMessage({ type: 'error', text: errorMsg });
         }
     };
 
     const handleOpenModal = (user) => {
         setEditingUser(user);
-        setFormData({
+        setModalMessage(null);
+
+        const initialData = {
             firstName: user.firstName,
             lastName: user.lastName,
             email: user.email,
             userRole: user.userRole
-        });
-        setIsModalOpen(true);
+        };
+
+        setFormData(initialData);
+        setOriginalData(initialData);
+        setIsModalOpen(true)
     };
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setEditingUser(null);
+        setModalMessage(null);
     };
 
     // --- Helpers ---
@@ -105,6 +176,12 @@ const UsersManagementPage = () => {
         const first = firstName ? firstName.charAt(0).toUpperCase() : '';
         const last = lastName ? lastName.charAt(0).toUpperCase() : '';
         return `${first}${last}`;
+    };
+    const getMessageStyle = (type) => {
+        if (type === 'success') return { color: '#10B981', bg: '#D1FAE5' };
+        if (type === 'error') return { color: '#EF4444', bg: '#FEE2E2' };
+        if (type === 'info') return { color: '#3B82F6', bg: '#DBEAFE' };
+        return { color: 'black', bg: 'transparent' };
     };
 
     return (
@@ -125,6 +202,7 @@ const UsersManagementPage = () => {
                         {users.map(user => {
                             const userId = user.userId;
                             const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+                            const isSelf = currentUser?.userId === userId;
 
                             return (
                                 <div className="event-card" key={userId}>
@@ -155,10 +233,12 @@ const UsersManagementPage = () => {
                                                     title="Edit User">
                                                 <FiEdit2 size={16}/>
                                             </button>
-                                            <button className="icon-btn delete-btn"
-                                                    onClick={() => handleTriggerDelete(userId)} title="Delete User">
-                                                <FiTrash2 size={16}/>
-                                            </button>
+                                            {!isSelf && (
+                                                <button className="icon-btn delete-btn"
+                                                        onClick={() => handleTriggerDelete(userId)} title="Delete User">
+                                                    <FiTrash2 size={16}/>
+                                                </button>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -182,9 +262,19 @@ const UsersManagementPage = () => {
                 <div className="modal-overlay" onClick={handleCloseModal}>
                     <div className="modal-content" onClick={e => e.stopPropagation()}>
                         <h2>Edit User</h2>
-                        <p>Update the settings and role for this user.</p>
+                        <p>Update the settings for this user.</p>
 
                         <form className="modal-form" onSubmit={handleSubmit}>
+                            {modalMessage && (
+                                <div style={{
+                                    color: getMessageStyle(modalMessage.type).color,
+                                    backgroundColor: getMessageStyle(modalMessage.type).bg,
+                                    padding: '10px', borderRadius: '6px', textAlign: 'center',
+                                    marginBottom: '15px', fontSize: '14px', fontWeight: '500'
+                                }}>
+                                    {modalMessage.text}
+                                </div>
+                            )}
                             <div style={{display: 'flex', gap: '1rem'}}>
                                 <div style={{flex: 1}}>
                                     <label>First Name</label>

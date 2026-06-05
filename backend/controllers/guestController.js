@@ -22,13 +22,15 @@ const getAllGuests = (req, res) => {
         });
     } catch (error) {
         // Global error handling for unexpected issues
-        res.status(500).json({ success: false,
+        res.status(500).json({
+            success: false,
             data: null,
             error: {
-                code: "Internal Server Error",
+                code: "SERVER_ERROR",
                 message: "Internal Server Error",
-                details : {}
-            }});
+                details: {}
+            }
+        });
     }
 };
 
@@ -60,13 +62,15 @@ const getGuestById = (req, res) => {
             error: null
         });
     } catch (error) {
-        res.status(500).json({ success: false,
+        res.status(500).json({
+            success: false,
             data: null,
             error: {
-                code: "Internal Server Error",
+                code: "SERVER_ERROR",
                 message: "Internal Server Error",
-                details : {}
-            }});
+                details: {}
+            }
+        });
     }
 };
 
@@ -86,13 +90,15 @@ const createGuest = (req, res) => {
             error: null
         });
     } catch (error) {
-        res.status(500).json({ success: false,
+        res.status(500).json({
+            success: false,
             data: null,
             error: {
-                code: "Internal Server Error",
+                code: "SERVER_ERROR",
                 message: "Internal Server Error",
-                details : {}
-            }});
+                details: {}
+            }
+        });
     }
 };
 
@@ -125,13 +131,15 @@ const updateGuest = (req, res) => {
                 }
             });
         }
-        res.status(500).json({ success: false,
+        res.status(500).json({
+            success: false,
             data: null,
             error: {
-                code: "Internal Server Error",
+                code: "SERVER_ERROR",
                 message: "Internal Server Error",
-                details : {}
-            }});
+                details: {}
+            }
+        });
     }
 };
 
@@ -159,13 +167,15 @@ const deleteGuest = (req, res) => {
                 error: { code: "NOT_FOUND", message: `Guest with ID ${id} was not found.`, details : {}}
             });
         }
-        res.status(500).json({ success: false,
+        res.status(500).json({
+            success: false,
             data: null,
             error: {
-                code: "Internal Server Error",
+                code: "SERVER_ERROR",
                 message: "Internal Server Error",
-                details : {}
-            }});
+                details: {}
+            }
+        });
     }
 };
 

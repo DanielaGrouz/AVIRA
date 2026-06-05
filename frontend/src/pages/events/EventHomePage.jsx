@@ -30,6 +30,8 @@ const EventHomePage = () => {
         location: ''
     });
 
+    const [modalMessage, setModalMessage] = useState(null);
+    const [originalEditData, setOriginalEditData] = useState(null);
     const navigate = useNavigate();
     const PAGE_SIZE = 6;
 
@@ -62,14 +64,17 @@ const EventHomePage = () => {
         e.stopPropagation();
         setSelectedEvent(event);
         setActionType(type);
+        setModalMessage(null);
 
         if (type === 'edit') {
-            setEditFormData({
+            const initialData = {
                 title: event.title || '',
                 date: event.date !== 'TBD' ? event.date : '',
                 time: event.time !== 'TBD' ? event.time : '',
                 location: event.location || ''
-            });
+            };
+            setEditFormData(initialData);
+            setOriginalEditData(initialData);
         }
 
         setIsModalOpen(true);
@@ -79,6 +84,7 @@ const EventHomePage = () => {
         setIsModalOpen(false);
         setSelectedEvent(null);
         setActionType('');
+        setModalMessage(null);
     };
 
     const handleEditFormChange = (e) => {
@@ -91,16 +97,69 @@ const EventHomePage = () => {
 
     const handleConfirmAction = async () => {
         if (!selectedEvent) return;
-        try {
-            if (actionType === 'delete') {
+        setModalMessage(null);
+
+        // Handle Delete
+        if (actionType === 'delete') {
+            try {
                 await EventService.delete(selectedEvent.eventId);
-            } else if (actionType === 'edit') {
-                await EventService.update(selectedEvent.eventId, {...editFormData});
+                fetchEvents();
+                closeModal();
+            } catch (error) {
+                console.error("Failed to delete event:", error);
             }
-            fetchEvents();
-            closeModal();
-        } catch (error) {
-            console.error(`Failed to ${actionType} event:`, error);
+            return;
+        }
+
+        // Handle Edit
+        if (actionType === 'edit') {
+            // Check if anything actually changed
+            let hasChanges = false;
+            if (originalEditData) {
+                if (editFormData.title !== originalEditData.title) hasChanges = true;
+                if (editFormData.date !== originalEditData.date) hasChanges = true;
+                if (editFormData.time !== originalEditData.time) hasChanges = true;
+                if (editFormData.location !== originalEditData.location) hasChanges = true;
+            }
+
+            if (!hasChanges) {
+                setModalMessage({ type: 'info', text: 'No changes detected. Update cancelled.' });
+                return;
+            }
+
+            // Validate Length
+            if (editFormData.title.trim().length < 2) {
+                setModalMessage({ type: 'error', text: 'Event title must be at least 2 characters long.' });
+                return;
+            }
+            if (editFormData.location.trim().length < 2) {
+                setModalMessage({ type: 'error', text: 'Location must be at least 2 characters long.' });
+                return;
+            }
+
+            // Future Date Check
+            if (editFormData.date && editFormData.time) {
+                const eventDateTime = new Date(`${editFormData.date}T${editFormData.time}`);
+                if (eventDateTime <= new Date()) {
+                    setModalMessage({ type: 'error', text: 'Event date and time must be in the future.' });
+                    return;
+                }
+            }
+
+            try {
+                await EventService.update(selectedEvent.eventId, { ...editFormData });
+                setModalMessage({ type: 'success', text: 'Event updated successfully!' });
+                fetchEvents();
+
+                setTimeout(() => {
+                    closeModal();
+                }, 1500);
+            } catch (error) {
+                console.error("Failed to edit event:", error);
+                const errorMsg = error.response?.data?.error?.message || error.message || 'Failed to update event.';
+                setModalMessage({ type: 'error', text: errorMsg });
+            }
+
         }
     };
 
@@ -158,6 +217,13 @@ const EventHomePage = () => {
             }
         }
         return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&location=${location}${datesStr}`;
+    };
+
+    const getMessageStyle = (type) => {
+        if (type === 'success') return { color: '#10B981', bg: '#D1FAE5' };
+        if (type === 'error') return { color: '#EF4444', bg: '#FEE2E2' };
+        if (type === 'info') return { color: '#3B82F6', bg: '#DBEAFE' };
+        return { color: 'black', bg: 'transparent' };
     };
 
     return (
@@ -279,6 +345,16 @@ const EventHomePage = () => {
 
                         {actionType === 'edit' ? (
                             <div className="modal-form">
+                                {modalMessage && (
+                                    <div style={{
+                                        color: getMessageStyle(modalMessage.type).color,
+                                        backgroundColor: getMessageStyle(modalMessage.type).bg,
+                                        padding: '10px', borderRadius: '6px', textAlign: 'center',
+                                        marginBottom: '15px', fontSize: '14px', fontWeight: '500'
+                                    }}>
+                                        {modalMessage.text}
+                                    </div>
+                                )}
                                 <InputField id="edit-title" label="Event Title" type="text" name="title" value={editFormData.title} onChange={handleEditFormChange} placeholder="Enter event title" />
                                 <InputField id="edit-date" label="Date" type="date" name="date" value={editFormData.date} onChange={handleEditFormChange} />
                                 <InputField id="edit-time" label="Time" type="time" name="time" value={editFormData.time} onChange={handleEditFormChange} />

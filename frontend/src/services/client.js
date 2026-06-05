@@ -51,7 +51,11 @@ apiClient.interceptors.response.use(
             );
         } else if (error.request) {
             // The request was made but no response was received
-            throw new ApiError(503, 'Network Error: No response from server.');
+            console.error("Server is unreachable, redirecting to 500 page...");
+            window.location.href = '/server-error';
+
+            // Return a rejected promise so the calling function doesn't crash
+            return Promise.reject(new ApiError(503, 'Network Error: No response from server.'));
         } else {
             // Something else triggered an error
             throw new ApiError(500, `Request Error: ${error.message}`);

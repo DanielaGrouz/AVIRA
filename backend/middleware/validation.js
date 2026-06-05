@@ -33,7 +33,8 @@ const validateEventExists = (req, res, next) => {
             success: false,
             error: {
                 code: "VALIDATION_ERROR",
-                message: "eventId must be a valid positive integer"
+                message: "eventId must be a valid positive integer",
+                details: {}
             }
         });
     }
@@ -263,20 +264,14 @@ const validateEventFields = (req, res, next) => {
     if (!date || typeof date !== 'string' || !dateRegex.test(date)) {
         errors.push("date must be a valid string in YYYY-MM-DD format");
     } else {
-        // Split the date string to parse it in the local timezone
-        const [year, month, day] = date.split('-').map(Number);
-        const inputDate = new Date(year, month - 1, day);
+        // Backend Validation: Future Date & Time Check for new events
+        const timeString = time && time !== 'TBD' ? time : "00:00";
+        const eventDateTime = new Date(`${date}T${timeString}`);
 
-        // Get today's date and zero out the time for an accurate date-to-date comparison
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        // Check if the input date is today or in the past
-        if (inputDate <= today) {
-            errors.push("date must be in the future");
+        if (eventDateTime <= new Date()) {
+            errors.push("date and time must be in the future");
         }
     }
-
 
     const timeRegex = /^([0-1]\d|2[0-3]):([0-5]\d)$/;
     if (!time || typeof time !== 'string' || !timeRegex.test(time)) {
@@ -321,7 +316,8 @@ const validateUserExists = (req, res, next) => {
             data: null,
             error: {
                 code: "VALIDATION_ERROR",
-                message: "creatorId must be a valid positive integer"
+                message: "creatorId must be a valid positive integer",
+                details: {}
             }
         });
     }
@@ -356,7 +352,17 @@ const validateOptionalEventFields = (req, res, next) => {
     }
     if (isProvided(date)) {
         const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-        if (typeof date !== 'string' || !dateRegex.test(date)) errors.push("date must be a valid string in YYYY-MM-DD format");
+        if (typeof date !== 'string' || !dateRegex.test(date)) {
+            errors.push("date must be a valid string in YYYY-MM-DD format");
+        }else {
+            // Future Date Check for Update
+            const timeString = isProvided(time) && time !== 'TBD' ? time : "00:00";
+            const eventDateTime = new Date(`${date}T${timeString}`);
+
+            if (eventDateTime <= new Date()) {
+                errors.push("date and time must be in the future");
+            }
+        }
     }
     if (isProvided(time)) {
         const timeRegex = /^([0-1]\d|2[0-3]):([0-5]\d)$/;
@@ -375,6 +381,25 @@ const validateOptionalEventFields = (req, res, next) => {
     next();
 };
 
+/**
+ * Validates that the verification code is exactly 4 digits.
+ */
+const validateVerificationCode = (req, res, next) => {
+    const { code } = req.body;
+    if (!code || !/^\d{4}$/.test(code.toString().trim())) {
+        return res.status(400).json({
+            success: false,
+            data: null,
+            error: {
+                code: "VALIDATION_ERROR",
+                message: "Verification code must be exactly 4 digits",
+                details: {}
+            }
+        });
+    }
+    next();
+};
+
 module.exports = {
     validateId,
     validateUserFields,
@@ -384,5 +409,6 @@ module.exports = {
     validateEventExists,
     validateUserExists,
     validateOptionalUserFields,
-    validateOptionalEventFields
+    validateOptionalEventFields,
+    validateVerificationCode
 };

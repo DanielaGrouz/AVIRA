@@ -14,13 +14,15 @@ const getAllUsers = (req, res) => {
 
         res.status(200).json({ success: true, data: result, error: null });
     } catch (error) {
-        res.status(500).json({ success: false,
+        res.status(500).json({
+            success: false,
             data: null,
             error: {
-                code: "Internal Server Error",
+                code: "SERVER_ERROR",
                 message: "Internal Server Error",
-                details : {}
-            }});
+                details: {}
+            }
+        });
     }
 };
 
@@ -39,13 +41,15 @@ const getUserById = (req, res) => {
         }
         res.status(200).json({ success: true, data: user, error: null });
     } catch (error) {
-        res.status(500).json({ success: false,
+        res.status(500).json({
+            success: false,
             data: null,
             error: {
-                code: "Internal Server Error",
+                code: "SERVER_ERROR",
                 message: "Internal Server Error",
-                details : {}
-            }});
+                details: {}
+            }
+        });
     }
 };
 
@@ -82,7 +86,15 @@ const createUser = async (req, res) => {
                 error: { code: "EMAIL_EXISTS", message: "A user with this email already exists", details:{}}
             });
         }
-        res.status(500).json({ success: false, data: null, error: { code: "SERVER_ERROR", message: error.message, details: {}} });
+        res.status(500).json({
+            success: false,
+            data: null,
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
+        });
     }
 };
 
@@ -111,12 +123,17 @@ const updateUser = (req, res) => {
             return res.status(404).json({ success: false, data: null,
                 error: { code: "NOT_FOUND", message: `User with id: ${id} not found.`, details:{} } });
         }
-        res.status(500).json({ success: false,
+        if (error.message === "EMAIL_EXISTS") {
+            return res.status(400).json({ success: false, data: null,
+                error: { code: "EMAIL_EXISTS", message: "A user with this email already exists.", details:{} } });
+        }
+        res.status(500).json({
+            success: false,
             data: null,
             error: {
                 code: "SERVER_ERROR",
                 message: "Internal Server Error",
-                details : {}
+                details: {}
             }
         });
     }
@@ -127,6 +144,19 @@ const updateUser = (req, res) => {
  */
 const deleteUser = (req, res) => {
     const id = parseInt(req.params.id);
+
+    if (req.user && req.user.userId === id) {
+        return res.status(403).json({
+            success: false,
+            data: null,
+            error: {
+                code: "FORBIDDEN",
+                message: "You cannot delete your own account.",
+                details: {}
+            }
+        });
+    }
+
     try {
         userService.deleteUserLogic(id);
 
@@ -136,12 +166,13 @@ const deleteUser = (req, res) => {
             return res.status(404).json({ success: false, data: null,
                 error: { code: "NOT_FOUND", message: `User with id: ${id} not found.`, details:{} } });
         }
-        res.status(500).json({ success: false,
+        res.status(500).json({
+            success: false,
             data: null,
             error: {
                 code: "SERVER_ERROR",
                 message: "Internal Server Error",
-                details : {}
+                details: {}
             }
         });
     }
@@ -155,6 +186,7 @@ const completeEmailVerification = async (req, res) => {
         const { email, code } = req.body;
         const {user, token} = await userService.completeEmailVerificationLogic(email, code);
         const { password, ...safeUserCopy } = user;
+
         res.status(200).json({
             success: true,
             data: { user: safeUserCopy, token: token, message: "users email has been verified." },
@@ -168,12 +200,13 @@ const completeEmailVerification = async (req, res) => {
         if (error.message === "USER_NOT_FOUND") {
             return res.status(404).json({ success: false, data: null, error: { code: "NOT_FOUND", message: `User with email ${req.body.email} was not found.`, details:{} } });
         }
-        res.status(500).json({ success: false,
+        res.status(500).json({
+            success: false,
             data: null,
             error: {
                 code: "SERVER_ERROR",
                 message: "Internal Server Error",
-                details : {}
+                details: {}
             }
         });
     }
@@ -207,7 +240,15 @@ const login = async (req, res) => {
         if (error.message === "INCORRECT_PASSWORD") {
             return res.status(401).json({ success: false, data: null, error: { code: "UNAUTHORIZED", message: "Incorrect password", details:{} } });
         }
-        res.status(500).json({ success: false, data: null, error: { code: "SERVER_ERROR", message: error.message, details: {} } });
+        res.status(500).json({
+            success: false,
+            data: null,
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
+        });
     }
 };
 
@@ -223,7 +264,15 @@ const sendVerificationCode = async (req, res) => {
         if (error.message === "USER_NOT_FOUND") {
             return res.status(404).json({ success: false, data: null, error: { code: "NOT_FOUND", message: "User with this email not found" , details:{} } });
         }
-        res.status(500).json({ success: false, data: null, error: { code: "SERVER_ERROR", message: error.message , details: {} } });
+        res.status(500).json({
+            success: false,
+            data: null,
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
+        });
     }
 };
 
@@ -243,7 +292,15 @@ const resetPassword = async (req, res) => {
         if (error.message === "INVALID_CODE") {
             return res.status(400).json({ success: false, data: null, error: { code: "INVALID_CODE", message: "Invalid verification code", details:{} } });
         }
-        res.status(500).json({ success: false, data: null, error: { code: "SERVER_ERROR", message: error.message, details: {} } });
+        res.status(500).json({
+            success: false,
+            data: null,
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
+        });
     }
 };
 

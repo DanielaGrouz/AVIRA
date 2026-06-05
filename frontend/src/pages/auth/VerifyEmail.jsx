@@ -36,8 +36,17 @@ export default function VerifyEmail() {
     const handleVerify = async (e) => {
         e.preventDefault();
 
-        if (!code.trim()) {
+        const cleanCode = code.trim();
+
+        if (!cleanCode) {
             setError('Please enter the verification code.');
+            return;
+        }
+
+        // Exactly 4 digits
+        const codeRegex = /^\d{4}$/;
+        if (!codeRegex.test(cleanCode)) {
+            setError('Verification code must be exactly 4 digits.');
             return;
         }
 

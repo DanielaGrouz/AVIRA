@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController'); // import user logic
 const {authorize, validateOwnUserId} = require('../middleware/auth');
-const { validateId, validateUserFields, validateOptionalUserFields } = require('../middleware/validation');
+const { validateId, validateUserFields, validateOptionalUserFields, validateVerificationCode } = require('../middleware/validation');
 const {upload} = require("../middleware/fileUpload");
 
 
@@ -13,7 +13,7 @@ router.put('/:id', authorize(['admin', 'user']), validateId, validateOwnUserId, 
 router.delete('/:id', authorize(['admin']), validateId, userController.deleteUser);
 router.post('/login', userController.login);
 router.post('/send-verification-code', userController.sendVerificationCode);
-router.post('/verify-email', userController.completeEmailVerification);
-router.post('/reset-password', userController.resetPassword);
+router.post('/verify-email', validateVerificationCode, userController.completeEmailVerification);
+router.post('/reset-password', validateVerificationCode, userController.resetPassword);
 
 module.exports = router;

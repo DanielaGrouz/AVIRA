@@ -47,6 +47,7 @@ function AppContent() {
 
                     <Route path={AppRoutes.NOT_FOUND} element={<ErrorPage code={404} />}/>
                     <Route path={AppRoutes.UNAUTHORIZED} element={<ErrorPage code={403} />} />
+                    <Route path={AppRoutes.SERVER_ERROR} element={<ErrorPage code={500} />} />
 
                     <Route path="*" element={<Navigate to={AppRoutes.NOT_FOUND} replace />} />
                 </Routes>

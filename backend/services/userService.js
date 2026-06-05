@@ -154,6 +154,13 @@ const updateUserLogic = (id, updateData) => {
     const userIndex = users.findIndex(u => u.userId === id);
     if (userIndex === -1) throw new Error("USER_NOT_FOUND");
 
+    if (updateData.email && updateData.email !== users[userIndex].email) {
+        const emailTaken = users.find(u => u.email === updateData.email);
+        if (emailTaken) {
+            throw new Error("EMAIL_EXISTS");
+        }
+    }
+
     const oldPhone = users[userIndex].phoneNumber;
 
     const { firstName, lastName, userRole, phoneNumber, email, picture } = updateData;

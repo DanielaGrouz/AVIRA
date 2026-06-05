@@ -19,7 +19,11 @@ const getAllEvents = (req, res) => {
         res.status(500).json({
             success: false,
             data: null,
-            error: { code: "Internal Server Error", message: "Internal Server Error", details: {} }
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
         });
     }
 };
@@ -51,7 +55,11 @@ const getEventById = (req, res) => {
         res.status(500).json({
             success: false,
             data: null,
-            error: { code: "Internal Server Error", message: "Internal Server Error", details: {} }
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
         });
     }
 };
@@ -70,7 +78,11 @@ const createEvent = (req, res) => {
         res.status(500).json({
             success: false,
             data: null,
-            error: { code: "Internal Server Error", message: "Internal Server Error", details: {} }
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
         });
     }
 };
@@ -97,7 +109,11 @@ const deleteEvent = (req, res) => {
         res.status(500).json({
             success: false,
             data: null,
-            error: { code: "Internal Server Error", message: "Internal Server Error", details: {} }
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
         });
     }
 };
@@ -128,7 +144,11 @@ const updateEvent = (req, res) => {
         res.status(500).json({
             success: false,
             data: null,
-            error: { code: "Internal Server Error", message: "Internal Server Error", details: {} }
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
         });
     }
 };
@@ -166,7 +186,11 @@ const getAllGuestsByEvent = (req, res) => {
         res.status(500).json({
             success: false,
             data: null,
-            error: { code: "Internal Server Error", message: "Internal Server Error", details: {} }
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
         });
     }
 };
@@ -194,7 +218,11 @@ const getTasksByEventId = (req, res) => {
         res.status(500).json({
             success: false,
             data: null,
-            error: { code: "Internal Server Error", message: "Internal Server Error", details: {} }
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
         });
     }
 };
@@ -216,7 +244,11 @@ const addTaskToEvent = (req, res) => {
         res.status(500).json({
             success: false,
             data: null,
-            error: { code: "Internal Server Error", message: "Internal Server Error", details: {} }
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
         });
     }
 };
@@ -239,7 +271,11 @@ const updateTaskInEvent = (req, res) => {
         res.status(500).json({
             success: false,
             data: null,
-            error: { code: "Internal Server Error", message: "Internal Server Error", details: {} }
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
         });
     }
 };
@@ -262,7 +298,11 @@ const removeTaskFromEvent = (req, res) => {
         res.status(500).json({
             success: false,
             data: null,
-            error: { code: "Internal Server Error", message: "Internal Server Error", details: {} }
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
         });
     }
 };
@@ -274,7 +314,15 @@ const getEventsByCreator = (req, res) => {
         const data = eventService.getEventsByCreatorLogic(creatorId);
         res.status(200).json({ success: true, data, error: null });
     } catch (error) {
-        res.status(500).json({ success: false, data: null, error: { code: "Internal Server Error", message: "Internal Server Error", details: {} } });
+        res.status(500).json({
+            success: false,
+            data: null,
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
+        });
     }
 };
 
@@ -285,7 +333,15 @@ const getEventsByGuestName = (req, res) => {
         const data = eventService.getEventsByGuestNameLogic(name);
         res.status(200).json({ success: true, data, error: null });
     } catch (error) {
-        res.status(500).json({ success: false, data: null, error: { code: "Internal Server Error", message: "Internal Server Error", details: {} } });
+        res.status(500).json({
+            success: false,
+            data: null,
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
+        });
     }
 };
 
@@ -296,7 +352,15 @@ const getEventsByPhone = (req, res) => {
         const data = eventService.getEventsByPhoneLogic(phone);
         res.status(200).json({ success: true, data, error: null });
     } catch (error) {
-        res.status(500).json({ success: false, data: null, error: { code: "Internal Server Error", message: "Internal Server Error", details: {} } });
+        res.status(500).json({
+            success: false,
+            data: null,
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
+        });
     }
 };
 
@@ -318,7 +382,11 @@ const addGuestToEvent = (req, res) => {
         res.status(500).json({
             success: false,
             data: null,
-            error: { code: "Internal Server Error", message: "Internal Server Error", details: {} }
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
         });
     }
 };
@@ -334,7 +402,15 @@ const removeGuestFromEvent = (req, res) => {
         if (error.message === "EVENT_NOT_FOUND" || error.message === "GUEST_NOT_FOUND_IN_EVENT" || error.message === "GUEST_NOT_FOUND") {
             return res.status(404).json({ success: false, data: null, error: { code: "NOT_FOUND", message: error.message, details: {} } });
         }
-        res.status(500).json({ success: false, data: null, error: { code: "Internal Server Error", message: "Internal Server Error", details: {} } });
+        res.status(500).json({
+            success: false,
+            data: null,
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
+        });
     }
 };
 
@@ -349,7 +425,15 @@ const updateGuestInEvent = (req, res) => {
         if (error.message === "EVENT_NOT_FOUND" || error.message === "GUEST_NOT_FOUND_IN_EVENT" || error.message === "GUEST_NOT_FOUND") {
             return res.status(404).json({ success: false, data: null, error: { code: "NOT_FOUND", message: error.message, details: {} } });
         }
-        res.status(500).json({ success: false, data: null, error: { code: "Internal Server Error", message: "Internal Server Error", details: {} } });
+        res.status(500).json({
+            success: false,
+            data: null,
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
+        });
     }
 };
 
@@ -364,7 +448,15 @@ const updateGuestRSVP = (req, res) => {
         if (error.message === "EVENT_NOT_FOUND" || error.message === "GUEST_NOT_FOUND_IN_EVENT" || error.message === "GUEST_NOT_FOUND") {
             return res.status(404).json({ success: false, data: null, error: { code: "NOT_FOUND", message: error.message, details: {} } });
         }
-        res.status(500).json({ success: false, data: null, error: { code: "Internal Server Error", message: "Internal Server Error", details: {} } });
+        res.status(500).json({
+            success: false,
+            data: null,
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
+        });
     }
 };
 
@@ -383,10 +475,15 @@ const generateInvite = async (req, res) => {
                 error: { code: "NOT_FOUND", message: "Event not found", details: {} }
             });
         }
-        res.status(500).json({ success: false, data: null,
+        res.status(500).json({
+            success: false,
+            data: null,
             error: {
-                code: "Internal Server Error", message: "Internal Server Error", details: {}
-            }});
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
+        });
     }
 };
 
@@ -403,10 +500,15 @@ const generateShoppingList = async (req, res) => {
                 error: { code: "NOT_FOUND", message: "Event not found", details: {} }
             });
         }
-        res.status(500).json({ success: false, data: null,
+        res.status(500).json({
+            success: false,
+            data: null,
             error: {
-                code: "Internal Server Error", message: "Internal Server Error", details: {}
-            }});
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
+        });
     }
 };
 
@@ -423,10 +525,15 @@ const generateTaskList = async (req, res) => {
                 error: { code: "NOT_FOUND", message: "Event not found", details: {} }
             });
         }
-        res.status(500).json({ success: false, data: null,
+        res.status(500).json({
+            success: false,
+            data: null,
             error: {
-                code: "Internal Server Error", message: "Internal Server Error", details: {}
-            }});
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
+        });
     }
 };
 
@@ -486,7 +593,7 @@ const findStores = async (req, res) => {
             success: false,
             data: null,
             error: {
-                code: "INTERNAL_SERVER_ERROR",
+                code: "SERVER_ERROR",
                 message: "Internal Server Error",
                 details: {}
             }
@@ -521,10 +628,15 @@ const saveInvitation = async (req, res) => {
                 error: { code: "NOT_FOUND", message: "Event not found", details: {} }
             });
         }
-        res.status(500).json({ success: false, data: null,
+        res.status(500).json({
+            success: false,
+            data: null,
             error: {
-                code: "Internal Server Error", message: "Internal Server Error", details: {}
-            }});
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
+        });
     }
 }
 

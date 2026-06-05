@@ -30,9 +30,16 @@ export default function ResetPassword() {
             return;
         }
 
-        // 1. Basic validation
+        // Basic validation
         if (!code || !newPassword || !confirmPassword) {
             setError('Please fill in all fields.');
+            return;
+        }
+
+        const cleanCode = code.trim();
+        const codeRegex = /^\d{4}$/;
+        if (!codeRegex.test(cleanCode)) {
+            setError('Verification code must be exactly 4 digits.');
             return;
         }
 

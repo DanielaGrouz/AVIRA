@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FiAlertCircle, FiArrowLeft, FiLock } from 'react-icons/fi';
+import { FiAlertCircle, FiArrowLeft, FiLock, FiServer } from 'react-icons/fi';
 import '../styles/ErrorPage.css';
 
 const ErrorPage = ({ code = 404 }) => { //defaulting to 404 if nothing is passed
@@ -15,6 +15,11 @@ const ErrorPage = ({ code = 404 }) => { //defaulting to 404 if nothing is passed
             title: "Access Denied",
             message: "Sorry, you don't have permission to access this event or page.",
             icon: <FiLock className="not-found-icon" /> // Lock icon for permission issues
+        },
+        500: {
+            title: "Internal Server Error",
+            message: "Our servers are currently unreachable. Please check your internet connection or try again later.",
+            icon: <FiServer className="not-found-icon" /> // Server icon for network/server issues
         }
     };
 
