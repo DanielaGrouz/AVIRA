@@ -9,7 +9,7 @@
 ### Prerequisites
 - **Node.js** (v14.0.0 or higher)
 - **npm** (comes with Node.js)
-- **Backend Server**: Ensure the AVIRA backend server is currently running before operating the frontend.
+- **Backend Server**: Ensure the AVIRA backend server is currently running before operating the frontend, by running:
     ```bash
     node server.js
     ```
@@ -25,28 +25,41 @@ Once the installation is complete, run the following command to start the React 
 ```bash
 npm start
 ```
-The application will automatically open in your default browser at http://localhost:5000.
-
----
-
-## 🔗 API Base URL
-
-The frontend application relies on the backend API to function correctly and fetch data. All client-side services (e.g., API requests made from `src/services/`) are explicitly configured to communicate with the backend server at the following target address:
-
-**Target URL:** `http://localhost:3000`
-
-*(Note: While the React frontend runs on port 5000, all data requests are routed to this backend API on port 3000).*
+The application will automatically open in your default browser at http://localhost:5173.
+* Note: The React frontend application runs on port 5173, while all internal client-side API requests are routed to the backend server running at http://localhost:3000.
 
 ---
 
 ## ✨ Key Features & Screens
 
-AVIRA provides a seamless and secure interface built around the following core features:
+AVIRA provides a seamless, secure, and feature-rich interface built around the following core modules:
 
-- **Secure Authentication System:** Access to the platform is protected, requiring users to log in. The system includes a full registration flow with secure email verification, as well as a complete password reset process for account recovery.
-- **Centralized Dashboard:** The main hub of the application where authenticated users can view, manage, and organize all boutique events (such as birthdays, bridal showers, and dinners) in one clean interface.
-- **AI-Powered Event Tools:** Elevate the planning experience with built-in artificial intelligence integrations. The system can automatically generate custom event invitations and intelligently suggest relevant local stores based on the event's specific task lists.
-- **Profile Settings:** A dedicated configuration page allowing users to update their personal information. This includes a custom **Profile Image Uploader** that enables users to seamlessly upload a new photo, updating the UI instantly.
+1. **Authentication & Security:**
+   * Login & Registration: Secure entry points with strict frontend and backend input validation.
+   * OTP Verification: A complete email verification flow requiring a 4-digit code sent via email. 
+   * Password Recovery: A robust "Forgot Password" and "Reset Password" flow.
+   * Role-Based Access Control: Protected routes ensure that only authenticated users can access protected pages, and only Admins can access management tools.
+   * JWT Session Management: Secure, stateless user sessions managed via JSON Web Tokens, automatically attached to all outgoing API requests using centralized Axios interceptors.
+2. **Event Management:**
+   * My Events Grid: A styled grid displaying all user events with dynamic date badges, guest counts, and embedded Google Maps for locations.
+   * Search & Sort: Real-time filtering and sorting of events by title, date, or location.
+   * Calendar Integration: A built-in "Add to Calendar" button that generates a Google Calendar event with pre-filled details.
+   * Admin-Only Permissions: View and edit all events in the system.
+3. **Event Operations & Data Tables:**
+   * Guest List Table: A dynamic Data Table component for managing attendees, featuring inline editing, deletion, and RSVP status tracking (Pending/Confirmed/Cancelled).
+   * WhatsApp RSVP Integration: With a single click, event managers can generate and send a personalized WhatsApp message to a guest containing a dynamic, unique RSVP landing page link.
+   * Task Management: An interactive checklist for event-related tasks, categorized by priority and status.
+4. **Smart AI Integrations:**
+   * AI Invitations: Automatically generate customized image invitations based on the event's theme and details, which can be downloaded or saved to the dashboard. 
+   * AI Task Generation: Intelligently generate a recommended checklist of action items and preparations tailored specifically to the event type.
+   * AI Shopping Lists: Automatically compile relevant shopping items and supply lists needed to make the event a success.
+   * Location-Based Store Finder: Utilizes Google Maps to find and display nearby stores relevant to the specific tasks required for the event.
+5. **Profile Settings & User Management:**
+   * Personal Account Management: A dedicated configuration page allowing users to update their personal information, phone numbers, and upload a custom profile picture.
+   * Admin User Management: Seamlessly integrated into the settings page, Administrators have access to a secure dashboard portal to monitor, edit, or remove registered users across the platform.
+6. **System Errors:**
+   * Global Error Handling: user-friendly fallback screens designed to elegantly handle 404 (Not Found), 403 (Access Denied), and 500 (Internal Server Error) scenarios, ensuring a seamless experience even during network failures.
+   * Dynamic UI Feedback: Real-time error messages displayed directly within forms and modals, accurately reflecting specific validation failures (e.g. invalid dates) to guide the user seamlessly.
 
 ---
 

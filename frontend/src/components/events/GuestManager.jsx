@@ -35,7 +35,7 @@ const GuestManager = ({ eventId, eventDetails }) => {
                 cleanPhone = '972' + cleanPhone.substring(1);
             }
 
-            const frontendUrl = 'http://localhost:5000';
+            const frontendUrl = 'http://localhost:5173';
 
             let formattedDate = eventDetails?.date;
             if (formattedDate && formattedDate !== 'TBD') {

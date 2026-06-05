@@ -30,10 +30,17 @@ const GuestModal = ({ isOpen, onClose, onSave, initialData, isEditing }) => {
             return;
         }
 
+        const currentStatus = formData.status ? formData.status.toLowerCase() : '';
+        if (!['pending', 'confirmed', 'cancelled'].includes(currentStatus)) {
+            setError('Please select a valid RSVP status.');
+            return;
+        }
+
         try {
-            await onSave({ ...formData, phone: cleanPhone, sendWhatsapp });
+            await onSave({ ...formData, phone: cleanPhone, status: currentStatus, sendWhatsapp });
         } catch (err) {
-            setError('Failed to save guest. Please try again.');
+            const errorMsg = err.response?.data?.error?.message || err.data?.error?.message || err.message || 'Failed to save guest. Please try again.';
+            setError(errorMsg);
         }
     };
 
