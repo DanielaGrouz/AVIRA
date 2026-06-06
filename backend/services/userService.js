@@ -276,6 +276,13 @@ const sendVerificationCodeLogic = async (email) => {
     const user = users.find(u => u.email === email);
     if (!user) throw new Error("USER_NOT_FOUND");
 
+    // Remove any previous codes for this email
+    for (let i = verificationCodes.length - 1; i >= 0; i--) {
+        if (verificationCodes[i].email === email) {
+            verificationCodes.splice(i, 1);
+        }
+    }
+
     const code = Math.floor(1000 + Math.random() * 9000).toString();
 
     // Store code for later verification
