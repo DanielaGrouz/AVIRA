@@ -1,4 +1,5 @@
 const userService = require('../services/userService');
+const jwt = require('jsonwebtoken');
 
 /**
  * Retrieves a paginated list of all users.
@@ -13,13 +14,15 @@ const getAllUsers = (req, res) => {
 
         res.status(200).json({ success: true, data: result, error: null });
     } catch (error) {
-        res.status(500).json({ success: false,
+        res.status(500).json({
+            success: false,
             data: null,
             error: {
-                code: "Internal Server Error",
+                code: "SERVER_ERROR",
                 message: "Internal Server Error",
-                details : {}
-            }});
+                details: {}
+            }
+        });
     }
 };
 
@@ -38,13 +41,15 @@ const getUserById = (req, res) => {
         }
         res.status(200).json({ success: true, data: user, error: null });
     } catch (error) {
-        res.status(500).json({ success: false,
+        res.status(500).json({
+            success: false,
             data: null,
             error: {
-                code: "Internal Server Error",
+                code: "SERVER_ERROR",
                 message: "Internal Server Error",
-                details : {}
-            }});
+                details: {}
+            }
+        });
     }
 };
 
@@ -69,7 +74,7 @@ const createUser = async (req, res) => {
             success: true,
             data: {
                 message: "User registered successfully. Please verify user's email.",
-                user: { userId: newUser.userId, email: newUser.email }
+                user: { userId: newUser.userId, email: newUser.email },
             },
             error: null
         });
@@ -81,7 +86,15 @@ const createUser = async (req, res) => {
                 error: { code: "EMAIL_EXISTS", message: "A user with this email already exists", details:{}}
             });
         }
-        res.status(500).json({ success: false, data: null, error: { code: "SERVER_ERROR", message: error.message, details: {}} });
+        res.status(500).json({
+            success: false,
+            data: null,
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
+        });
     }
 };
 
@@ -91,20 +104,36 @@ const createUser = async (req, res) => {
 const updateUser = (req, res) => {
     const id = parseInt(req.params.id);
     try {
-        userService.updateUserLogic(id, req.body);
+        // Check if a new file was uploaded
+        let picture = null;
+        if (req.file){
+            picture = `/uploads/${req.file.filename}`;
+        }
+        // Merge body data with the new picture path (if any)
+        const updateData = { ...req.body };
+        if (picture) {
+            updateData.picture = picture;
+        }
 
-        res.status(200).json({ success: true, data: { userId: id }, error: null });
+        const updatedUser = userService.updateUserLogic(id, updateData);
+        res.status(200).json({ success: true, data: updatedUser, error: null });
+
     } catch (error) {
         if (error.message === "USER_NOT_FOUND") {
             return res.status(404).json({ success: false, data: null,
                 error: { code: "NOT_FOUND", message: `User with id: ${id} not found.`, details:{} } });
         }
-        res.status(500).json({ success: false,
+        if (error.message === "EMAIL_EXISTS") {
+            return res.status(400).json({ success: false, data: null,
+                error: { code: "EMAIL_EXISTS", message: "A user with this email already exists.", details:{} } });
+        }
+        res.status(500).json({
+            success: false,
             data: null,
             error: {
                 code: "SERVER_ERROR",
                 message: "Internal Server Error",
-                details : {}
+                details: {}
             }
         });
     }
@@ -115,6 +144,19 @@ const updateUser = (req, res) => {
  */
 const deleteUser = (req, res) => {
     const id = parseInt(req.params.id);
+
+    if (req.user && req.user.userId === id) {
+        return res.status(403).json({
+            success: false,
+            data: null,
+            error: {
+                code: "FORBIDDEN",
+                message: "You cannot delete your own account.",
+                details: {}
+            }
+        });
+    }
+
     try {
         userService.deleteUserLogic(id);
 
@@ -124,12 +166,13 @@ const deleteUser = (req, res) => {
             return res.status(404).json({ success: false, data: null,
                 error: { code: "NOT_FOUND", message: `User with id: ${id} not found.`, details:{} } });
         }
-        res.status(500).json({ success: false,
+        res.status(500).json({
+            success: false,
             data: null,
             error: {
                 code: "SERVER_ERROR",
                 message: "Internal Server Error",
-                details : {}
+                details: {}
             }
         });
     }
@@ -138,14 +181,15 @@ const deleteUser = (req, res) => {
 /**
  * Finalizes the email verification process using a code sent to the user.
  */
-const completeEmailVerification = (req, res) => {
+const completeEmailVerification = async (req, res) => {
     try {
         const { email, code } = req.body;
-        const user = userService.completeEmailVerificationLogic(email, code);
+        const {user, token} = await userService.completeEmailVerificationLogic(email, code);
+        const { password, ...safeUserCopy } = user;
 
         res.status(200).json({
             success: true,
-            data: { userId: user.userId, message: "users email has been verified." },
+            data: { user: safeUserCopy, token: token, message: "users email has been verified." },
             error: null
         });
     } catch (error) {
@@ -156,12 +200,13 @@ const completeEmailVerification = (req, res) => {
         if (error.message === "USER_NOT_FOUND") {
             return res.status(404).json({ success: false, data: null, error: { code: "NOT_FOUND", message: `User with email ${req.body.email} was not found.`, details:{} } });
         }
-        res.status(500).json({ success: false,
+        res.status(500).json({
+            success: false,
             data: null,
             error: {
                 code: "SERVER_ERROR",
                 message: "Internal Server Error",
-                details : {}
+                details: {}
             }
         });
     }
@@ -173,18 +218,37 @@ const completeEmailVerification = (req, res) => {
 const login = async (req, res) => {
     try {
         const { email, password } = req.body;
-        const user = await userService.loginLogic(email, password);
+        const {user, token} = await userService.loginLogic(email, password);
+        const { password: _, ...safeUserCopy } = user;
 
-        res.status(200).json({ success: true, data: { user: { userId: user.userId } }, error: null });
+        res.status(200).json({
+            success: true,
+            data: {
+                user: safeUserCopy,
+                token: token
+            },
+            error: null
+        });
     } catch (error) {
         // Specific errors for security: distinct messages for missing email vs wrong password
         if (error.message === "EMAIL_NOT_FOUND") {
             return res.status(404).json({ success: false, data: null, error: { code: "NOT_FOUND", message: "Email not exists", details:{} } });
         }
+        if (error.message === "EMAIL_NOT_VERIFIED"){
+            return res.status(401).json({ success: false, data: null, error: { code: "EMAIL_NOT_VERIFIED", message: "Email is not verified", details:{} } });
+        }
         if (error.message === "INCORRECT_PASSWORD") {
             return res.status(401).json({ success: false, data: null, error: { code: "UNAUTHORIZED", message: "Incorrect password", details:{} } });
         }
-        res.status(500).json({ success: false, data: null, error: { code: "SERVER_ERROR", message: error.message, details: {} } });
+        res.status(500).json({
+            success: false,
+            data: null,
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
+        });
     }
 };
 
@@ -195,13 +259,20 @@ const sendVerificationCode = async (req, res) => {
     try {
         const { email } = req.body;
         await userService.sendVerificationCodeLogic(email);
-
         res.status(200).json({ success: true, data: { message: "Verification code sent to email" }, error: null });
     } catch (error) {
         if (error.message === "USER_NOT_FOUND") {
             return res.status(404).json({ success: false, data: null, error: { code: "NOT_FOUND", message: "User with this email not found" , details:{} } });
         }
-        res.status(500).json({ success: false, data: null, error: { code: "SERVER_ERROR", message: error.message , details: {} } });
+        res.status(500).json({
+            success: false,
+            data: null,
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
+        });
     }
 };
 
@@ -221,7 +292,15 @@ const resetPassword = async (req, res) => {
         if (error.message === "INVALID_CODE") {
             return res.status(400).json({ success: false, data: null, error: { code: "INVALID_CODE", message: "Invalid verification code", details:{} } });
         }
-        res.status(500).json({ success: false, data: null, error: { code: "SERVER_ERROR", message: error.message, details: {} } });
+        res.status(500).json({
+            success: false,
+            data: null,
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
+        });
     }
 };
 

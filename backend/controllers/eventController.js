@@ -3,11 +3,12 @@ const eventService = require('../services/eventService');
 // Get all events with pagination and sorting
 const getAllEvents = (req, res) => {
     try {
-        const limit = 5;
+        const limit = req.query.limit || 5;
         const page = parseInt(req.query.page) || 1;
         const sortBy = req.query.sortBy || 'id';
+        const searchQuery = req.query.searchQuery || null;
 
-        const result = eventService.getAllEventsLogic(page, limit, sortBy);
+        const result = eventService.getAllEventsLogic(page, limit, sortBy, searchQuery, req.user);
 
         res.status(200).json({
             success: true,
@@ -18,7 +19,11 @@ const getAllEvents = (req, res) => {
         res.status(500).json({
             success: false,
             data: null,
-            error: { code: "Internal Server Error", message: "Internal Server Error", details: {} }
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
         });
     }
 };
@@ -50,7 +55,11 @@ const getEventById = (req, res) => {
         res.status(500).json({
             success: false,
             data: null,
-            error: { code: "Internal Server Error", message: "Internal Server Error", details: {} }
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
         });
     }
 };
@@ -58,7 +67,7 @@ const getEventById = (req, res) => {
 // Create a new event
 const createEvent = (req, res) => {
     try {
-        const newEvent = eventService.createEventLogic(req.body);
+        const newEvent = eventService.createEventLogic(req.user.userId, req.body);
 
         res.status(201).json({
             success: true,
@@ -69,7 +78,11 @@ const createEvent = (req, res) => {
         res.status(500).json({
             success: false,
             data: null,
-            error: { code: "Internal Server Error", message: "Internal Server Error", details: {} }
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
         });
     }
 };
@@ -96,7 +109,11 @@ const deleteEvent = (req, res) => {
         res.status(500).json({
             success: false,
             data: null,
-            error: { code: "Internal Server Error", message: "Internal Server Error", details: {} }
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
         });
     }
 };
@@ -127,7 +144,11 @@ const updateEvent = (req, res) => {
         res.status(500).json({
             success: false,
             data: null,
-            error: { code: "Internal Server Error", message: "Internal Server Error", details: {} }
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
         });
     }
 };
@@ -135,12 +156,19 @@ const updateEvent = (req, res) => {
 // Get a list of all guests invited to a specific event
 const getAllGuestsByEvent = (req, res) => {
     try {
-        const id = parseInt(req.params.id);
-        const result = eventService.getAllGuestsByEventLogic(id);
+        const eventId = parseInt(req.params.id);
+        const limit = req.query.limit || 5;
+        const page = parseInt(req.query.page) || 1;
+        const sortBy = req.query.sortBy || 'id';
+        const sortDirection = req.query.sortDirection || 1;
+
+        const searchQuery = req.query.searchQuery || null;
+
+        const result = eventService.getAllGuestsByEventLogic(eventId, page, limit, sortBy, searchQuery, sortDirection);
 
         res.status(200).json({
             success: true,
-            data: { guests: result.data },
+            data: result,
             error: null
         });
     } catch (error) {
@@ -158,7 +186,11 @@ const getAllGuestsByEvent = (req, res) => {
         res.status(500).json({
             success: false,
             data: null,
-            error: { code: "Internal Server Error", message: "Internal Server Error", details: {} }
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
         });
     }
 };
@@ -167,9 +199,14 @@ const getAllGuestsByEvent = (req, res) => {
 const getTasksByEventId = (req, res) => {
     try {
         const eventId = parseInt(req.params.id);
-        const eventTasks = eventService.getTasksByEventIdLogic(eventId);
+        const limit = req.query.limit || 5;
+        const page = parseInt(req.query.page) || 1;
+        const sortBy = req.query.sortBy || 'id';
+        const sortDirection = req.query.sortDirection || 1;
+        const searchQuery = req.query.searchQuery || null;
+        const result = eventService.getTasksByEventIdLogic(eventId, page, limit, sortBy, sortDirection, searchQuery);
 
-        res.status(200).json({ success: true, data: eventTasks, error: null });
+        res.status(200).json({ success: true, data: result, error: null });
     } catch (error) {
         if (error.message === "EVENT_NOT_FOUND") {
             return res.status(404).json({
@@ -181,7 +218,11 @@ const getTasksByEventId = (req, res) => {
         res.status(500).json({
             success: false,
             data: null,
-            error: { code: "Internal Server Error", message: "Internal Server Error", details: {} }
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
         });
     }
 };
@@ -203,7 +244,11 @@ const addTaskToEvent = (req, res) => {
         res.status(500).json({
             success: false,
             data: null,
-            error: { code: "Internal Server Error", message: "Internal Server Error", details: {} }
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
         });
     }
 };
@@ -226,7 +271,11 @@ const updateTaskInEvent = (req, res) => {
         res.status(500).json({
             success: false,
             data: null,
-            error: { code: "Internal Server Error", message: "Internal Server Error", details: {} }
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
         });
     }
 };
@@ -249,7 +298,11 @@ const removeTaskFromEvent = (req, res) => {
         res.status(500).json({
             success: false,
             data: null,
-            error: { code: "Internal Server Error", message: "Internal Server Error", details: {} }
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
         });
     }
 };
@@ -261,7 +314,15 @@ const getEventsByCreator = (req, res) => {
         const data = eventService.getEventsByCreatorLogic(creatorId);
         res.status(200).json({ success: true, data, error: null });
     } catch (error) {
-        res.status(500).json({ success: false, data: null, error: { code: "Internal Server Error", message: "Internal Server Error", details: {} } });
+        res.status(500).json({
+            success: false,
+            data: null,
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
+        });
     }
 };
 
@@ -272,7 +333,15 @@ const getEventsByGuestName = (req, res) => {
         const data = eventService.getEventsByGuestNameLogic(name);
         res.status(200).json({ success: true, data, error: null });
     } catch (error) {
-        res.status(500).json({ success: false, data: null, error: { code: "Internal Server Error", message: "Internal Server Error", details: {} } });
+        res.status(500).json({
+            success: false,
+            data: null,
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
+        });
     }
 };
 
@@ -283,28 +352,15 @@ const getEventsByPhone = (req, res) => {
         const data = eventService.getEventsByPhoneLogic(phone);
         res.status(200).json({ success: true, data, error: null });
     } catch (error) {
-        res.status(500).json({ success: false, data: null, error: { code: "Internal Server Error", message: "Internal Server Error", details: {} } });
-    }
-};
-
-// Browse events using exact query filters
-const browseEvents = (req, res) => {
-    try {
-        const data = eventService.browseEventsLogic(req.query);
-        res.status(200).json({ success: true, data, error: null });
-    } catch (error) {
-        res.status(500).json({ success: false, data: null, error: { code: "Internal Server Error", message: "Internal Server Error", details: {} } });
-    }
-};
-
-// Search events using a free text query across all fields
-const searchEvents = (req, res) => {
-    try {
-        const query = req.query.q;
-        const data = eventService.searchEventsLogic(query);
-        res.status(200).json({ success: true, data, error: null });
-    } catch (error) {
-        res.status(500).json({ success: false, data: null, error: { code: "Internal Server Error", message: "Internal Server Error", details: {} } });
+        res.status(500).json({
+            success: false,
+            data: null,
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
+        });
     }
 };
 
@@ -326,7 +382,11 @@ const addGuestToEvent = (req, res) => {
         res.status(500).json({
             success: false,
             data: null,
-            error: { code: "Internal Server Error", message: "Internal Server Error", details: {} }
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
         });
     }
 };
@@ -342,7 +402,15 @@ const removeGuestFromEvent = (req, res) => {
         if (error.message === "EVENT_NOT_FOUND" || error.message === "GUEST_NOT_FOUND_IN_EVENT" || error.message === "GUEST_NOT_FOUND") {
             return res.status(404).json({ success: false, data: null, error: { code: "NOT_FOUND", message: error.message, details: {} } });
         }
-        res.status(500).json({ success: false, data: null, error: { code: "Internal Server Error", message: "Internal Server Error", details: {} } });
+        res.status(500).json({
+            success: false,
+            data: null,
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
+        });
     }
 };
 
@@ -357,26 +425,40 @@ const updateGuestInEvent = (req, res) => {
         if (error.message === "EVENT_NOT_FOUND" || error.message === "GUEST_NOT_FOUND_IN_EVENT" || error.message === "GUEST_NOT_FOUND") {
             return res.status(404).json({ success: false, data: null, error: { code: "NOT_FOUND", message: error.message, details: {} } });
         }
-        res.status(500).json({ success: false, data: null, error: { code: "Internal Server Error", message: "Internal Server Error", details: {} } });
+        res.status(500).json({
+            success: false,
+            data: null,
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
+        });
     }
 };
 
-// Confirm guest attendance
-const confirmGuestAttendance = (req, res) => {
+const updateGuestRSVP = (req, res) => {
     try {
         const eventId = parseInt(req.params.id);
         const guestId = parseInt(req.params.guestId);
         const { status } = req.body;
-        const updatedGuest = eventService.confirmGuestAttendanceLogic(eventId, guestId, status);
+        const updatedGuest = eventService.updateGuestRSVPLogic(eventId, guestId, status);
         res.status(200).json({ success: true, data: updatedGuest, error: null });
     } catch (error) {
         if (error.message === "EVENT_NOT_FOUND" || error.message === "GUEST_NOT_FOUND_IN_EVENT" || error.message === "GUEST_NOT_FOUND") {
             return res.status(404).json({ success: false, data: null, error: { code: "NOT_FOUND", message: error.message, details: {} } });
         }
-        res.status(500).json({ success: false, data: null, error: { code: "Internal Server Error", message: "Internal Server Error", details: {} } });
+        res.status(500).json({
+            success: false,
+            data: null,
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
+        });
     }
 };
-
 
 
 const generateInvite = async (req, res) => {
@@ -393,10 +475,15 @@ const generateInvite = async (req, res) => {
                 error: { code: "NOT_FOUND", message: "Event not found", details: {} }
             });
         }
-        res.status(500).json({ success: false, data: null,
+        res.status(500).json({
+            success: false,
+            data: null,
             error: {
-                code: "Internal Server Error", message: "Internal Server Error", details: {}
-            }});
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
+        });
     }
 };
 
@@ -413,10 +500,15 @@ const generateShoppingList = async (req, res) => {
                 error: { code: "NOT_FOUND", message: "Event not found", details: {} }
             });
         }
-        res.status(500).json({ success: false, data: null,
+        res.status(500).json({
+            success: false,
+            data: null,
             error: {
-                code: "Internal Server Error", message: "Internal Server Error", details: {}
-            }});
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
+        });
     }
 };
 
@@ -433,19 +525,40 @@ const generateTaskList = async (req, res) => {
                 error: { code: "NOT_FOUND", message: "Event not found", details: {} }
             });
         }
-        res.status(500).json({ success: false, data: null,
+        res.status(500).json({
+            success: false,
+            data: null,
             error: {
-                code: "Internal Server Error", message: "Internal Server Error", details: {}
-            }});
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
+        });
     }
 };
 
 const findStores = async (req, res) => {
     try {
-        const storesList = await eventService.findRelevantStores(req.body.location, parseInt(req.params.id));
+        if (!req.query.lat || !req.query.lon) {
+            return res.status(400).json({
+                success: false,
+                data: null,
+                error: { code: "BAD_REQUEST", message: "Location (lat and lon) is required", details: {} }
+            });
+        }
+
+        const locationObj = {
+            lat: parseFloat(req.query.lat),
+            lon: parseFloat(req.query.lon)
+        };
+
+        const storesList = await eventService.findRelevantStores(locationObj, parseInt(req.params.id));
+
         res.status(200).json({ success: true, data: storesList, error: null });
+
     } catch (error) {
-        console.error(error);
+        console.error("Error in findStores:", error.message);
+
         if (error.message === "EVENT_NOT_FOUND") {
             return res.status(404).json({
                 success: false,
@@ -457,13 +570,34 @@ const findStores = async (req, res) => {
             return res.status(400).json({
                 success: false,
                 data: null,
-                error: { code: "BAD_REQUEST", message: "task list was not generated yet", details: {} }
+                error: { code: "BAD_REQUEST", message: "There are no tasks for this event" , details: {} }
             });
         }
-        res.status(500).json({ success: false, data: null,
+
+        const mapErrors = [
+            "We couldn't identify the types of stores needed for your tasks.",
+            "Map services are temporarily unavailable. Please try again later.",
+            "No relevant stores were found within a 2.5km radius of your location.",
+            "Stores were found nearby, but none matched your specific event tasks."
+        ];
+
+        if (mapErrors.includes(error.message)) {
+            return res.status(404).json({
+                success: false,
+                data: null,
+                error: { code: "NOT_FOUND", message: error.message, details: {} }
+            });
+        }
+
+        res.status(500).json({
+            success: false,
+            data: null,
             error: {
-                code: "Internal Server Error", message: "Internal Server Error", details: {}
-            }});
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
+        });
     }
 };
 
@@ -494,10 +628,15 @@ const saveInvitation = async (req, res) => {
                 error: { code: "NOT_FOUND", message: "Event not found", details: {} }
             });
         }
-        res.status(500).json({ success: false, data: null,
+        res.status(500).json({
+            success: false,
+            data: null,
             error: {
-                code: "Internal Server Error", message: "Internal Server Error", details: {}
-            }});
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
+        });
     }
 }
 
@@ -520,10 +659,8 @@ module.exports = {
     getEventsByCreator,
     getEventsByGuestName,
     getEventsByPhone,
-    browseEvents,
-    searchEvents,
     addGuestToEvent,
     removeGuestFromEvent,
     updateGuestInEvent,
-    confirmGuestAttendance
+    updateGuestRSVP
 };

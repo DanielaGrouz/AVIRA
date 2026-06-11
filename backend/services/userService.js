@@ -1,10 +1,14 @@
 let users = require('../models/userModel');
+let guests = require('../models/guestModel');
 const bcrypt = require("bcrypt");
 const verificationCodes = require("../models/authVerification");
 const { sendMail } = require("../utils/emailClient");
 const {generateAvatar} = require("../utils/generateAvatarClient");
 const fs = require('fs/promises');
 const path = require('path');
+const jwt = require("jsonwebtoken");
+const sharp = require('sharp');
+
 
 /**
  * Logic for retrieving a paginated list of users.
@@ -37,6 +41,7 @@ const getUserByIdLogic = (id) => {
  * create a unique profile picture if the user
  * doesn't upload their own. It saves the resulting buffer to the disk.
  */
+
 const generateAvatarPicture = async (firstName, lastName) => {
     const roles = ["cat", "dog", "fox", "robot", "astronaut", "wizard", "ninja", "panda", "owl", "dragon"];
     const traitsList = [
@@ -54,30 +59,30 @@ const generateAvatarPicture = async (firstName, lastName) => {
     ];
 
     const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
-    const randomRole = getRandom(roles);
-    const randomTrait = getRandom(traitsList);
-    const randomColor = getRandom(colorThemes);
 
     const userProfile = {
-        role: randomRole,
-        traits: `${randomTrait}, looking friendly, representing the vibe of a person named ${firstName} ${lastName}`,
-        colorTheme: randomColor
+        role: getRandom(roles),
+        traits: `${getRandom(traitsList)}, looking friendly, representing the vibe of a person named ${firstName} ${lastName}`,
+        colorTheme: getRandom(colorThemes)
     };
 
-    // Call the external AI generation client
     const buffer = await generateAvatar(userProfile);
 
-    // Safety Check: Prevent crash if the external AI service returns null/fails
     if (!buffer) {
         throw new Error("AVATAR_GENERATION_FAILED");
     }
 
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    let finalPicture = path.join(__dirname, '../uploads', `avatar_ai_${uniqueSuffix}.jpg`);
+    const fileName = `avatar_ai_${uniqueSuffix}.png`;
 
-    // Asynchronously write the image to the file system
-    await fs.writeFile(finalPicture, buffer, 'utf8');
-    return finalPicture;
+    const savePath = path.join(__dirname, '../uploads/avatar', fileName);
+
+    await sharp(buffer)
+        .resize(96, 96)
+        .png()
+        .toFile(savePath);
+
+    return `/uploads/avatar/${fileName}`;
 }
 
 /**
@@ -97,17 +102,32 @@ const createUserLogic = async (userData) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Dynamic Avatar: Generate AI picture if no picture was uploaded
     let finalPicture = picturePath;
     if (!picturePath) {
         try {
-            // Try to generate the cool AI avatar
             finalPicture = await generateAvatarPicture(firstName, lastName);
-        } catch (error) {
-            // If AI fails, use a default placeholder instead of crashing the registration
-            finalPicture = path.join(__dirname, '../uploads', 'default_avatar.jpg');
+        }catch (error) {
+            try {
+                const avatarFolder = path.join(__dirname, '../uploads/avatar');
+                const files = await fs.readdir(avatarFolder);
+                const imageFiles = files.filter(file => /\.(jpg|jpeg|png|gif)$/i.test(file));
+
+                if (imageFiles.length > 0) {
+                    const randomFile = imageFiles[Math.floor(Math.random() * imageFiles.length)];
+
+                    finalPicture = `/uploads/avatar/${randomFile}`;
+                } else {
+                    finalPicture = `/uploads/avatar/avatar1.png`;
+                }
+            }
+            catch (error) {
+                console.error("Error picking random avatar:", error);
+                finalPicture = `/uploads/avatar/avatar1.png`;
+
+            }
         }
     }
+
 
     const newUser = {
         userId: users.length > 0 ? Math.max(...users.map(u => u.userId)) + 1 : 1,
@@ -119,7 +139,8 @@ const createUserLogic = async (userData) => {
         userRole: userRole || "user",
         createDate: new Date().toISOString(),
         updateDate: new Date().toISOString(),
-        picturePath: finalPicture
+        picturePath: finalPicture,
+        isEmailVerified: false,
     };
 
     users.push(newUser);
@@ -133,6 +154,15 @@ const updateUserLogic = (id, updateData) => {
     const userIndex = users.findIndex(u => u.userId === id);
     if (userIndex === -1) throw new Error("USER_NOT_FOUND");
 
+    if (updateData.email && updateData.email !== users[userIndex].email) {
+        const emailTaken = users.find(u => u.email === updateData.email);
+        if (emailTaken) {
+            throw new Error("EMAIL_EXISTS");
+        }
+    }
+
+    const oldPhone = users[userIndex].phoneNumber;
+
     const { firstName, lastName, userRole, phoneNumber, email, picture } = updateData;
 
     users[userIndex] = {
@@ -145,7 +175,18 @@ const updateUserLogic = (id, updateData) => {
         email: email || users[userIndex].email,
         picturePath: picture || users[userIndex].picturePath
     };
-    return users[userIndex];
+    const updatedUser = users[userIndex];
+
+    // TEMPORARY SYNC: Update all guest records that belong to this user
+    // We match by phone number assuming it acts as a unique identifier for guests
+    guests.forEach(guest => {
+        if (guest.phone === oldPhone) {
+            guest.name = `${updatedUser.firstName} ${updatedUser.lastName}`;
+            guest.phone = updatedUser.phoneNumber;
+        }
+    });
+
+    return updatedUser;
 };
 
 /**
@@ -166,6 +207,7 @@ const checkVerificationCodeLogic = (email, code) => {
     const recordIndex = verificationCodes.findIndex(
         c => c.email === email && c.code.toString() === code.toString()
     );
+    console.log(recordIndex, email, code);
     if (recordIndex === -1) return false;
 
     const record = verificationCodes[recordIndex];
@@ -185,14 +227,31 @@ const checkVerificationCodeLogic = (email, code) => {
 /**
  * Logic to complete the email verification flow.
  */
-const completeEmailVerificationLogic = (email, code) => {
+const completeEmailVerificationLogic = async (email, code) => {
     const isValid = checkVerificationCodeLogic(email, code);
     if (!isValid) throw new Error("INVALID_CODE");
 
     const user = users.find(u => u.email === email);
     if (!user) throw new Error("USER_NOT_FOUND");
-    return user;
+    user.isEmailVerified = true;
+    const token = await createToken(user);
+    return {user, token};
 };
+
+const createToken = async (user) => {
+
+    const tokenPayload = {
+        userId: user.userId,
+        userRole: user.userRole,
+        email: user.email,
+    };
+
+    return jwt.sign(
+        tokenPayload,
+        process.env.JWT_SECRET,
+        {expiresIn: '24h'}
+    );
+}
 
 /**
  * Logic for User Login.
@@ -201,12 +260,12 @@ const completeEmailVerificationLogic = (email, code) => {
 const loginLogic = async (email, password) => {
     const user = users.find(u => u.email === email);
     if (!user) throw new Error("EMAIL_NOT_FOUND");
-
+    if (!user.isEmailVerified) throw new Error("EMAIL_NOT_VERIFIED");
     // Secure password comparison
     const isMatch = await bcrypt.compare(password, user.password).catch(() => password === user.password);
     if (!isMatch) throw new Error("INCORRECT_PASSWORD");
-
-    return user;
+    const token = await createToken(user);
+    return {user, token };
 };
 
 /**
@@ -216,6 +275,13 @@ const loginLogic = async (email, password) => {
 const sendVerificationCodeLogic = async (email) => {
     const user = users.find(u => u.email === email);
     if (!user) throw new Error("USER_NOT_FOUND");
+
+    // Remove any previous codes for this email
+    for (let i = verificationCodes.length - 1; i >= 0; i--) {
+        if (verificationCodes[i].email === email) {
+            verificationCodes.splice(i, 1);
+        }
+    }
 
     const code = Math.floor(1000 + Math.random() * 9000).toString();
 
@@ -231,9 +297,12 @@ const sendVerificationCodeLogic = async (email) => {
  * Logic for resetting a user's password.
  * Always hashes the new password before updating the "database".
  */
-const resetPasswordLogic = async (userId, newPassword) => {
-    const user = users.find(u => u.userId === userId);
+const resetPasswordLogic = async (email, newPassword, code) => {
+    const user = users.find(u => u.email === email);
     if (!user) throw new Error("USER_NOT_FOUND");
+    const isValid = checkVerificationCodeLogic(email, code);
+    if (!isValid) throw new Error("INVALID_CODE");
+
 
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(newPassword, salt);

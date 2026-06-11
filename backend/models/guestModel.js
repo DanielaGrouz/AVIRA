@@ -22,7 +22,7 @@ let guests = [
     { guestId: 6, eventId: 106,  name: "Daniela Levi", phone: "050-0000001", status: "confirmed", role: "manager" },
 
     // --- Event 107 (2 People) ---
-    { guestId: 7, eventId: 107, name: "Admin User", phone: "050-0000003", status: "confirmed", role: "manager" },
+    { guestId: 7, eventId: 107, name: "Yosef Cohen", phone: "050-0000002", status: "confirmed", role: "manager" },
     { guestId: 15, eventId: 107,  name: "Mark Zuckerberg", phone: "055-9999999", status: "pending", role: "guest" },
 
     // --- Event 108 (1 Person - Manager Only) ---

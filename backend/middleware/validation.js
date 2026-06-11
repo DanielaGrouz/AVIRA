@@ -33,7 +33,8 @@ const validateEventExists = (req, res, next) => {
             success: false,
             error: {
                 code: "VALIDATION_ERROR",
-                message: "eventId must be a valid positive integer"
+                message: "eventId must be a valid positive integer",
+                details: {}
             }
         });
     }
@@ -93,6 +94,7 @@ const validateUserFields = (req, res, next) => {
     }
 
     if (errors.length > 0) {
+        console.error(errors);
         return res.status(400).json({
             success: false,
             data: null,
@@ -179,7 +181,7 @@ const validateOptionalUserFields = (req, res, next) => {
  * Validates Guest data including their specific roles and confirmation statuses.
  */
 const validateGuestFields = (req, res, next) => {
-    const { name, phone, role, status } = req.body;
+    const { name, phone, status } = req.body;
     let errors = [];
     if (!name || typeof name !== 'string' || name.trim().length < 2) {
         errors.push("name must be a string (min 2 chars)");
@@ -187,11 +189,6 @@ const validateGuestFields = (req, res, next) => {
     const phoneRegex = /^05\d-?\d{7}$/;
     if (!phone || !phoneRegex.test(phone)) {
         errors.push("A valid Israeli phone number is required (e.g., 0545368889)");
-    }
-
-    const VALID_GUEST_ROLES = ['manager', 'guest'];
-    if (!role || !VALID_GUEST_ROLES.includes(role)) {
-        errors.push(`role must be one of: ${VALID_GUEST_ROLES.join(', ')}`);
     }
 
     const VALID_STATUSES = ['confirmed', 'pending', 'cancelled'];
@@ -256,7 +253,7 @@ const validateEventFields = (req, res, next) => {
         req.body.guestsCount = 0;
     }
 
-    const { creatorId, title, date, time, location, eventType, guestsCount } = req.body;
+    const { title, date, time, location, eventType, guestsCount } = req.body;
     let errors = [];
 
     if (!title || typeof title !== 'string' || title.trim().length < 2) {
@@ -266,6 +263,14 @@ const validateEventFields = (req, res, next) => {
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
     if (!date || typeof date !== 'string' || !dateRegex.test(date)) {
         errors.push("date must be a valid string in YYYY-MM-DD format");
+    } else {
+        // Backend Validation: Future Date & Time Check for new events
+        const timeString = time && time !== 'TBD' ? time : "00:00";
+        const eventDateTime = new Date(`${date}T${timeString}`);
+
+        if (eventDateTime <= new Date()) {
+            errors.push("date and time must be in the future");
+        }
     }
 
     const timeRegex = /^([0-1]\d|2[0-3]):([0-5]\d)$/;
@@ -283,10 +288,6 @@ const validateEventFields = (req, res, next) => {
 
     if (guestsCount === undefined || typeof guestsCount !== 'number' || guestsCount < 0) {
         errors.push("guestsCount must be a non-negative number");
-    }
-
-    if (creatorId !== undefined && (typeof creatorId !== 'number' || creatorId <= 0)) {
-        errors.push("creatorId must be a positive number");
     }
 
     if (errors.length > 0) {
@@ -315,7 +316,8 @@ const validateUserExists = (req, res, next) => {
             data: null,
             error: {
                 code: "VALIDATION_ERROR",
-                message: "creatorId must be a valid positive integer"
+                message: "creatorId must be a valid positive integer",
+                details: {}
             }
         });
     }
@@ -341,7 +343,7 @@ const validateUserExists = (req, res, next) => {
  * Only validates fields if they are provided in the request body.
  */
 const validateOptionalEventFields = (req, res, next) => {
-    const { title, date, time, location, eventType, guestsCount } = req.body;
+    const { title, date, time, location } = req.body;
     let errors = [];
     const isProvided = (value) => value !== undefined && value !== null && value !== "";
 
@@ -350,7 +352,17 @@ const validateOptionalEventFields = (req, res, next) => {
     }
     if (isProvided(date)) {
         const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-        if (typeof date !== 'string' || !dateRegex.test(date)) errors.push("date must be a valid string in YYYY-MM-DD format");
+        if (typeof date !== 'string' || !dateRegex.test(date)) {
+            errors.push("date must be a valid string in YYYY-MM-DD format");
+        }else {
+            // Future Date Check for Update
+            const timeString = isProvided(time) && time !== 'TBD' ? time : "00:00";
+            const eventDateTime = new Date(`${date}T${timeString}`);
+
+            if (eventDateTime <= new Date()) {
+                errors.push("date and time must be in the future");
+            }
+        }
     }
     if (isProvided(time)) {
         const timeRegex = /^([0-1]\d|2[0-3]):([0-5]\d)$/;
@@ -359,17 +371,30 @@ const validateOptionalEventFields = (req, res, next) => {
     if (isProvided(location) && (typeof location !== 'string' || location.trim().length < 2)) {
         errors.push("location must be a string (min 2 chars)");
     }
-    if (isProvided(eventType) && (typeof eventType !== 'string' || eventType.trim().length < 2)) {
-        errors.push("eventType must be a string (min 2 chars)");
-    }
-    if (isProvided(guestsCount) && (typeof guestsCount !== 'number' || guestsCount < 0)) {
-        errors.push("guestsCount must be a non-negative number");
-    }
 
     if (errors.length > 0) {
         return res.status(400).json({
             success: false, data: null,
             error: { code: "VALIDATION_ERROR", message: "Invalid input data", details: { errors } }
+        });
+    }
+    next();
+};
+
+/**
+ * Validates that the verification code is exactly 4 digits.
+ */
+const validateVerificationCode = (req, res, next) => {
+    const { code } = req.body;
+    if (!code || !/^\d{4}$/.test(code.toString().trim())) {
+        return res.status(400).json({
+            success: false,
+            data: null,
+            error: {
+                code: "VALIDATION_ERROR",
+                message: "Verification code must be exactly 4 digits",
+                details: {}
+            }
         });
     }
     next();
@@ -384,5 +409,6 @@ module.exports = {
     validateEventExists,
     validateUserExists,
     validateOptionalUserFields,
-    validateOptionalEventFields
+    validateOptionalEventFields,
+    validateVerificationCode
 };

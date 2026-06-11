@@ -22,7 +22,15 @@ const getAllTasks = (req, res) => {
         });
     } catch (error) {
         // Fallback for unexpected system errors
-        res.status(500).json({ success: false, error: "Internal Server Error" });
+        res.status(500).json({
+            success: false,
+            data: null,
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
+        });
     }
 };
 
@@ -54,7 +62,15 @@ const getTaskById = (req, res) => {
             error: null
         });
     } catch (error) {
-        res.status(500).json({ success: false, error: "Internal Server Error" });
+        res.status(500).json({
+            success: false,
+            data: null,
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
+        });
     }
 };
 
@@ -74,7 +90,15 @@ const createTask = (req, res) => {
             error: null
         });
     } catch (error) {
-        res.status(500).json({ success: false, error: "Internal Server Error" });
+        res.status(500).json({
+            success: false,
+            data: null,
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
+        });
     }
 };
 
@@ -101,7 +125,15 @@ const updateTask = (req, res) => {
                 error: { code: "NOT_FOUND", message: "Task not found", details: {} }
             });
         }
-        res.status(500).json({ success: false, error: "Internal Server Error" });
+        res.status(500).json({
+            success: false,
+            data: null,
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
+        });
     }
 };
 
@@ -127,7 +159,15 @@ const deleteTask = (req, res) => {
                 error: { code: "NOT_FOUND", message: "Task not found", details: {} }
             });
         }
-        res.status(500).json({ success: false, error: "Internal Server Error" });
+        res.status(500).json({
+            success: false,
+            data: null,
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
+        });
     }
 };
 

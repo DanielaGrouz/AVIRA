@@ -1,7 +1,47 @@
-// check permission by user role
+const jwt = require('jsonwebtoken');
+const events = require("../models/eventModel");
+
 const authorize = (allowedRoles) => {
     return (req, res, next) => {
         const userRole = req.headers['x-user-role'];
+        const userToken = req.headers['x-user-token'];
+
+        if (!userToken) {
+            return res.status(401).json({
+                success: false,
+                data: null,
+                error: {
+                    code: "UNAUTHORIZED",
+                    message: "Access denied. No token provided.",
+                    details: { }
+                }
+            });
+        }
+        try {
+            const decodedToken = jwt.verify(userToken, process.env.JWT_SECRET);
+            if (decodedToken.userRole !== userRole) {
+                return res.status(403).json({
+                    success: false,
+                    data: null,
+                    error: {
+                        code: "FORBIDDEN",
+                        message: `you are not ${userRole}!`,
+                        details: { }
+                    }
+                });
+            }
+            req.user = decodedToken;
+        } catch (error) {
+            return res.status(401).json({
+                success: false,
+                data: null,
+                error: {
+                    code: "UNAUTHORIZED",
+                    message: "Invalid or expired token.",
+                    details: { }
+                }
+            });
+        }
 
         if (!userRole || !allowedRoles.includes(userRole)) {
             return res.status(403).json({
@@ -21,5 +61,75 @@ const authorize = (allowedRoles) => {
     };
 };
 
+const validateEventId = (req, res, next) => {
+    if (!req.user) {
+        return res.status(401).json({
+            success: false,
+            data: null,
+            error: {
+                code: "UNAUTHORIZED",
+                message: "Invalid or expired token.",
+                details: { }
+            }
+        });
+    }
+    const eventId = parseInt(req.params.id);
+    const event = events.find(event => event.eventId === eventId);
+    if (!event){
+        return res.status(404).json({
+            success: false,
+            data: null,
+            error: {
+                code: "NOT_FOUND",
+                message: "Event not found",
+                details: {}
+            }
+        });
+    }
+    if (req.user.userRole !== "admin"){
+        if (event.creatorId !== req.user.userId){
+            return res.status(403).json({
+                success: false,
+                data: null,
+                error: {
+                    code: "FORBIDDEN",
+                    message: "You do not have permission to perform this action.",
+                    details: 'this event is not listed for this user'
+                }
+            });
+        }
+    }
+    next();
+}
 
-module.exports = authorize;
+
+const validateOwnUserId = (req, res, next) => {
+    if (!req.user){
+        return res.status(500).json({
+            success: false,
+            data: null,
+            error: {
+                code: "SERVER_ERROR",
+                message: "missing middleware of authorize before this action.",
+                details: { }
+            }
+        });
+    }
+    const userId = parseInt(req.params.id);
+    if (req.user.userRole !== "admin"){
+        if (req.user.userId !== userId){
+            return res.status(403).json({
+                success: false,
+                data: null,
+                error: {
+                    code: "FORBIDDEN",
+                    message: "You do not have permission to perform this action.",
+                    details: 'this user is not you'
+                }
+            });
+        }
+    }
+    next();
+}
+
+module.exports = {authorize, validateEventId, validateOwnUserId};

@@ -1,0 +1,210 @@
+/* ─────────────────────────────────────────────────────────
+   AVIRA — A Boutique Event System
+   Navbar Stylesheet  ·  Pastel Luxury Edition
+   ───────────────────────────────────────────────────────── */
+
+/* ── Design Tokens (mirrors full system) ───────────────── */
+:root {
+    --color-blush:        #f0dbd8;
+    --color-blush-deep:   #e8c8c4;
+    --color-sage:         #b8cfc4;
+    --color-sage-deep:    #9cbfb0;
+    --color-sage-light:   #ddeee8;
+    --color-cream:        #faf8f5;
+    --color-gold:         #c9a96e;
+    --color-gold-light:   #dfc08a;
+
+    --color-ink:          #3a3530;
+    --color-ink-light:    #5a534d;
+    --color-muted:        #8a8078;
+    --color-subtle:       #b0a89e;
+    --color-rule:         rgba(184, 207, 196, 0.35);
+
+    --font-display: 'Cormorant Garamond', Georgia, serif;
+    --font-body:    'Jost', 'Helvetica Neue', sans-serif;
+
+    --transition-base: 0.22s ease;
+}
+
+/* =========================================
+   Navbar Shell
+   ========================================= */
+.navbar {
+    width: 100%;
+    /* Frosted glass — consistent with cards, modals, dropdown */
+    background: rgba(250, 248, 245, 0.82);
+    backdrop-filter: blur(20px) saturate(1.4);
+    -webkit-backdrop-filter: blur(20px) saturate(1.4);
+    border-bottom: 1px solid var(--color-rule);
+    padding: 0.7rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+/* Thin gold shimmer line at the very top of the navbar */
+.navbar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(
+            90deg,
+            transparent              0%,
+            var(--color-blush-deep) 20%,
+            var(--color-gold)       50%,
+            var(--color-blush-deep) 80%,
+            transparent             100%
+    );
+    opacity: 0.7;
+}
+
+/* =========================================
+   Layout
+   ========================================= */
+.navbar-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.navbar-links {
+    display: flex;
+    gap: 0.25rem;
+}
+
+/* =========================================
+   Brand / Logo
+   ========================================= */
+.navbar-brand {
+    margin-left: 5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+}
+
+.brand-name {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 300;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-ink);
+    text-decoration: none;
+
+    /* Subtle gold shimmer on the brand word */
+    background: linear-gradient(
+            135deg,
+            var(--color-ink)   0%,
+            var(--color-ink)   40%,
+            var(--color-gold)  60%,
+            var(--color-ink)   80%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    transition: background-position 0.6s ease;
+}
+
+.navbar-brand:hover .brand-name {
+    background-position: right center;
+}
+
+/* =========================================
+   Nav Links
+   ========================================= */
+.nav-link {
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--color-subtle);
+    padding: 6px 10px;
+    border-radius: 8px;
+    border-bottom: 2px solid transparent;
+    transition:
+            color      var(--transition-base),
+            background var(--transition-base);
+}
+
+.nav-link:hover {
+    color: var(--color-ink-light);
+    background: rgba(184, 207, 196, 0.15);
+}
+
+/* Active state — gold underline, consistent with brand accent */
+.nav-link.active {
+    color: var(--color-ink);
+    font-weight: 500;
+    background: rgba(184, 207, 196, 0.18);
+    border-bottom: 2px solid var(--color-gold);
+}
+
+/* =========================================
+   Divider
+   ========================================= */
+.navbar-divider {
+    width: 1px;
+    height: 22px;
+    background: var(--color-rule);
+}
+
+/* =========================================
+   Profile Section
+   ========================================= */
+.navbar-profile {
+    margin-right: 50px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* =========================================
+   User Greeting
+   ========================================= */
+.user-greeting {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 300;
+    color: var(--color-ink-light);
+    letter-spacing: 0.04em;
+    margin-right: 0.5rem;
+}
+
+/* Boutique touch: Use the elegant serif font for the user's name */
+.user-greeting strong {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--color-ink);
+    letter-spacing: 0.02em;
+    margin-left: 0.2rem;
+    vertical-align: baseline;
+}
+
+/* =========================================
+   Logout Confirmation Popup
+   ========================================= */
+.cancel-btn {
+    background-color: var(--color-cream);
+    color: var(--color-ink);
+    transition: background-color var(--transition-base), color var(--transition-base);
+}
+
+.cancel-btn:hover {
+    background-color: #e2e8f0; /* Soft gray/slate color */
+    color: var(--color-ink);
+}

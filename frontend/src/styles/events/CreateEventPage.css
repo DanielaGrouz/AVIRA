@@ -1,0 +1,373 @@
+/* ─────────────────────────────────────────────────────────
+   AVIRA — A Boutique Event System
+   Create Event Stylesheet  ·  Pastel Luxury Edition
+   ───────────────────────────────────────────────────────── */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap');
+
+/* ── Design Tokens (mirrors auth.css & home.css) ────────── */
+:root {
+    --color-blush:        #f0dbd8;
+    --color-blush-deep:   #e8c8c4;
+    --color-blush-light:  #f7eeec;
+    --color-sage:         #b8cfc4;
+    --color-sage-deep:    #9cbfb0;
+    --color-sage-light:   #ddeee8;
+    --color-sand:         #e8e0d6;
+    --color-cream:        #faf8f5;
+    --color-gold:         #c9a96e;
+    --color-gold-light:   #dfc08a;
+
+    --color-ink:          #3a3530;
+    --color-ink-light:    #5a534d;
+    --color-muted:        #8a8078;
+    --color-subtle:       #b0a89e;
+    --color-rule:         rgba(184, 207, 196, 0.35);
+
+    --color-card-bg:      rgba(250, 248, 245, 0.88);
+    --color-card-border:  rgba(255, 255, 255, 0.75);
+
+    --color-error-bg:     #fdf0ef;
+    --color-error-text:   #9b4040;
+    --color-error-line:   #d4837a;
+
+    --radius-card:        20px;
+    --radius-input:       10px;
+    --radius-btn:         10px;
+
+    --shadow-card:
+            0 2px 4px  rgba(58, 53, 48, 0.04),
+            0 8px 24px rgba(58, 53, 48, 0.07),
+            0 1px 2px  rgba(58, 53, 48, 0.04);
+    --shadow-btn:
+            0 2px 8px rgba(156, 191, 176, 0.35),
+            0 1px 2px rgba(58, 53, 48, 0.10);
+
+    --font-display: 'Cormorant Garamond', Georgia, serif;
+    --font-body:    'Jost', 'Helvetica Neue', sans-serif;
+
+    --transition-base: 0.22s ease;
+}
+
+/* =========================================
+   Page Wrapper
+   ========================================= */
+.create-event-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 100px);
+    padding: 2.5rem 2rem;
+    font-family: var(--font-body);
+
+    /* Same diagonal mesh as the rest of the app */
+    background:
+            radial-gradient(ellipse at 0%   0%,   rgba(240, 219, 216, 0.55) 0px, transparent 55%),
+            radial-gradient(ellipse at 100% 0%,   rgba(184, 207, 196, 0.45) 0px, transparent 50%),
+            radial-gradient(ellipse at 100% 100%, rgba(201, 169, 110, 0.18) 0px, transparent 50%),
+            radial-gradient(ellipse at 0%   100%, rgba(232, 224, 214, 0.50) 0px, transparent 50%),
+            var(--color-cream);
+    background-attachment: fixed;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Ambient ring — bottom-left, mirroring login page top-right */
+.create-event-container::before {
+    content: '';
+    position: fixed;
+    bottom: -110px;
+    left: -110px;
+    width: 380px;
+    height: 380px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255, 255, 255, 0.5);
+    box-shadow:
+            0 0 0 32px rgba(255, 255, 255, 0.07),
+            0 0 0 64px rgba(255, 255, 255, 0.04);
+    pointer-events: none;
+    animation: orbit-rotate 32s linear infinite reverse;
+}
+
+@keyframes orbit-rotate {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+/* =========================================
+   Card
+   ========================================= */
+.create-event-card {
+    background: var(--color-card-bg);
+    backdrop-filter: blur(24px) saturate(1.4);
+    -webkit-backdrop-filter: blur(24px) saturate(1.4);
+
+    width: 100%;
+    max-width: 620px;
+    padding: 3rem 2.75rem 2.5rem;
+    border-radius: var(--radius-card);
+    border: 1px solid var(--color-card-border);
+    box-shadow: var(--shadow-card);
+    position: relative;
+    z-index: 1;
+
+    animation: card-appear 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes card-appear {
+    from {
+        opacity: 0;
+        transform: translateY(18px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Gold top-accent bar */
+.create-event-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 56px;
+    height: 2px;
+    background: linear-gradient(
+            90deg,
+            var(--color-blush-deep),
+            var(--color-gold),
+            var(--color-blush-deep)
+    );
+    border-radius: 0 0 4px 4px;
+}
+
+/* ── Card Heading ───────────────────────────────────────── */
+.create-event-card h2 {
+    margin: 0 0 2rem 0;
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-ink);
+    text-align: center;
+}
+
+/* Sparkle + divider under the title */
+.create-event-card h2::after {
+    content: '✦';
+    display: block;
+    font-size: 10px;
+    letter-spacing: 0.4em;
+    color: var(--color-gold);
+    margin-top: 10px;
+    opacity: 0.8;
+}
+
+/* =========================================
+   Error Message
+   ========================================= */
+.error-message {
+    background-color: var(--color-error-bg);
+    border-left: 3px solid var(--color-error-line);
+    color: var(--color-error-text);
+    padding: 12px 16px;
+    border-radius: var(--radius-input);
+    margin-bottom: 1.5rem;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    animation: shake 0.4s ease both;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%       { transform: translateX(-5px); }
+    40%       { transform: translateX(5px); }
+    60%       { transform: translateX(-3px); }
+    80%       { transform: translateX(3px); }
+}
+
+/* =========================================
+   Form Layout
+   ========================================= */
+.event-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+}
+
+.form-row {
+    display: flex;
+    gap: 1rem;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+/* ── Individual Field Group ─────────────────────────────── */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+}
+
+/* ── Inputs & Selects ───────────────────────────────────── */
+.form-group input,
+.form-group select {
+    padding: 11px 14px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--color-ink);
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(184, 207, 196, 0.5);
+    border-radius: var(--radius-input);
+    outline: none;
+    transition:
+            border-color var(--transition-base),
+            background   var(--transition-base),
+            box-shadow   var(--transition-base);
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+/* Custom select arrow in sage */
+.form-group select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%239cbfb0'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z' clip-rule='evenodd'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 1.1rem;
+    padding-right: 2.25rem;
+    cursor: pointer;
+}
+
+.form-group input::placeholder {
+    color: var(--color-subtle);
+    font-weight: 300;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: var(--color-sage-deep);
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow:
+            0 0 0 3px rgba(156, 191, 176, 0.2),
+            0 2px 8px rgba(58, 53, 48, 0.06);
+}
+
+/* Subtle section divider between field groups */
+.event-form .form-section-divider {
+    height: 1px;
+    background: var(--color-rule);
+    margin: 0.25rem 0;
+}
+
+/* =========================================
+   Submit Button
+   ========================================= */
+.submit-btn {
+    margin-top: 1.25rem;
+    padding: 13px 24px;
+    width: 100%;
+    background: linear-gradient(
+            135deg,
+            var(--color-sage)       0%,
+            var(--color-sage-deep)  55%,
+            var(--color-blush-deep) 100%
+    );
+    color: #ffffff;
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    border: none;
+    border-radius: var(--radius-btn);
+    cursor: pointer;
+    box-shadow: var(--shadow-btn);
+    position: relative;
+    overflow: hidden;
+    transition:
+            opacity     var(--transition-base),
+            transform   var(--transition-base),
+            box-shadow  var(--transition-base);
+}
+
+/* Shimmer sweep */
+.submit-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(
+            120deg,
+            transparent              0%,
+            rgba(255, 255, 255, 0.28) 50%,
+            transparent              100%
+    );
+    transition: left 0.45s ease;
+}
+
+.submit-btn:hover:not(:disabled)::before {
+    left: 160%;
+}
+
+.submit-btn:hover:not(:disabled) {
+    opacity: 0.92;
+    transform: translateY(-1px);
+    box-shadow:
+            0 4px 14px rgba(156, 191, 176, 0.45),
+            0 2px 4px  rgba(58, 53, 48, 0.12);
+}
+
+.submit-btn:active:not(:disabled) {
+    transform: scale(0.985) translateY(0);
+    box-shadow: 0 1px 4px rgba(156, 191, 176, 0.3);
+}
+
+.submit-btn:disabled {
+    background: linear-gradient(135deg, #d4ccc4, #c4bcb4);
+    cursor: not-allowed;
+    opacity: 0.65;
+    box-shadow: none;
+}
+
+/* Loading state (mirrors login-button.loading) */
+.submit-btn.loading {
+    color: transparent;
+}
+
+.submit-btn.loading::after {
+    content: '';
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    top: 50%;
+    left: 50%;
+    margin: -7.5px 0 0 -7.5px;
+    border: 1.5px solid rgba(255, 255, 255, 0.35);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: spinner 0.8s linear infinite;
+}
+
+@keyframes spinner {
+    from { transform: rotate(0turn); }
+    to   { transform: rotate(1turn); }
+}

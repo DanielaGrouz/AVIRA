@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const taskController = require('../controllers/taskController'); // Import task logic
-const authorize = require('../middleware/auth');
-const { validateId, validateEventExists, validateTaskFields} = require('../middleware/validation');
+const {authorize, validateEventId} = require('../middleware/auth');
+const { validateId,} = require('../middleware/validation');
+const eventController = require("../controllers/eventController");
 
-router.get('/', authorize(['admin']), taskController.getAllTasks);
-router.get('/:id', validateId, taskController.getTaskById);
-router.post('/', validateEventExists, validateTaskFields, taskController.createTask);
-router.put('/:id', validateId, validateTaskFields, taskController.updateTask);
-router.delete('/:id', validateId, taskController.deleteTask);
+router.get('/:id/tasks', authorize(['user', 'admin']), validateId, validateEventId, eventController.getTasksByEventId);
+router.post('/:id/tasks', authorize(['user', 'admin']), validateId, validateEventId, eventController.addTaskToEvent);
+router.put('/:id/tasks/:taskId', authorize(['user', 'admin']), validateId, validateEventId, eventController.updateTaskInEvent);
+router.delete('/:id/tasks/:taskId', authorize(['user', 'admin']), validateId, validateEventId, eventController.removeTaskFromEvent);
+
 
 module.exports = router;

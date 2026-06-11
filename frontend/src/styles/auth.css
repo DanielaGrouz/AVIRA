@@ -1,0 +1,458 @@
+/* ─────────────────────────────────────────────────────────
+   AVIRA — A Boutique Event System
+   Auth Stylesheet  ·  Pastel Luxury Edition
+   ───────────────────────────────────────────────────────── */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap');
+
+/* ── Design Tokens ──────────────────────────────────────── */
+:root {
+    --color-blush:      #f0dbd8;
+    --color-blush-deep: #e8c8c4;
+    --color-sage:       #b8cfc4;
+    --color-sage-deep:  #9cbfb0;
+    --color-sand:       #e8e0d6;
+    --color-cream:      #faf8f5;
+    --color-gold:       #c9a96e;
+    --color-gold-light: #dfc08a;
+
+    --color-ink:        #3a3530;
+    --color-muted:      #8a8078;
+    --color-subtle:     #b0a89e;
+
+    --color-error-bg:   #fdf0ef;
+    --color-error-text: #9b4040;
+    --color-error-line: #d4837a;
+
+    --color-link:       #9cbfb0;
+    --color-link-hover: #7aaa99;
+
+    --radius-card:    20px;
+    --radius-input:   10px;
+    --radius-btn:     10px;
+
+    --shadow-card:
+            0 4px 6px rgba(58, 53, 48, 0.04),
+            0 12px 32px rgba(58, 53, 48, 0.08),
+            0 2px 4px rgba(58, 53, 48, 0.04);
+
+    --font-display: 'Cormorant Garamond', Georgia, serif;
+    --font-body:    'Jost', 'Helvetica Neue', sans-serif;
+
+    --transition-base: 0.22s ease;
+}
+
+/* ── Full-Page Wrapper ──────────────────────────────────── */
+.login-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 24px;
+
+    /* Two-tone diagonal inspired by the brand photos */
+    background:
+            linear-gradient(
+                    135deg,
+                    var(--color-sand)  0%,
+                    var(--color-blush) 50%,
+                    var(--color-sage)  100%
+            );
+
+    /* Subtle noise grain for depth */
+    position: relative;
+    overflow: hidden;
+}
+
+/* Decorative orbiting rings (like the brand imagery) */
+.login-wrapper::before,
+.login-wrapper::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.login-wrapper::before {
+    width: 480px;
+    height: 480px;
+    top: -140px;
+    right: -140px;
+    border: 1.5px solid rgba(255, 255, 255, 0.5);
+    box-shadow:
+            0 0 0 40px rgba(255, 255, 255, 0.08),
+            0 0 0 80px rgba(255, 255, 255, 0.05);
+    animation: orbit-rotate 30s linear infinite;
+}
+
+.login-wrapper::after {
+    width: 300px;
+    height: 300px;
+    bottom: -80px;
+    left: -80px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    box-shadow: 0 0 0 35px rgba(255, 255, 255, 0.06);
+    animation: orbit-rotate 22s linear infinite reverse;
+}
+
+@keyframes orbit-rotate {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+/* ── Card ───────────────────────────────────────────────── */
+.login-card {
+    background: rgba(250, 248, 245, 0.82);
+    backdrop-filter: blur(24px) saturate(1.4);
+    -webkit-backdrop-filter: blur(24px) saturate(1.4);
+
+    width: 100%;
+    max-width: 420px;
+    padding: 52px 44px 44px;
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    position: relative;
+    z-index: 1;
+
+    animation: card-appear 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes card-appear {
+    from {
+        opacity: 0;
+        transform: translateY(18px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Thin gold top accent line */
+.login-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 56px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--color-blush-deep), var(--color-gold), var(--color-blush-deep));
+    border-radius: 0 0 4px 4px;
+}
+
+/* ── Header ─────────────────────────────────────────────── */
+.login-header {
+    text-align: center;
+    margin-bottom: 36px;
+}
+
+.login-header h2 {
+    margin: 0 0 10px 0;
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    color: var(--color-ink);
+    text-transform: uppercase;
+}
+
+/* Decorative sparkle element under the title */
+.login-header h2::after {
+    content: '✦';
+    display: block;
+    font-size: 10px;
+    letter-spacing: 0.4em;
+    color: var(--color-gold);
+    margin-top: 10px;
+    opacity: 0.8;
+}
+
+.login-header p {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 300;
+    color: var(--color-muted);
+    letter-spacing: 0.03em;
+}
+
+/* ── Form ───────────────────────────────────────────────── */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+/* ── Error Message ──────────────────────────────────────── */
+.login-error-message {
+    background-color: var(--color-error-bg);
+    border-left: 3px solid var(--color-error-line);
+    color: var(--color-error-text);
+    padding: 12px 16px;
+    border-radius: var(--radius-input);
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    animation: shake 0.4s ease both;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%       { transform: translateX(-5px); }
+    40%       { transform: translateX(5px); }
+    60%       { transform: translateX(-3px); }
+    80%       { transform: translateX(3px); }
+}
+
+/* ── Input Fields (targeting the InputField wrapper) ────── */
+
+/* Label */
+.login-form label,
+.input-label {
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    display: block;
+    margin-bottom: 6px;
+}
+
+/* Input element */
+.login-form input[type="email"],
+.login-form input[type="password"],
+.login-form input[type="text"],
+.input-field {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 16px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--color-ink);
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(184, 207, 196, 0.5);
+    border-radius: var(--radius-input);
+    outline: none;
+    transition:
+            border-color var(--transition-base),
+            background var(--transition-base),
+            box-shadow var(--transition-base);
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.login-form input[type="email"]:focus,
+.login-form input[type="password"]:focus,
+.login-form input[type="text"]:focus,
+.input-field:focus {
+    border-color: var(--color-sage-deep);
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow:
+            0 0 0 3px rgba(156, 191, 176, 0.2),
+            0 2px 8px rgba(58, 53, 48, 0.06);
+}
+
+.login-form input::placeholder,
+.input-field::placeholder {
+    color: var(--color-subtle);
+    font-weight: 300;
+}
+
+/* ── Submit Button ──────────────────────────────────────── */
+.login-button {
+    margin-top: 10px;
+    background: linear-gradient(
+            135deg,
+            var(--color-sage)      0%,
+            var(--color-sage-deep) 55%,
+            var(--color-blush-deep) 100%
+    );
+    color: #ffffff;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 14px 24px;
+    border: none;
+    border-radius: var(--radius-btn);
+    cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+    transition:
+            opacity var(--transition-base),
+            transform var(--transition-base),
+            box-shadow var(--transition-base);
+    box-shadow:
+            0 2px 8px rgba(156, 191, 176, 0.35),
+            0 1px 2px rgba(58, 53, 48, 0.1);
+}
+
+/* Shimmer sweep on hover */
+.login-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(
+            120deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.28) 50%,
+            transparent 100%
+    );
+    transition: left 0.45s ease;
+}
+
+.login-button:hover:not(:disabled)::before {
+    left: 160%;
+}
+
+.login-button:hover:not(:disabled) {
+    opacity: 0.92;
+    box-shadow:
+            0 4px 14px rgba(156, 191, 176, 0.45),
+            0 2px 4px rgba(58, 53, 48, 0.12);
+    transform: translateY(-1px);
+}
+
+.login-button:active:not(:disabled) {
+    transform: scale(0.985) translateY(0);
+    box-shadow: 0 1px 4px rgba(156, 191, 176, 0.3);
+}
+
+.login-button:disabled {
+    background: linear-gradient(135deg, #d4ccc4, #c4bcb4);
+    cursor: not-allowed;
+    opacity: 0.65;
+    box-shadow: none;
+}
+
+/* Loading Spinner */
+.login-button.loading {
+    color: transparent;
+}
+
+.login-button.loading::after {
+    content: '';
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    top: 50%;
+    left: 50%;
+    margin: -7.5px 0 0 -7.5px;
+    border: 1.5px solid rgba(255, 255, 255, 0.35);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: button-loading-spinner 0.8s linear infinite;
+}
+
+@keyframes button-loading-spinner {
+    from { transform: rotate(0turn); }
+    to   { transform: rotate(1turn); }
+}
+
+/* ── Auth Links ─────────────────────────────────────────── */
+.forget-password-button {
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--color-sage-deep);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+    transition: color var(--transition-base);
+}
+
+.forget-password-button:hover {
+    color: var(--color-gold);
+    text-decoration: none;
+}
+
+.signup-container {
+    text-align: center;
+    margin-top: 8px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 300;
+    color: var(--color-muted);
+    letter-spacing: 0.02em;
+
+    /* Delicate top divider */
+    padding-top: 22px;
+    border-top: 1px solid rgba(184, 207, 196, 0.3);
+}
+
+.signup-link {
+    color: var(--color-sage-deep);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color var(--transition-base);
+    margin-left: 3px;
+}
+
+.signup-link:hover {
+    color: var(--color-gold);
+}
+
+.admin-manage-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--color-muted);
+    padding: 0.65rem 1.25rem;
+    border: 1px solid rgba(184, 207, 196, 0.45);
+    border-radius: 10px;
+    background: rgba(250, 248, 245, 0.6);
+    margin-top: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: color 0.22s ease, background 0.22s ease,
+    border-color 0.22s ease, box-shadow 0.22s ease, transform 0.22s ease;
+}
+.admin-manage-link::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 2.5px;
+    background: linear-gradient(180deg, var(--color-sage), var(--color-gold-light));
+    border-radius: 10px 0 0 10px;
+    opacity: 0;
+    transition: opacity 0.22s ease;
+}
+.admin-manage-link:hover::before { opacity: 1; }
+.admin-manage-link:hover {
+    color: var(--color-ink);
+    background: rgba(221, 238, 232, 0.6);
+    border-color: rgba(156, 191, 176, 0.55);
+    box-shadow: 0 2px 10px rgba(156, 191, 176, 0.2);
+    transform: translateY(-1px);
+}
+.admin-link-icon {
+    width: 14px; height: 14px;
+    stroke: currentColor; opacity: 0.65; flex-shrink: 0;
+}
+.admin-link-arrow {
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: opacity 0.22s ease, transform 0.22s ease;
+    font-size: 10px;
+}
+.admin-manage-link:hover .admin-link-arrow {
+    opacity: 0.7;
+    transform: translateX(0);
+}
