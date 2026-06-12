@@ -12,7 +12,7 @@ import CustomSelect from "../../components/CustomSelect";
 const EventHomePage = () => {
     const [events, setEvents] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
-    const [sortBy, setSortBy] = useState('id');
+    const [sortBy, setSortBy] = useState('eventId');
 
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPageCount, setTotalPageCount] = useState(0);
@@ -38,8 +38,8 @@ const EventHomePage = () => {
     const fetchEvents = async () => {
         try {
             const response = await EventService.getAll(currentPage, sortBy, searchQuery, PAGE_SIZE);
-            setTotalPageCount(response.data.data.totalPages);
-            setEvents(response.data.data.data);
+            setTotalPageCount(response.data.data.totalPages || 0);
+            setEvents(response.data.data.data || []);
         } catch (error) {
             console.error("Failed to fetch events:", error);
         }

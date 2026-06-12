@@ -1,6 +1,5 @@
-const { VALID_ROLES } = require('../models/constants');
-const events = require('../models/eventModel');
-const users = require('../models/userModel');
+const { VALID_ROLES } = require('../../models/constants');
+const { Event, User } = require('../../models');
 
 /**
  * Validates that the 'id' parameter in a URL is a positive integer.
@@ -18,15 +17,14 @@ const validateId = (req, res, next) => {
             }
         });
     }
-    // If valid, move to the next middleware or controller
     next();
 };
 
 /**
  * Ensures an eventId exists in the request body and corresponds
- * to an existing event in the system.
+ * to an existing event in the database. (UPDATED FOR ORM)
  */
-const validateEventExists = (req, res, next) => {
+const validateEventExists = async (req, res, next) => {
     const { eventId } = req.body;
     if (!eventId || !Number.isInteger(eventId) || eventId <= 0) {
         return res.status(400).json({
@@ -39,27 +37,38 @@ const validateEventExists = (req, res, next) => {
         });
     }
 
-    // Check if the event actually exists in the data source
-    const event = events.find(e => e.eventId === eventId);
-    if (!event) {
-        return res.status(404).json({
+    try {
+        // Check if the event actually exists in the database
+        const event = await Event.findByPk(eventId);
+        if (!event) {
+            return res.status(404).json({
+                success: false,
+                data: null,
+                error: {
+                    code: "NOT_FOUND",
+                    message: `Event with ID ${eventId} not found.`,
+                    details: { eventId: eventId }
+                }
+            });
+        }
+        // Attach the found event to the request object for easy access in the controller
+        req.event = event;
+        next();
+    } catch (error) {
+        return res.status(500).json({
             success: false,
             data: null,
             error: {
-                code: "NOT_FOUND",
-                message: `Event with ID ${eventId} not found.`,
-                details: { eventId: eventId }
+                code: "SERVER_ERROR",
+                message: "Database error during event validation",
+                details: error.message
             }
         });
     }
-    // Attach the found event to the request object for easy access in the controller
-    req.event = event;
-    next();
 };
 
 /**
  * Strict validation for User Registration.
- * Checks for mandatory fields: names, password length, email format, and Israeli phone numbers.
  */
 const validateUserFields = (req, res, next) => {
     const { firstName, lastName, userRole, password, email, phoneNumber } = req.body;
@@ -94,7 +103,6 @@ const validateUserFields = (req, res, next) => {
     }
 
     if (errors.length > 0) {
-        console.error(errors);
         return res.status(400).json({
             success: false,
             data: null,
@@ -110,13 +118,11 @@ const validateUserFields = (req, res, next) => {
 
 /**
  * Validation for User Updates (PATCH).
- * Only validates fields if they are provided in the request body.
  */
 const validateOptionalUserFields = (req, res, next) => {
     const { firstName, lastName, userRole, password, email, phoneNumber, picture } = req.body;
     let errors = [];
 
-    // Helper to check if a field is actually being sent in the update
     const isProvided = (value) => value !== undefined && value !== null && value !== "";
 
     if (isProvided(firstName)) {
@@ -246,7 +252,6 @@ const validateTaskFields = (req, res, next) => {
 
 /**
  * Validates Event creation data.
- * Checks for strict date (YYYY-MM-DD) and time (HH:MM) formatting.
  */
 const validateEventFields = (req, res, next) => {
     if (req.body.guestsCount === undefined) {
@@ -264,7 +269,6 @@ const validateEventFields = (req, res, next) => {
     if (!date || typeof date !== 'string' || !dateRegex.test(date)) {
         errors.push("date must be a valid string in YYYY-MM-DD format");
     } else {
-        // Backend Validation: Future Date & Time Check for new events
         const timeString = time && time !== 'TBD' ? time : "00:00";
         const eventDateTime = new Date(`${date}T${timeString}`);
 
@@ -305,10 +309,10 @@ const validateEventFields = (req, res, next) => {
 };
 
 /**
- * Cross-references creatorId with the User "database" to ensure
- * the event is being assigned to a real user.
+ * Cross-references creatorId with the User database to ensure
+ * the event is being assigned to a real user. (UPDATED FOR ORM)
  */
-const validateUserExists = (req, res, next) => {
+const validateUserExists = async (req, res, next) => {
     const { creatorId } = req.body;
     if (!creatorId || !Number.isInteger(creatorId) || creatorId <= 0) {
         return res.status(400).json({
@@ -322,25 +326,36 @@ const validateUserExists = (req, res, next) => {
         });
     }
 
-    const user = users.find(u => u.userId === creatorId);
-    if (!user) {
-        return res.status(404).json({
+    try {
+        const user = await User.findByPk(creatorId);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                data: null,
+                error: {
+                    code: "NOT_FOUND",
+                    message: `User with ID ${creatorId} not found.`,
+                    details: { userId: creatorId }
+                }
+            });
+        }
+        req.user = user;
+        next();
+    } catch (error) {
+        return res.status(500).json({
             success: false,
             data: null,
             error: {
-                code: "NOT_FOUND",
-                message: `User with ID ${creatorId} not found.`,
-                details: { userId: creatorId }
+                code: "SERVER_ERROR",
+                message: "Database error during user validation",
+                details: error.message
             }
         });
     }
-    req.user = user;
-    next();
 };
 
 /**
  * Validation for Event Updates (PUT/PATCH).
- * Only validates fields if they are provided in the request body.
  */
 const validateOptionalEventFields = (req, res, next) => {
     const { title, date, time, location } = req.body;
@@ -355,7 +370,6 @@ const validateOptionalEventFields = (req, res, next) => {
         if (typeof date !== 'string' || !dateRegex.test(date)) {
             errors.push("date must be a valid string in YYYY-MM-DD format");
         }else {
-            // Future Date Check for Update
             const timeString = isProvided(time) && time !== 'TBD' ? time : "00:00";
             const eventDateTime = new Date(`${date}T${timeString}`);
 

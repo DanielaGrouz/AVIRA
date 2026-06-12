@@ -69,12 +69,12 @@ const sendMail = async (emailSubject, verificationCode, emailToSent) => {
         attachments: [
             {
                 filename: 'logo1.png',
-                path: './sources/logo.png',
+                path: './src/sources/logo.png',
                 cid: 'logo1'
             },
             {
                 filename: 'logo2.png',
-                path: './sources/background.png',
+                path: './src/sources/background.png',
                 cid: 'logo2' // This CID is now feeding the CSS background-image
             }
         ]
@@ -82,10 +82,10 @@ const sendMail = async (emailSubject, verificationCode, emailToSent) => {
 
     try {
         const info = await transporter.sendMail(mailOptions);
-        console.log('✅ Auth email sent successfully!');
+        console.log('Auth email sent successfully!');
         return info;
     } catch (error) {
-        console.error('❌ Error sending auth email:', error.message);
+        console.error('Error sending auth email:', error.message);
         throw error;
     }
 };

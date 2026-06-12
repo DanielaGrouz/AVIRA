@@ -1,4 +1,3 @@
-// models/eventModel.js
 let events = [
     { eventId: 101, creatorId: 1, title: "Shir's Bachelorette Party", date: "2026-06-15", time: "19:00", location: "Villa Caesarea", eventType: "Bachelorette", guestsCount: 3 ,invitationPath: null},
     { eventId: 102, creatorId: 1, title: "Grandma's 80th Birthday", date: "2026-07-20", time: "12:30", location: "King David Hotel", eventType: "Birthday", guestsCount: 2 ,invitationPath: null},

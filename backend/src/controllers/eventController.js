@@ -1,14 +1,14 @@
 const eventService = require('../services/eventService');
 
 // Get all events with pagination and sorting
-const getAllEvents = (req, res) => {
+const getAllEvents = async (req, res) => {
     try {
         const limit = req.query.limit || 5;
         const page = parseInt(req.query.page) || 1;
-        const sortBy = req.query.sortBy || 'id';
+        const sortBy = req.query.sortBy || 'eventId';
         const searchQuery = req.query.searchQuery || null;
 
-        const result = eventService.getAllEventsLogic(page, limit, sortBy, searchQuery, req.user);
+        const result = await eventService.getAllEventsLogic(page, limit, sortBy, searchQuery, req.user);
 
         res.status(200).json({
             success: true,
@@ -29,10 +29,10 @@ const getAllEvents = (req, res) => {
 };
 
 // Get a specific event using its ID
-const getEventById = (req, res) => {
+const getEventById = async (req, res) => {
     try {
         const id = parseInt(req.params.id);
-        const event = eventService.getEventByIdLogic(id);
+        const event = await eventService.getEventByIdLogic(id);
 
         if (!event) {
             return res.status(404).json({
@@ -65,9 +65,9 @@ const getEventById = (req, res) => {
 };
 
 // Create a new event
-const createEvent = (req, res) => {
+const createEvent = async (req, res) => {
     try {
-        const newEvent = eventService.createEventLogic(req.user.userId, req.body);
+        const newEvent = await eventService.createEventLogic(req.user.userId, req.body);
 
         res.status(201).json({
             success: true,
@@ -81,17 +81,17 @@ const createEvent = (req, res) => {
             error: {
                 code: "SERVER_ERROR",
                 message: "Internal Server Error",
-                details: {}
+                details: error.message
             }
         });
     }
 };
 
 // Delete an existing event
-const deleteEvent = (req, res) => {
+const deleteEvent = async (req, res) => {
     try {
         const { id } = req.params;
-        eventService.deleteEventLogic(parseInt(id));
+        await eventService.deleteEventLogic(parseInt(id));
 
         res.status(200).json({
             success: true,
@@ -112,17 +112,17 @@ const deleteEvent = (req, res) => {
             error: {
                 code: "SERVER_ERROR",
                 message: "Internal Server Error",
-                details: {}
+                details: error.message
             }
         });
     }
 };
 
 // Update details of an existing event
-const updateEvent = (req, res) => {
+const updateEvent = async (req, res) => {
     try {
         const id = parseInt(req.params.id);
-        eventService.updateEventLogic(id, req.body);
+        await eventService.updateEventLogic(id, req.body);
 
         res.status(200).json({
             success: true,
@@ -154,17 +154,17 @@ const updateEvent = (req, res) => {
 };
 
 // Get a list of all guests invited to a specific event
-const getAllGuestsByEvent = (req, res) => {
+const getAllGuestsByEvent = async (req, res) => {
     try {
         const eventId = parseInt(req.params.id);
         const limit = req.query.limit || 5;
         const page = parseInt(req.query.page) || 1;
-        const sortBy = req.query.sortBy || 'id';
-        const sortDirection = req.query.sortDirection || 1;
+        const sortBy = req.query.sortBy || 'eventId';
+        const sortDirection = parseInt(req.query.sortDirection || '1');
 
         const searchQuery = req.query.searchQuery || null;
 
-        const result = eventService.getAllGuestsByEventLogic(eventId, page, limit, sortBy, searchQuery, sortDirection);
+        const result = await eventService.getAllGuestsByEventLogic(eventId, page, limit, sortBy, sortDirection, searchQuery);
 
         res.status(200).json({
             success: true,
@@ -196,18 +196,19 @@ const getAllGuestsByEvent = (req, res) => {
 };
 
 // Get all tasks linked to a specific event
-const getTasksByEventId = (req, res) => {
+const getTasksByEventId = async (req, res) => {
     try {
         const eventId = parseInt(req.params.id);
         const limit = req.query.limit || 5;
         const page = parseInt(req.query.page) || 1;
-        const sortBy = req.query.sortBy || 'id';
-        const sortDirection = req.query.sortDirection || 1;
+        const sortBy = req.query.sortBy || 'eventId';
+        const sortDirection = parseInt(req.query.sortDirection || '1');
         const searchQuery = req.query.searchQuery || null;
-        const result = eventService.getTasksByEventIdLogic(eventId, page, limit, sortBy, sortDirection, searchQuery);
+        const result = await eventService.getTasksByEventIdLogic(eventId, page, limit, sortBy, sortDirection, searchQuery);
 
         res.status(200).json({ success: true, data: result, error: null });
     } catch (error) {
+        console.error(error);
         if (error.message === "EVENT_NOT_FOUND") {
             return res.status(404).json({
                 success: false,
@@ -228,10 +229,10 @@ const getTasksByEventId = (req, res) => {
 };
 
 // Add a task to an event
-const addTaskToEvent = (req, res) => {
+const addTaskToEvent = async (req, res) => {
     try {
         const eventId = parseInt(req.params.id);
-        const newTask = eventService.addTaskToEventLogic(eventId, req.body);
+        const newTask = await eventService.addTaskToEventLogic(eventId, req.body);
         res.status(201).json({ success: true, data: newTask, error: null });
     } catch (error) {
         if (error.message === "EVENT_NOT_FOUND") {
@@ -254,11 +255,11 @@ const addTaskToEvent = (req, res) => {
 };
 
 // Update task details (status, description, etc.)
-const updateTaskInEvent = (req, res) => {
+const updateTaskInEvent = async (req, res) => {
     try {
         const eventId = parseInt(req.params.id);
         const taskId = parseInt(req.params.taskId);
-        const updatedTask = eventService.updateTaskInEventLogic(eventId, taskId, req.body);
+        const updatedTask = await eventService.updateTaskInEventLogic(eventId, taskId, req.body);
         res.status(200).json({ success: true, data: updatedTask, error: null });
     } catch (error) {
         if (error.message === "EVENT_NOT_FOUND" || error.message === "TASK_NOT_FOUND_IN_EVENT" || error.message === "TASK_NOT_FOUND") {
@@ -281,11 +282,11 @@ const updateTaskInEvent = (req, res) => {
 };
 
 // Remove a task from an event
-const removeTaskFromEvent = (req, res) => {
+const removeTaskFromEvent = async (req, res) => {
     try {
         const eventId = parseInt(req.params.id);
         const taskId = parseInt(req.params.taskId);
-        eventService.removeTaskFromEventLogic(eventId, taskId);
+        await eventService.removeTaskFromEventLogic(eventId, taskId);
         res.status(200).json({ success: true, data: { eventId, taskId, action: "deleted" }, error: null });
     } catch (error) {
         if (error.message === "EVENT_NOT_FOUND" || error.message === "TASK_NOT_FOUND_IN_EVENT" || error.message === "TASK_NOT_FOUND") {
@@ -308,10 +309,10 @@ const removeTaskFromEvent = (req, res) => {
 };
 
 // Get events managed by a specific creator
-const getEventsByCreator = (req, res) => {
+const getEventsByCreator = async (req, res) => {
     try {
         const creatorId = req.params.creatorId;
-        const data = eventService.getEventsByCreatorLogic(creatorId);
+        const data = await eventService.getEventsByCreatorLogic(creatorId);
         res.status(200).json({ success: true, data, error: null });
     } catch (error) {
         res.status(500).json({
@@ -327,10 +328,10 @@ const getEventsByCreator = (req, res) => {
 };
 
 // Get events where a specific person is invited (by name)
-const getEventsByGuestName = (req, res) => {
+const getEventsByGuestName = async (req, res) => {
     try {
         const name = req.params.name;
-        const data = eventService.getEventsByGuestNameLogic(name);
+        const data = await eventService.getEventsByGuestNameLogic(name);
         res.status(200).json({ success: true, data, error: null });
     } catch (error) {
         res.status(500).json({
@@ -346,10 +347,10 @@ const getEventsByGuestName = (req, res) => {
 };
 
 // Get events where a specific person is invited (by phone)
-const getEventsByPhone = (req, res) => {
+const getEventsByPhone = async (req, res) => {
     try {
         const phone = req.params.phone;
-        const data = eventService.getEventsByPhoneLogic(phone);
+        const data = await eventService.getEventsByPhoneLogic(phone);
         res.status(200).json({ success: true, data, error: null });
     } catch (error) {
         res.status(500).json({
@@ -358,17 +359,17 @@ const getEventsByPhone = (req, res) => {
             error: {
                 code: "SERVER_ERROR",
                 message: "Internal Server Error",
-                details: {}
+                details: error.message
             }
         });
     }
 };
 
 // Add a new guest to an event
-const addGuestToEvent = (req, res) => {
+const addGuestToEvent = async (req, res) => {
     try {
         const eventId = parseInt(req.params.id);
-        const newGuest = eventService.addGuestToEventLogic(eventId, req.body);
+        const newGuest = await eventService.addGuestToEventLogic(eventId, req.body);
 
         res.status(201).json({ success: true, data: newGuest, error: null });
     } catch (error) {
@@ -385,18 +386,18 @@ const addGuestToEvent = (req, res) => {
             error: {
                 code: "SERVER_ERROR",
                 message: "Internal Server Error",
-                details: {}
+                details: error.message
             }
         });
     }
 };
 
 // Remove a guest from an event
-const removeGuestFromEvent = (req, res) => {
+const removeGuestFromEvent = async (req, res) => {
     try {
         const eventId = parseInt(req.params.id);
         const guestId = parseInt(req.params.guestId);
-        eventService.removeGuestFromEventLogic(eventId, guestId);
+        await eventService.removeGuestFromEventLogic(eventId, guestId);
         res.status(200).json({ success: true, data: { eventId, guestId, action: "deleted" }, error: null });
     } catch (error) {
         if (error.message === "EVENT_NOT_FOUND" || error.message === "GUEST_NOT_FOUND_IN_EVENT" || error.message === "GUEST_NOT_FOUND") {
@@ -408,18 +409,18 @@ const removeGuestFromEvent = (req, res) => {
             error: {
                 code: "SERVER_ERROR",
                 message: "Internal Server Error",
-                details: {}
+                details: error.message
             }
         });
     }
 };
 
 // Update guest details
-const updateGuestInEvent = (req, res) => {
+const updateGuestInEvent = async (req, res) => {
     try {
         const eventId = parseInt(req.params.id);
         const guestId = parseInt(req.params.guestId);
-        const updatedGuest = eventService.updateGuestInEventLogic(eventId, guestId, req.body);
+        const updatedGuest = await eventService.updateGuestInEventLogic(eventId, guestId, req.body);
         res.status(200).json({ success: true, data: updatedGuest, error: null });
     } catch (error) {
         if (error.message === "EVENT_NOT_FOUND" || error.message === "GUEST_NOT_FOUND_IN_EVENT" || error.message === "GUEST_NOT_FOUND") {
@@ -431,18 +432,18 @@ const updateGuestInEvent = (req, res) => {
             error: {
                 code: "SERVER_ERROR",
                 message: "Internal Server Error",
-                details: {}
+                details: error.message
             }
         });
     }
 };
 
-const updateGuestRSVP = (req, res) => {
+const updateGuestRSVP = async (req, res) => {
     try {
         const eventId = parseInt(req.params.id);
         const guestId = parseInt(req.params.guestId);
         const { status } = req.body;
-        const updatedGuest = eventService.updateGuestRSVPLogic(eventId, guestId, status);
+        const updatedGuest = await eventService.updateGuestRSVPLogic(eventId, guestId, status);
         res.status(200).json({ success: true, data: updatedGuest, error: null });
     } catch (error) {
         if (error.message === "EVENT_NOT_FOUND" || error.message === "GUEST_NOT_FOUND_IN_EVENT" || error.message === "GUEST_NOT_FOUND") {
@@ -454,7 +455,7 @@ const updateGuestRSVP = (req, res) => {
             error: {
                 code: "SERVER_ERROR",
                 message: "Internal Server Error",
-                details: {}
+                details: error.message
             }
         });
     }
@@ -481,7 +482,7 @@ const generateInvite = async (req, res) => {
             error: {
                 code: "SERVER_ERROR",
                 message: "Internal Server Error",
-                details: {}
+                details: error.message
             }
         });
     }
@@ -506,7 +507,7 @@ const generateShoppingList = async (req, res) => {
             error: {
                 code: "SERVER_ERROR",
                 message: "Internal Server Error",
-                details: {}
+                details: error.message
             }
         });
     }
@@ -531,7 +532,7 @@ const generateTaskList = async (req, res) => {
             error: {
                 code: "SERVER_ERROR",
                 message: "Internal Server Error",
-                details: {}
+                details: error.message
             }
         });
     }

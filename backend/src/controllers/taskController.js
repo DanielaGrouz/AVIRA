@@ -4,15 +4,15 @@ const taskService = require('../services/taskService');
  * Fetches all tasks from the system.
  * Implements pagination and sorting via query parameters.
  */
-const getAllTasks = (req, res) => {
+const getAllTasks = async (req, res) => {
     try {
         // Extract pagination and sorting parameters from req.query
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 5;
         const sortBy = req.query.sortBy || 'taskId';
 
-        // Execute core business logic via the service layer
-        const result = taskService.getAllTasksLogic(page, limit, sortBy);
+        // Execute core business logic via the service layer asynchronously
+        const result = await taskService.getAllTasksLogic(page, limit, sortBy);
 
         // Standard success response structure
         res.status(200).json({
@@ -22,13 +22,14 @@ const getAllTasks = (req, res) => {
         });
     } catch (error) {
         // Fallback for unexpected system errors
+        console.error(error);
         res.status(500).json({
             success: false,
             data: null,
             error: {
                 code: "SERVER_ERROR",
                 message: "Internal Server Error",
-                details: {}
+                details: error.message
             }
         });
     }
@@ -37,11 +38,11 @@ const getAllTasks = (req, res) => {
 /**
  * Retrieves a specific task using its unique ID.
  */
-const getTaskById = (req, res) => {
+const getTaskById = async (req, res) => {
     try {
         // Parse the task ID from the URL parameters
         const id = parseInt(req.params.id);
-        const task = taskService.getTaskByIdLogic(id);
+        const task = await taskService.getTaskByIdLogic(id);
 
         // Validation: Ensure the task exists before returning data
         if (!task) {
@@ -62,13 +63,15 @@ const getTaskById = (req, res) => {
             error: null
         });
     } catch (error) {
+        console.error(error);
+
         res.status(500).json({
             success: false,
             data: null,
             error: {
                 code: "SERVER_ERROR",
                 message: "Internal Server Error",
-                details: {}
+                details: error.message
             }
         });
     }
@@ -78,10 +81,10 @@ const getTaskById = (req, res) => {
  * Creates a new task record.
  * Uses req.body to pass data to the Service.
  */
-const createTask = (req, res) => {
+const createTask = async (req, res) => {
     try {
-        // Pass the body to the service to handle data persistence/logic
-        const newTask = taskService.createTaskLogic(req.body);
+        // Pass the body to the service to handle data persistence/logic asynchronously
+        const newTask = await taskService.createTaskLogic(req.body);
 
         // Return 201 Created status for successful post
         res.status(201).json({
@@ -90,13 +93,14 @@ const createTask = (req, res) => {
             error: null
         });
     } catch (error) {
+        console.error(error);
         res.status(500).json({
             success: false,
             data: null,
             error: {
                 code: "SERVER_ERROR",
                 message: "Internal Server Error",
-                details: {}
+                details: error.message
             }
         });
     }
@@ -106,10 +110,10 @@ const createTask = (req, res) => {
  * Updates an existing task by ID.
  * Integrates error handling for specific business logic failures.
  */
-const updateTask = (req, res) => {
+const updateTask = async (req, res) => {
     try {
         const id = parseInt(req.params.id);
-        taskService.updateTaskLogic(id, req.body);
+        await taskService.updateTaskLogic(id, req.body);
 
         res.status(200).json({
             success: true,
@@ -117,7 +121,8 @@ const updateTask = (req, res) => {
             error: null
         });
     } catch (error) {
-        // Handle specific logic error: Task not found in "database"
+        console.error(error);
+        // Handle specific logic error: Task not found in database
         if (error.message === "TASK_NOT_FOUND") {
             return res.status(404).json({
                 success: false,
@@ -131,7 +136,7 @@ const updateTask = (req, res) => {
             error: {
                 code: "SERVER_ERROR",
                 message: "Internal Server Error",
-                details: {}
+                details: error.message
             }
         });
     }
@@ -140,10 +145,10 @@ const updateTask = (req, res) => {
 /**
  * Deletes a task from the system.
  */
-const deleteTask = (req, res) => {
+const deleteTask = async (req, res) => {
     try {
         const id = parseInt(req.params.id);
-        taskService.deleteTaskLogic(id);
+        await taskService.deleteTaskLogic(id);
 
         res.status(200).json({
             success: true,
@@ -151,6 +156,7 @@ const deleteTask = (req, res) => {
             error: null
         });
     } catch (error) {
+        console.error(error);
         // Error handling for deletion of non-existent ID
         if (error.message === "TASK_NOT_FOUND") {
             return res.status(404).json({
@@ -165,7 +171,7 @@ const deleteTask = (req, res) => {
             error: {
                 code: "SERVER_ERROR",
                 message: "Internal Server Error",
-                details: {}
+                details: error.message
             }
         });
     }
