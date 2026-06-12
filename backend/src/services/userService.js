@@ -91,7 +91,7 @@ const createUserLogic = async (userData) => {
 
                 if (imageFiles.length > 0) {
                     const randomFile = imageFiles[Math.floor(Math.random() * imageFiles.length)];
-                    finalPicture = `/sources/avatar/${randomFile}`;
+                    finalPicture = `/sources/src/avatar/${randomFile}`;
                 } else {
                     finalPicture = `/sources/avatar/avatar1.png`;
                 }

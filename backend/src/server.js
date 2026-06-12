@@ -6,12 +6,14 @@ const guestsRoutes = require('./routes/guestsRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const taskRoutes = require('./routes/tasksRoutes');
 const aiRoutes = require('./routes/aiRoutes');
+const path = require('path');
 
 const {uploadDir} = require("./middleware/fileUpload");
 const app = express();
 const port = 3000;
 
 app.use(cors());
+app.use('/sources', express.static(path.join(__dirname, './sources')));
 app.use('/uploads', express.static(uploadDir));
 app.use(express.json());
 app.use(logger);
