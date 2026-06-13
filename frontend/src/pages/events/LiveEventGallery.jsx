@@ -1,109 +1,99 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { io } from 'socket.io-client';
+import { useParams } from 'react-router-dom';
+import eventService from '../../services/EventService';
 import '../../styles/LiveEventGallery.css';
-import {useParams} from "react-router-dom";
-import eventService from "../../services/EventService";
 
-const API_BASE = 'http://localhost:3000'; // adjust to your backend URL
+const API_BASE = 'http://localhost:3000';
 
 const LiveEventGallery = () => {
     const { id: eventId } = useParams();
-    const [images, setImages] = useState([]);
-    const [isGalleryOpen, setIsGalleryOpen] = useState(false);
-    const [unreadCount, setUnreadCount] = useState(0);
-    const [isLoading, setIsLoading]     = useState(false);
-    const [lightboxSrc, setLightboxSrc] = useState(null);
-    const [newIds, setNewIds]           = useState(new Set());    // tracks freshly arrived images
-    const socketRef                     = useRef(null);
-    const isGalleryOpenRef              = useRef(isGalleryOpen); // stable ref for socket callback
 
-    // Keep ref in sync with state
-    useEffect(() => {
-        isGalleryOpenRef.current = isGalleryOpen;
-    }, [isGalleryOpen]);
+    const [images, setImages]       = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [lightbox, setLightbox]   = useState(null);   // { src, timestamp }
+    const [newIds, setNewIds]       = useState(new Set());
 
-    const fetchInitialImages = async () => {
-        setIsLoading(true);
-        try {
-            const response = await eventService.getEventGallery(eventId, 1, 5);
-            setImages(response.data.data.data);
-        } catch (err) {
-            console.error('Could not fetch initial event photos:', err);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-    console.log(images);
+    const socketRef = useRef(null);
 
+    // ── Build the full image URL from a path ─────────────────
+    const toUrl = (path) =>
+        path?.startsWith('http') ? path : `${API_BASE}${path}`;
+
+    // ── Fetch initial photos ──────────────────────────────────
     useEffect(() => {
         if (!eventId) return;
-        fetchInitialImages()
+
+        const load = async () => {
+            setIsLoading(true);
+            try {
+                const response = await eventService.getEventGallery(eventId, 1, 10);
+                const photos = response?.data?.data?.data ?? [];
+                setImages(photos);
+            } catch (err) {
+                console.error('Could not fetch event photos:', err);
+                setImages([]);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        load();
     }, [eventId]);
 
+    // ── Socket.io realtime listener ───────────────────────────
     useEffect(() => {
         if (!eventId) return;
 
         const socket = io(API_BASE);
         socketRef.current = socket;
-
         socket.emit('joinEventRoom', eventId);
 
         socket.on('newImageBroadcast', (data) => {
-            console.error(data);
-            const id = data.id ?? data.imageUrl; // fall back to URL as unique key
+            const uid = data.id ?? data.path ?? data.imageUrl;
 
             setImages((prev) => {
-                // Avoid duplicates
-                if (prev.some((img) => (img.id ?? img.path) === id)) return prev;
-                return [{ ...data, _isNew: true }, ...prev];
+                if (prev.some((img) => (img.id ?? img.path) === uid)) return prev;
+                return [{ ...data }, ...prev];
             });
 
-            // Mark as "new" for glow animation
-            setNewIds((prev) => new Set(prev).add(id));
+            setNewIds((prev) => new Set(prev).add(uid));
             setTimeout(() => {
                 setNewIds((prev) => {
                     const next = new Set(prev);
-                    next.delete(id);
+                    next.delete(uid);
                     return next;
                 });
-            }, 6000); // badge fades after 6 s
-
-            if (!isGalleryOpenRef.current) {
-                setUnreadCount((prev) => prev + 1);
-            }
+            }, 6000);
         });
 
-        return () => {
-            socket.disconnect();
-        };
+        return () => socket.disconnect();
     }, [eventId]);
 
-    // ── Gallery open / close ──────────────────────────────────
-    const openGallery = useCallback(() => {
-        setIsGalleryOpen(true);
-        setUnreadCount(0);
-    }, []);
-
-    const closeGallery = useCallback(() => {
-        setIsGalleryOpen(false);
-    }, []);
-
-    // Close gallery on Escape key
+    // ── Lightbox keyboard + scroll lock ──────────────────────
     useEffect(() => {
-        const handleKey = (e) => {
-            if (e.key === 'Escape') {
-                if (lightboxSrc) {
-                    setLightboxSrc(null);
-                } else {
-                    closeGallery();
-                }
-            }
+        const onKey = (e) => {
+            if (!lightbox) return;
+            if (e.key === 'Escape') closeLightbox();
         };
-        window.addEventListener('keydown', handleKey);
-        return () => window.removeEventListener('keydown', handleKey);
-    }, [lightboxSrc, closeGallery]);
+        window.addEventListener('keydown', onKey);
 
-    // ── Helpers ───────────────────────────────────────────────
+        // Lock scroll while lightbox is open
+        if (lightbox) document.body.style.overflow = 'hidden';
+        else          document.body.style.overflow  = '';
+
+        return () => {
+            window.removeEventListener('keydown', onKey);
+            document.body.style.overflow = '';
+        };
+    }, [lightbox]);
+
+    const openLightbox = useCallback((img) => {
+        setLightbox({ src: toUrl(img.path ?? img.imageUrl), timestamp: img.createdAt ?? img.timestamp });
+    }, []);
+
+    const closeLightbox = useCallback(() => setLightbox(null), []);
+
     const formatTime = (ts) => {
         if (!ts) return null;
         return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -112,161 +102,126 @@ const LiveEventGallery = () => {
     const photoLabel = images.length === 1 ? '1 photo' : `${images.length} photos`;
 
     // ── Render ────────────────────────────────────────────────
-
-    // Nothing at all if no images and not loading — don't render the FAB
-    if (!isLoading && images.length === 0 && !isGalleryOpen) {
-        return null;
-    }
-
     return (
         <>
-            {/* ── Floating Action Button ─────────────────── */}
-            {(images.length > 0 || isLoading) && (
-                <button
-                    className="floating-gallery-btn"
-                    onClick={openGallery}
-                    aria-label={`Open event gallery${unreadCount > 0 ? `, ${unreadCount} new` : ''}`}
-                >
-                    <span className="fab-icon">📸</span>
-                    Event Gallery
-                    {unreadCount > 0 && (
-                        <span className="gallery-badge" aria-live="polite">
-                            {unreadCount}
-                        </span>
-                    )}
-                </button>
-            )}
+            <section className="live-gallery-section" aria-label="Live event photo gallery">
 
-            {/* ── Fullscreen Sheet Modal ─────────────────── */}
-            {isGalleryOpen && (
-                <div
-                    className="gallery-modal-overlay"
-                    onClick={(e) => e.target === e.currentTarget && closeGallery()}
-                    role="dialog"
-                    aria-modal="true"
-                    aria-label="Live event photo gallery"
-                >
-                    <div className="gallery-modal-content">
-                        {/* Drag handle */}
-                        <div className="gallery-drag-handle" aria-hidden="true" />
-
-                        {/* Header */}
-                        <div className="gallery-header">
-                            <div className="gallery-header-left">
-                                <h2>Live Event Photos</h2>
-                                {!isLoading && (
-                                    <span className="gallery-photo-count">{photoLabel}</span>
-                                )}
-                            </div>
-
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                                <span className="gallery-live-pill" aria-label="Live">
-                                    <span className="live-dot" aria-hidden="true" />
-                                    Live
-                                </span>
-                                <button
-                                    className="gallery-close-btn"
-                                    onClick={closeGallery}
-                                    aria-label="Close gallery"
-                                >
-                                    ✕
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Body */}
-                        <div className="gallery-scroll-area">
-                            {/* Loading skeletons */}
-                            {isLoading && (
-                                <div className="masonry-grid" aria-busy="true" aria-label="Loading photos">
-                                    {[...Array(6)].map((_, i) => (
-                                        <div className="masonry-skeleton" key={i} aria-hidden="true" />
-                                    ))}
-                                </div>
-                            )}
-
-                            {/* Empty state (after loading) */}
-                            {!isLoading && images.length === 0 && (
-                                <div className="gallery-empty-state">
-                                    <div className="gallery-empty-icon" aria-hidden="true">📷</div>
-                                    <h3>No photos yet</h3>
-                                    <p>
-                                        Photos will appear here as guests share moments from the event.
-                                        Check back soon — the first shots are on their way.
-                                    </p>
-                                </div>
-                            )}
-
-                            {/* Photo grid */}
-                            {!isLoading && images.length > 0 && (
-                                <div className="masonry-grid">
-                                    {images.map((img, index) => {
-                                        const id       = img.id ?? img.imageUrl;
-                                        const isNew    = newIds.has(id);
-                                        const timeStr  = formatTime(img.timestamp);
-
-                                        return (
-                                            <div
-                                                className={`masonry-item${isNew ? ' is-new' : ''}`}
-                                                key={id ?? index}
-                                                onClick={() => setLightboxSrc(img.imageUrl)}
-                                                role="button"
-                                                tabIndex={0}
-                                                onKeyDown={(e) => e.key === 'Enter' && setLightboxSrc(img.imageUrl)}
-                                                aria-label={`Photo ${index + 1}${timeStr ? ` taken at ${timeStr}` : ''}`}
-                                            >
-                                                <img
-                                                    src={`http://localhost:3000${img.path}`}
-                                                    alt={`Event moment ${index + 1}`}
-                                                    loading="lazy"
-                                                />
-
-                                                {isNew && (
-                                                    <span className="img-new-badge" aria-label="New photo">
-                                                        New
-                                                    </span>
-                                                )}
-
-                                                {timeStr && (
-                                                    <div className="img-timestamp" aria-hidden="true">
-                                                        <svg width="10" height="10" viewBox="0 0 20 20" fill="currentColor">
-                                                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-                                                        </svg>
-                                                        {timeStr}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            )}
-                        </div>
+                {/* Header */}
+                <div className="gallery-section-header">
+                    <div className="gallery-section-header-left">
+                        <h2>Live Gallery</h2>
+                        {!isLoading && images.length > 0 && (
+                            <span className="gallery-photo-count">{photoLabel}</span>
+                        )}
                     </div>
-                </div>
-            )}
 
-            {/* ── Lightbox ───────────────────────────────── */}
-            {lightboxSrc && (
+                    <span className="gallery-live-pill" aria-label="Live feed">
+                        <span className="live-dot" aria-hidden="true" />
+                        Live
+                    </span>
+                </div>
+
+                {/* Loading skeletons */}
+                {isLoading && (
+                    <div className="gallery-grid" aria-busy="true" aria-label="Loading photos">
+                        {[...Array(8)].map((_, i) => (
+                            <div className="gallery-skeleton-item" key={i} aria-hidden="true" />
+                        ))}
+                    </div>
+                )}
+
+                {/* Empty state */}
+                {!isLoading && images.length === 0 && (
+                    <div className="gallery-empty-state">
+                        <div className="gallery-empty-icon" aria-hidden="true">📷</div>
+                        <h3>No photos yet</h3>
+                        <p>
+                            Moments from the event will appear here as guests share them.
+                            The first shot is just around the corner.
+                        </p>
+                    </div>
+                )}
+
+                {/* Photo grid */}
+                {!isLoading && images.length > 0 && (
+                    <div className="gallery-grid">
+                        {images.map((img, index) => {
+                            const uid     = img.id ?? img.path ?? img.imageUrl ?? index;
+                            const isNew   = newIds.has(uid);
+                            const timeStr = formatTime(img.createdAt ?? img.timestamp);
+                            const src     = toUrl(img.path ?? img.imageUrl);
+
+                            return (
+                                <div
+                                    className={`gallery-grid-item${isNew ? ' is-new' : ''}`}
+                                    key={uid}
+                                    onClick={() => openLightbox(img)}
+                                    role="button"
+                                    tabIndex={0}
+                                    onKeyDown={(e) => e.key === 'Enter' && openLightbox(img)}
+                                    aria-label={`Photo ${index + 1}${timeStr ? `, taken at ${timeStr}` : ''}`}
+                                >
+                                    <img
+                                        src={src}
+                                        alt={`Event moment ${index + 1}`}
+                                        loading="lazy"
+                                    />
+
+                                    {isNew && (
+                                        <span className="img-new-badge" aria-label="New photo">
+                                            New
+                                        </span>
+                                    )}
+
+                                    {timeStr && (
+                                        <div className="img-timestamp" aria-hidden="true">
+                                            <svg width="10" height="10" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                                            </svg>
+                                            {timeStr}
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
+            </section>
+
+            {/* ── Lightbox — portal-style, z-index 9999 ─────── */}
+            {lightbox && (
                 <div
                     className="lightbox-overlay"
-                    onClick={() => setLightboxSrc(null)}
+                    onClick={closeLightbox}
                     role="dialog"
                     aria-modal="true"
                     aria-label="Full-size photo"
                 >
+                    {/* Close button */}
                     <button
                         className="lightbox-close"
-                        onClick={() => setLightboxSrc(null)}
+                        onClick={(e) => { e.stopPropagation(); closeLightbox(); }}
                         aria-label="Close photo"
                     >
                         ✕
                     </button>
-                    <img
-                        className="lightbox-img"
-                        src={lightboxSrc}
-                        alt="Full size event photo"
+
+                    {/* Image wrapper — click on image does NOT close */}
+                    <div
+                        className="lightbox-inner"
                         onClick={(e) => e.stopPropagation()}
-                    />
+                    >
+                        <img
+                            className="lightbox-img"
+                            src={lightbox.src}
+                            alt="Full size event photo"
+                        />
+                        {lightbox.timestamp && (
+                            <div className="lightbox-caption">
+                                {formatTime(lightbox.timestamp)}
+                            </div>
+                        )}
+                    </div>
                 </div>
             )}
         </>

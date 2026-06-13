@@ -52,7 +52,7 @@ const getEventGalleryLogic = async (eventId, page, limit) => {
     };
     const { count, rows } = await EventGallery.findAndCountAll({
         where: whereClause,
-        order: [['createDate', 'ASC']],
+        order: [['createDate', 'DESC']],
         limit: parseInt(limit),
         offset: parseInt(offset)
     });
