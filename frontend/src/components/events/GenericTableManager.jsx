@@ -7,19 +7,20 @@ import Pagination from '../Pagination';
 import DeleteConfirmModal from './DeleteConfirmModal';
 
 const GenericTableManager = ({
-                                 title,
-                                 itemName,
-                                 idField,
-                                 initialFormState,
-                                 baseColumns,
-                                 fetchItems,
-                                 addItem,
-                                 updateItem,
-                                 deleteItem,
-                                 FormModal,
-                                 canDelete = () => true, // Optional function to hide delete button
-                                 mapRowToForm = (row) => row // Optional function to map row data to form data
-                             }) => {
+    title,
+    itemName,
+    idField,
+    initialFormState,
+    baseColumns,
+    fetchItems,
+    addItem,
+    updateItem,
+    deleteItem,
+    FormModal,
+    canDelete = () => true, // Optional function to hide delete button
+    mapRowToForm = (row) => row, // Optional function to map row data to form data
+    updatedItem
+}) => {
     // --- State ---
     const [data, setData] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
@@ -56,6 +57,16 @@ const GenericTableManager = ({
     useEffect(() => {
         loadData();
     }, [currentPage, searchQuery, sorting]);
+
+    useEffect(() => {
+        if (updatedItem) {
+            setData(prevData => prevData.map(item =>
+                item[idField] === updatedItem[idField]
+                    ? { ...item, ...updatedItem }
+                    : item
+            ));
+        }
+    }, [updatedItem, idField]);
 
     // --- Handlers ---
     const handleSave = async (payload) => {

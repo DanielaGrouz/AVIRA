@@ -23,8 +23,7 @@ const getGuestByIdLogic = async (id) => {
 };
 
 const createGuestLogic = async (guestData) => {
-    // Optionally: You might want to verify the eventId exists here before creating
-    return await Guest.create(guestData);
+    return Guest.create(guestData);
 };
 
 const updateGuestLogic = async (id, updateData) => {

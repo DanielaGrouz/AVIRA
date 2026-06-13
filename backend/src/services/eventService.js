@@ -1,9 +1,10 @@
-const { Event, User, Guest, Task } = require('../../models');
+const { Event, User, Guest, Task, EventGallery} = require('../../models');
 const { Op } = require('sequelize');
 const guestService = require('./guestService');
 const {getSupermarketList, getEventTaskList, getStoresForEvent} = require("../utils/generateTextClient");
 const {generateEventInvite} = require("../utils/generateImageClient");
 const taskService = require('./taskService');
+const jwt = require("jsonwebtoken");
 
 // Get all events with pagination and sorting
 const getAllEventsLogic = async (page, limit,sortBy, searchQuery, userData) => {
@@ -42,6 +43,26 @@ const getAllEventsLogic = async (page, limit,sortBy, searchQuery, userData) => {
         data: rows
     };
 };
+
+
+const getEventGalleryLogic = async (eventId, page, limit) => {
+    const offset = (page - 1) * limit;
+    let whereClause = {
+        eventId
+    };
+    const { count, rows } = await EventGallery.findAndCountAll({
+        where: whereClause,
+        order: [['createDate', 'ASC']],
+        limit: parseInt(limit),
+        offset: parseInt(offset)
+    });
+    return {
+        page: parseInt(page),
+        totalPages: Math.ceil(count / limit),
+        totalItems: count,
+        data: rows
+    };
+}
 
 // Get a specific event using its unique ID
 const getEventByIdLogic = async (id) => {
@@ -188,13 +209,11 @@ const getEventsByPhoneLogic = async (phone) => {
 const addGuestToEventLogic = async (eventId, guestData) => {
     const event = await Event.findByPk(eventId);
     if (!event) throw new Error("EVENT_NOT_FOUND");
-
-    const newGuest = await guestService.createGuestLogic({ ...guestData, eventId });
-
-    // DB Native Increment
+    const guest = { ...guestData, eventId };
+    const newGuest = await guestService.createGuestLogic(guest);
     await event.increment('guestsCount');
-
-    return newGuest;
+    const token = jwt.sign({eventId: eventId, guestId: newGuest.guestId}, process.env.JWT_SECRET, { expiresIn: '24h' });
+    return {...guest, token};
 };
 
 const removeGuestFromEventLogic = async (eventId, guestId) => {
@@ -217,6 +236,13 @@ const updateGuestInEventLogic = async (eventId, guestId, updateData) => {
     return await guestService.updateGuestLogic(guestId, updateData);
 };
 
+const getRsvpData = async (token) => {
+    const {guestId, eventId} = jwt.verify(token, process.env.JWT_SECRET);
+    const guest = await Guest.findOne({ where: { guestId, eventId } });
+    const event = await Event.findByPk(eventId);
+    return {guest, event};
+}
+
 const updateGuestRSVPLogic = async (eventId, guestId, rsvpStatus) => {
     const guest = await Guest.findOne({ where: { guestId, eventId } });
     if (!guest) throw new Error("GUEST_NOT_FOUND_IN_EVENT");
@@ -234,6 +260,14 @@ const generatePhotoInviteLogic = async (eventId) => {
     // Pass plain JSON object to the AI client, not the Sequelize instance
     return await generateEventInvite(event.get({ plain: true }));
 };
+
+const saveToGalleryLogic = async (eventId, guestId, imagePath) => {
+    console.log(`guest ${guestId} uploaded a new picture to gallery`);
+    return EventGallery.create({
+        path: imagePath,
+        eventId: eventId
+    })
+}
 
 const saveInvitationLogic = async (eventId, invitePath) => {
     const event = await Event.findByPk(eventId);
@@ -291,5 +325,8 @@ module.exports = {
     addGuestToEventLogic,
     removeGuestFromEventLogic,
     updateGuestInEventLogic,
-    updateGuestRSVPLogic
+    updateGuestRSVPLogic,
+    saveToGalleryLogic,
+    getEventGalleryLogic,
+    getRsvpData
 };

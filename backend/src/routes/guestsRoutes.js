@@ -9,6 +9,7 @@ router.get('/:id/guests', authorize(['user', 'admin']), validateId, validateEven
 router.post('/:id/guests', authorize(['user', 'admin']), validateId, validateEventId, validateGuestFields, eventController.addGuestToEvent);
 router.delete('/:id/guests/:guestId', authorize(['user', 'admin']), validateId, validateEventId, eventController.removeGuestFromEvent);
 router.put('/:id/guests/:guestId', authorize(['user', 'admin']), validateId, validateEventId, validateGuestFields, eventController.updateGuestInEvent);
-router.patch('/:id/guests/:guestId/rsvp', validateId, eventController.updateGuestRSVP);
+router.patch('/guests/rsvp', eventController.updateGuestRSVP);
+router.get('/guests/rsvp/:token', eventController.getGuestRSVPData);
 
 module.exports = router;

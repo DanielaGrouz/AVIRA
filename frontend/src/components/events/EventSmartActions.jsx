@@ -1,8 +1,11 @@
 import React, { useState, useRef } from 'react';
 import EventService from '../../services/EventService';
 import ActionResultModal from './ActionResultModal';
+import {useNavigate} from "react-router-dom";
+import AppRoutes from "../../AppRoutesConfig";
 
 const EventSmartActions = ({ eventId, onEventUpdate }) => {
+    const navigate = useNavigate();
     const [activeAction, setActiveAction] = useState(null);
     const [modalState, setModalState] = useState({ isOpen: false, type: null, title: '', data: null, image: null, text: '' });
     const fileInputRef = useRef(null);
@@ -103,10 +106,14 @@ const EventSmartActions = ({ eventId, onEventUpdate }) => {
 
     // Calculate if an AI action is currently loading (excluding normal file uploads)
     const isAiLoading = activeAction !== null && activeAction !== 'upload';
-
+    console.error(AppRoutes.getEventGallery(eventId));
     return (
         <div className="event-tools-section">
             <div className="event-tools-buttons">
+                <button className="tool-btn outline-btn" onClick={() => navigate(AppRoutes.getEventGallery(eventId))}>
+                    📸 {'Live Gallery'}
+                </button>
+
                 <button className="tool-btn outline-btn" onClick={() => handleAction('invite', 'Generated Invitation')} disabled={activeAction !== null}>
                     ✨ {activeAction === 'invite' ? 'Generating...' : 'Generate Invite'}
                 </button>

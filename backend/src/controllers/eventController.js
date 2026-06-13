@@ -1,4 +1,5 @@
 const eventService = require('../services/eventService');
+const jwt = require("jsonwebtoken");
 
 // Get all events with pagination and sorting
 const getAllEvents = async (req, res) => {
@@ -9,6 +10,33 @@ const getAllEvents = async (req, res) => {
         const searchQuery = req.query.searchQuery || null;
 
         const result = await eventService.getAllEventsLogic(page, limit, sortBy, searchQuery, req.user);
+
+        res.status(200).json({
+            success: true,
+            data: result,
+            error: null
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            data: null,
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: {}
+            }
+        });
+    }
+};
+
+
+const getEventGallery = async (req, res) => {
+    try {
+        const limit = req.query.limit || 5;
+        const page = parseInt(req.query.page) || 1;
+        const eventId = parseInt(req.params.id);
+
+        const result = await eventService.getEventGalleryLogic(eventId, page, limit);
 
         res.status(200).json({
             success: true,
@@ -440,10 +468,19 @@ const updateGuestInEvent = async (req, res) => {
 
 const updateGuestRSVP = async (req, res) => {
     try {
-        const eventId = parseInt(req.params.id);
-        const guestId = parseInt(req.params.guestId);
-        const { status } = req.body;
+        const { status, token } = req.body;
+        const guestData = jwt.verify(token, process.env.JWT_SECRET);
+
+        const eventId = parseInt(guestData.eventId);
+        const guestId = parseInt(guestData.guestId);
         const updatedGuest = await eventService.updateGuestRSVPLogic(eventId, guestId, status);
+        const io = req.app.get('io');
+
+        io.to(`event_${eventId}`).emit('rsvpUpdated', {
+            guestId,
+            status,
+        });
+
         res.status(200).json({ success: true, data: updatedGuest, error: null });
     } catch (error) {
         if (error.message === "EVENT_NOT_FOUND" || error.message === "GUEST_NOT_FOUND_IN_EVENT" || error.message === "GUEST_NOT_FOUND") {
@@ -460,6 +497,28 @@ const updateGuestRSVP = async (req, res) => {
         });
     }
 };
+
+
+
+const getGuestRSVPData = async (req, res) => {
+    try {
+        const token = req.params.token;
+        const data = await eventService.getRsvpData(token)
+
+        res.status(200).json({ success: true, data: data, error: null });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            data: null,
+            error: {
+                code: "SERVER_ERROR",
+                message: "Internal Server Error",
+                details: error.message
+            }
+        });
+    }
+};
+
 
 
 const generateInvite = async (req, res) => {
@@ -602,6 +661,27 @@ const findStores = async (req, res) => {
     }
 };
 
+const uploadToEventGallery = async(req, res) => {
+    const token = req.params.token;
+    const {eventId, guestId} = jwt.verify(token, process.env.JWT_SECRET);
+
+    if (!req.file) {
+        return res.status(400).json({
+            success: false,
+            data: null,
+            error: {
+                code: "VALIDATION_ERROR",
+                message: "No invitation file uploaded. Please upload an image using form-data.",
+                details: {}
+            }
+        });
+    }
+
+    const picturePath = `/uploads/${req.file.filename}`;
+    const imageRecord = await eventService.saveToGalleryLogic(eventId, guestId, picturePath);
+    res.status(200).json({ success: true, data: imageRecord, error: null });
+}
+
 const saveInvitation = async (req, res) => {
     try {
         // Enforcement Check: Ensure a file was actually uploaded via Multer
@@ -663,5 +743,8 @@ module.exports = {
     addGuestToEvent,
     removeGuestFromEvent,
     updateGuestInEvent,
-    updateGuestRSVP
+    updateGuestRSVP,
+    getGuestRSVPData,
+    uploadToEventGallery,
+    getEventGallery
 };

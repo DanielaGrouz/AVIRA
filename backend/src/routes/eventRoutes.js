@@ -12,7 +12,9 @@ router.get('/:id', authorize(['user', 'admin']), validateId, validateEventId, ev
 router.post('/', authorize(['user', 'admin']), validateEventFields, eventController.createEvent);
 router.put('/:id', authorize(['user', 'admin']), validateId, validateEventId, validateOptionalEventFields, eventController.updateEvent);
 router.delete('/:id', authorize(['user', 'admin']), validateId, validateEventId, eventController.deleteEvent);
+router.get('/:id/gallery', authorize(['user', 'admin']), validateId, validateEventId, eventController.getEventGallery);
 
+router.post('/gallery/:token', upload.single('picture'), eventController.uploadToEventGallery);
 router.put('/:id/save-invitation', authorize(['user', 'admin']), upload.single('picture'), validateId, validateEventId, eventController.saveInvitation);
 
 module.exports = router;

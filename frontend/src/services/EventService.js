@@ -43,6 +43,22 @@ class EventService {
         return apiClient.post(`${this.route}/${guestData.eventId}/guests`, guestData);
     }
 
+    getGuest(token) {
+        return apiClient.get(`${this.route}/guests/rsvp/${token}`);
+    }
+
+    uploadToGalleryEvent(token, file){
+        const formData = new FormData();
+        formData.append('picture', file);
+        return apiClient.post(`${this.route}/gallery/${token}`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+    }
+
+    getEventGallery(eventId, page, limit) {
+        return apiClient.get(`${this.route}/${eventId}/gallery`, { params: { page, limit } });
+    }
+
     updateGuest(guestId, guestData) {
         return apiClient.put(`${this.route}/${guestData.eventId}/guests/${guestId}`, guestData);
     }
@@ -51,8 +67,8 @@ class EventService {
         return apiClient.delete(`${this.route}/${eventId}/guests/${guestId}`);
     }
 
-    updateGuestAttendance(eventId, guestId, status) {
-        return apiClient.patch(`${this.route}/${eventId}/guests/${guestId}/rsvp`, { status });
+    updateGuestAttendance(token, status) {
+        return apiClient.patch(`${this.route}/guests/rsvp`, { status, token });
     }
 
     // --- Task Sub-resources ---
