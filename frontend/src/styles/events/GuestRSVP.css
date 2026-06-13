@@ -276,3 +276,23 @@
     50% { opacity: 1; }
     100% { opacity: 0.5; }
 }
+
+
+.drop-zone {
+    border: 1.5px dashed rgba(184, 207, 196, 0.8);
+    border-radius: 12px;
+    background: rgba(255,255,255,0.55);
+    padding: 2rem 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+.drop-zone.drag-over {
+    border-color: #9cbfb0;
+    background: rgba(184, 207, 196, 0.15);
+    transform: scale(1.01);
+}
+.drop-zone.has-file { border-style: solid; }
+
+.progress-bar-wrap { height: 3px; background: rgba(184,207,196,0.25); border-radius: 99px; margin-top: 0.75rem; }
+.progress-bar { height: 100%; background: linear-gradient(90deg, var(--color-sage), var(--color-gold)); border-radius: 99px; transition: width 0.3s ease; }

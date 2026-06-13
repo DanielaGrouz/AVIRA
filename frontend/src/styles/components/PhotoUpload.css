@@ -1,0 +1,358 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   PhotoUpload — reusable component styles
+   Namespaced with `pu-` to avoid collisions
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Wrapper */
+.pu-wrapper {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1px solid var(--color-rule, rgba(0, 0, 0, 0.07));
+}
+
+/* Header */
+.pu-header {
+    text-align: center;
+    margin-bottom: 1.25rem;
+}
+
+.pu-title {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    font-weight: 400;
+    color: var(--color-ink);
+    letter-spacing: 0.04em;
+    margin: 0 0 0.3rem 0;
+}
+
+.pu-subtitle {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--color-muted);
+    letter-spacing: 0.02em;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* ── Drop zone ──────────────────────────────────────────────────────────────── */
+
+.pu-drop-zone {
+    border: 1.5px dashed rgba(184, 207, 196, 0.8);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.55);
+    padding: 2rem 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+    outline: none;
+    position: relative;
+}
+
+.pu-drop-zone:focus-visible {
+    box-shadow: 0 0 0 3px rgba(156, 191, 176, 0.4);
+}
+
+.pu-drop-zone.pu-drag-over {
+    border-color: #9cbfb0;
+    background: rgba(184, 207, 196, 0.15);
+    transform: scale(1.01);
+}
+
+.pu-drop-zone.pu-has-file {
+    border-style: solid;
+    border-color: rgba(184, 207, 196, 0.9);
+    background: rgba(184, 207, 196, 0.06);
+    cursor: default;
+}
+
+/* Icon circle */
+.pu-drop-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: rgba(184, 207, 196, 0.25);
+    border: 1px solid rgba(184, 207, 196, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.pu-drag-over .pu-drop-icon {
+    background: rgba(184, 207, 196, 0.45);
+    transform: scale(1.08);
+}
+
+.pu-drop-icon svg {
+    width: 22px;
+    height: 22px;
+    stroke: #7a9e8e;
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: stroke 0.2s;
+}
+
+.pu-drag-over .pu-drop-icon svg {
+    stroke: #4e8070;
+}
+
+/* Labels */
+.pu-drop-label {
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    color: var(--color-ink-light, #6b6259);
+    letter-spacing: 0.02em;
+    line-height: 1.55;
+    margin: 0 0 0.4rem;
+}
+
+.pu-drop-label strong {
+    color: #5a8a7a;
+    font-weight: 500;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 2px;
+}
+
+.pu-drop-hint {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    color: var(--color-subtle, #b0a59e);
+    letter-spacing: 0.03em;
+    margin: 0;
+}
+
+/* ── File preview row ───────────────────────────────────────────────────────── */
+
+.pu-hidden-input {
+    display: none;
+}
+
+.pu-preview {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.75rem 0.9rem;
+    background: rgba(255, 255, 255, 0.75);
+    border: 1px solid rgba(184, 207, 196, 0.6);
+    border-radius: 10px;
+    margin-top: 0.85rem;
+}
+
+.pu-preview-thumb {
+    width: 48px;
+    height: 48px;
+    border-radius: 7px;
+    border: 1px solid rgba(184, 207, 196, 0.5);
+    flex-shrink: 0;
+    background: rgba(184, 207, 196, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.pu-preview-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.pu-preview-thumb svg {
+    width: 20px;
+    height: 20px;
+    stroke: #9cbfb0;
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.pu-preview-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.pu-preview-name {
+    font-family: var(--font-body);
+    font-size: 0.83rem;
+    font-weight: 500;
+    color: var(--color-ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    letter-spacing: 0.01em;
+}
+
+.pu-preview-size {
+    font-family: var(--font-body);
+    font-size: 0.74rem;
+    color: var(--color-subtle, #9e9590);
+}
+
+.pu-preview-remove {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: 0;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.pu-preview-remove:hover:not(:disabled) {
+    background: rgba(239, 68, 68, 0.08);
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.pu-preview-remove:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.pu-preview-remove svg {
+    width: 11px;
+    height: 11px;
+    stroke: #9e9590;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    transition: stroke 0.2s;
+}
+
+.pu-preview-remove:hover:not(:disabled) svg {
+    stroke: #ef4444;
+}
+
+/* ── Progress bar ───────────────────────────────────────────────────────────── */
+
+.pu-progress-track {
+    height: 3px;
+    background: rgba(184, 207, 196, 0.25);
+    border-radius: 99px;
+    margin-top: 0.75rem;
+    overflow: hidden;
+}
+
+.pu-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #9cbfb0, #c4a06e);
+    border-radius: 99px;
+    transition: width 0.25s ease;
+}
+
+/* ── Upload button ──────────────────────────────────────────────────────────── */
+
+.pu-upload-btn {
+    width: 100%;
+    margin-top: 0.85rem;
+    padding: 0.9rem 1.5rem;
+    border: none;
+    border-radius: 10px;
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    background: linear-gradient(135deg, #9cbfb0 0%, #7a9e8e 55%, #c09070 100%);
+    color: #ffffff;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.pu-upload-btn svg {
+    width: 15px;
+    height: 15px;
+    stroke: #fff;
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.pu-upload-btn.pu-uploading svg {
+    animation: pu-spin 1s linear infinite;
+}
+
+.pu-upload-btn:hover:not(:disabled) {
+    opacity: 0.88;
+    transform: translateY(-1px);
+}
+
+.pu-upload-btn:active:not(:disabled) {
+    transform: scale(0.985);
+}
+
+.pu-upload-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ── Status messages ────────────────────────────────────────────────────────── */
+
+.pu-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 0.9rem;
+    border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    letter-spacing: 0.01em;
+    margin-top: 0.75rem;
+    line-height: 1.5;
+}
+
+.pu-status svg {
+    width: 15px;
+    height: 15px;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex-shrink: 0;
+}
+
+.pu-status--success {
+    background: rgba(16, 185, 129, 0.08);
+    color: #047857;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.pu-status--success svg {
+    stroke: #059669;
+}
+
+.pu-status--error {
+    background: rgba(239, 68, 68, 0.07);
+    color: #b91c1c;
+    border: 1px solid rgba(239, 68, 68, 0.18);
+}
+
+.pu-status--error svg {
+    stroke: #dc2626;
+}
+
+/* ── Animation ──────────────────────────────────────────────────────────────── */
+
+@keyframes pu-spin {
+    to { transform: rotate(360deg); }
+}

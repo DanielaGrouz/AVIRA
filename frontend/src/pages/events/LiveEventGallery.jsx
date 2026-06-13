@@ -3,8 +3,9 @@ import { io } from 'socket.io-client';
 import { useParams } from 'react-router-dom';
 import eventService from '../../services/EventService';
 import '../../styles/LiveEventGallery.css';
+import Config from "../../services/Config";
 
-const API_BASE = 'http://localhost:3000';
+const API_BASE = Config.BASE_URL;
 
 const LiveEventGallery = () => {
     const { id: eventId } = useParams();

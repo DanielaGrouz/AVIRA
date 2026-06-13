@@ -1,8 +1,9 @@
 import React from 'react';
+import Config from "../../services/Config";
 
 const EventHeader = ({ eventDetails, eventId }) => {
     const handleDownloadSavedInvite = async (url) => {
-        const fullUrl = url.startsWith('http') ? url : `http://localhost:3000${url}`;
+        const fullUrl = url.startsWith('http') ? url : `${Config.BASE_URL}${url}`;
         try {
             const response = await fetch(fullUrl);
             const blob = await response.blob();
@@ -44,7 +45,7 @@ const EventHeader = ({ eventDetails, eventId }) => {
                     }}
                 >
                     <img
-                        src={invitationUrl.startsWith('http') ? invitationUrl : `http://localhost:3000${invitationUrl}`}
+                        src={invitationUrl.startsWith('http') ? invitationUrl : `${Config.BASE_URL}${invitationUrl}`}
                         alt="Event Invitation"
                         style={{
                             width: '100%',

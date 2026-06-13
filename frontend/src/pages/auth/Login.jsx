@@ -17,7 +17,6 @@ export default function Login() {
     const handleLogin = async (e) => {
         e.preventDefault();
 
-        // Basic Client-Side Validation
         if (!email.trim()) {
             setError('Email address is required.');
             return;

@@ -4,6 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 import Button from './Button';
 import ProfileImage from './ProfileImage';
 import '../styles/Navbar.css';
+import Config from "../services/Config";
 
 export default function Navbar() {
     const { user, forgetUser } = useAuth();
@@ -60,7 +61,7 @@ export default function Navbar() {
                                 user?.picturePath
                                     ? (user.picturePath.startsWith('blob') || user.picturePath.startsWith('http')
                                         ? user.picturePath
-                                        : `http://localhost:3000${user.picturePath}`)
+                                        : `${Config.BASE_URL}${user.picturePath}`)
                                     : null
                             }
                             key={user?.picturePath}

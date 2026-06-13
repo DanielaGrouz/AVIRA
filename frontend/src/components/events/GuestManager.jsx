@@ -3,12 +3,13 @@ import EventService from '../../services/EventService';
 import GenericTableManager from './GenericTableManager';
 import GuestModal from './GuestModal';
 import {io} from "socket.io-client";
+import Config from "../../services/Config";
 
 const GuestManager = ({ eventId, eventDetails }) => {
     const [liveUpdate, setLiveUpdate] = useState(null); // <--- NEW STATE
     useEffect(() => {
         // Connect to your backend URL
-        const socket = io('http://localhost:3000');
+        const socket = io(Config.BASE_URL);
 
         socket.emit('joinEventRoom', eventId);
 
@@ -53,7 +54,7 @@ const GuestManager = ({ eventId, eventDetails }) => {
                 cleanPhone = '972' + cleanPhone.substring(1);
             }
 
-            const frontendUrl = 'http://localhost:5173';
+            const frontendUrl = Config.FRONTEND_URL;
 
             let formattedDate = eventDetails?.date;
             if (formattedDate && formattedDate !== 'TBD') {
@@ -90,7 +91,7 @@ const GuestManager = ({ eventId, eventDetails }) => {
             title="Guest List"
             itemName="guest"
             idField="guestId"
-            initialFormState={{ name: '', phone: '', role: 'Guest', status: 'Pending' }}
+            initialFormState={{ name: '', phone: '', status: 'pending' }}
             baseColumns={columns}
             FormModal={GuestModal}
             canDelete={(row) => row.role?.toUpperCase() !== 'MANAGER'}

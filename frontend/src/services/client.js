@@ -1,9 +1,10 @@
 import axios from 'axios';
 import { ApiError } from './ApiError';
+import Config from "./Config";
 
 
 const apiClient = axios.create({
-    baseURL: 'http://localhost:3000',
+    baseURL: Config.BASE_URL,
 });
 
 // Request Interceptor: Attach the role header
