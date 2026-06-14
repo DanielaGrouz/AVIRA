@@ -49,7 +49,6 @@ const io = new Server(server, {
 
 app.set('io', io);
 
-// Handle connections and rooms
 io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`);
 
@@ -63,17 +62,14 @@ io.on('connection', (socket) => {
       console.log('Image uploaded data:', data);
       const { token } = data;
 
-      // This can throw an error if the token is invalid/expired
       const guestData = jwt.verify(token, process.env.JWT_SECRET);
 
-      // Broadcast to the specific event room
       io.to(`event_${guestData.eventId}`).emit('newImageBroadcast', {
         guestId: guestData.guestId,
         eventId: guestData.eventId,
         ...data,
       });
     } catch (error) {
-      // Log the error instead of crashing the server
       console.error('Socket error: Invalid or expired token during image upload', error.message);
     }
   });

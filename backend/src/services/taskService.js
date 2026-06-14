@@ -10,8 +10,8 @@ const createTaskLogic = async (taskData) => {
   return await Task.create({
     eventId,
     title,
-    status: status || 'pending',
-    priority: priority || 'medium',
+    status: status,
+    priority: priority,
   });
 };
 

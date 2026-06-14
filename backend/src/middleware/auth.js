@@ -18,7 +18,7 @@ const authorize = (allowedRoles) => {
       });
     }
     try {
-      const decodedToken = jwt.verify(userToken, process.env.JWT_SECRET || 'your_super_secret_key');
+      const decodedToken = jwt.verify(userToken, process.env.JWT_SECRET);
       if (decodedToken.userRole !== userRole) {
         return res.status(403).json({
           success: false,

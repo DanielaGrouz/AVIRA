@@ -80,8 +80,11 @@ const rsvpBodySchema = z.object({
 // Task Schemas
 const taskSchema = z.object({
   title: z.string().min(2, 'title must be at least 2 chars'),
-  status: z.enum(['pending', 'in-progress', 'completed', 'cancelled']).optional(),
-  priority: z.enum(['low', 'medium', 'high']).optional(),
+  status: z
+    .enum(['pending', 'in-progress', 'completed', 'cancelled'])
+    .optional()
+    .default('pending'),
+  priority: z.enum(['low', 'medium', 'high']).optional().default('medium'),
 });
 
 const optionalTaskSchema = taskSchema.partial();
@@ -120,26 +123,32 @@ const basePaginationSchema = z.object({
       message: 'sortDirection must be exactly 1 (ASC) or -1 (DESC)',
     })
     .optional()
-    .default(1),
-  searchQuery: z.string().optional().nullable(),
+    .default(-1),
 });
 
-// 2. Extend it for Events specifically (Defaults sortBy to 'eventId')
 const eventPaginationSchema = basePaginationSchema.extend({
   sortBy: z.string().optional().default('eventId'),
+  searchQuery: z.string().optional().nullable(),
 });
 
 // 3. Extend it for Tasks specifically (Defaults sortBy to 'taskId')
 const taskPaginationSchema = basePaginationSchema.extend({
   sortBy: z.string().optional().default('taskId'),
+  searchQuery: z.string().optional().nullable(),
 });
 
 const guestPaginationSchema = basePaginationSchema.extend({
   sortBy: z.string().optional().default('guestId'),
+  searchQuery: z.string().optional().nullable(),
 });
 
 const userPaginationSchema = basePaginationSchema.extend({
   sortBy: z.string().optional().default('userId'),
+  searchQuery: z.string().optional().nullable(),
+});
+
+const galleryPaginationSchema = basePaginationSchema.extend({
+  sortBy: z.string().optional().default('createDate'),
 });
 
 module.exports = {
@@ -164,4 +173,5 @@ module.exports = {
   taskPaginationSchema,
   guestPaginationSchema,
   userPaginationSchema,
+  galleryPaginationSchema,
 };

@@ -17,11 +17,16 @@ const getAllEvents = asyncHandler(async (req, res) => {
 });
 
 const getEventGallery = asyncHandler(async (req, res) => {
-  const limit = req.query.limit || 5;
-  const page = parseInt(req.query.page) || 1;
-  const eventId = parseInt(req.params.id);
+  const eventId = req.params.id;
+  const { page, limit, sortBy, sortDirection } = req.query;
 
-  const result = await eventService.getEventGalleryLogic(eventId, page, limit);
+  const result = await eventService.getEventGalleryLogic(
+    eventId,
+    page,
+    limit,
+    sortBy,
+    sortDirection
+  );
 
   res.status(200).json({ success: true, data: result, error: null });
 });

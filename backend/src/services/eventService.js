@@ -51,14 +51,16 @@ const getAllEventsLogic = async (page, limit, sortBy, sortDirection, searchQuery
   };
 };
 
-const getEventGalleryLogic = async (eventId, page, limit) => {
+const getEventGalleryLogic = async (eventId, page, limit, sortBy, sortDirection) => {
   const offset = (page - 1) * limit;
   let whereClause = {
     eventId,
   };
+  const validSortDirection = sortDirection === '1' ? 'ASC' : 'DESC';
+
   const { count, rows } = await EventGallery.findAndCountAll({
     where: whereClause,
-    order: [['createDate', 'DESC']],
+    order: [[sortBy, validSortDirection]],
     limit: parseInt(limit),
     offset: parseInt(offset),
   });

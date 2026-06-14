@@ -245,7 +245,7 @@ const createToken = async (user) => {
     userRole: user.userRole,
     email: user.email,
   };
-  return jwt.sign(tokenPayload, process.env.JWT_SECRET || 'your_super_secret_key', {
+  return jwt.sign(tokenPayload, process.env.JWT_SECRET, {
     expiresIn: '24h',
   });
 };
@@ -277,12 +277,10 @@ const sendVerificationCodeLogic = async (email) => {
     throw new NotFoundError('User with this email not found.', 'USER_NOT_FOUND');
   }
 
-  // Remove old codes for this email
   await VerificationCode.destroy({ where: { email } });
 
   const code = Math.floor(1000 + Math.random() * 9000).toString();
 
-  // Store code
   await VerificationCode.create({
     email,
     code,

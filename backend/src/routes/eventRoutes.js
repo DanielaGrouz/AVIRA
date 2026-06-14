@@ -10,6 +10,7 @@ const {
   optionalEventSchema,
   tokenParamSchema,
   eventPaginationSchema,
+  galleryPaginationSchema,
 } = require('../middleware/schemas');
 const { VALID_ROLES } = require('../../models/constants');
 
@@ -52,6 +53,7 @@ router.get(
   authorize(VALID_ROLES),
   validate(idSchema, 'params'),
   validateEventId,
+  validate(galleryPaginationSchema, 'query'),
   eventController.getEventGallery
 );
 
