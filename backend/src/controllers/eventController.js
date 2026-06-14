@@ -165,7 +165,7 @@ const updateGuestRSVP = asyncHandler(async (req, res) => {
   const guestId = parseInt(guestData.guestId);
   const updatedGuest = await eventService.updateGuestRSVPLogic(eventId, guestId, status);
 
-  const io = req.validated.app.get('io');
+  const io = req.app.get('io');
   io.to(`event_${eventId}`).emit('rsvpUpdated', { guestId, status });
 
   res.status(200).json({ success: true, data: updatedGuest, error: null });
