@@ -81,7 +81,7 @@ const rsvpBodySchema = z.object({
 const taskSchema = z.object({
   title: z.string().min(2, 'title must be at least 2 chars'),
   status: z
-    .enum(['pending', 'in-progress', 'completed', 'cancelled'])
+    .enum(['pending', 'in progress', 'completed', 'cancelled'])
     .optional()
     .default('pending'),
   priority: z.enum(['low', 'medium', 'high']).optional().default('medium'),
@@ -151,7 +151,7 @@ const userPaginationSchema = basePaginationSchema.extend({
 });
 
 const galleryPaginationSchema = basePaginationSchema.extend({
-  sortBy: z.string().trim().min(1).catch('createDate').optional().default('createDate')
+  sortBy: z.string().trim().min(1).catch('createDate').optional().default('createDate'),
 });
 
 module.exports = {

@@ -99,7 +99,11 @@ const addTaskToEvent = asyncHandler(async (req, res) => {
 const updateTaskInEvent = asyncHandler(async (req, res) => {
   const eventId = parseInt(req.validated.params.id);
   const taskId = parseInt(req.validated.params.taskId);
-  const updatedTask = await eventService.updateTaskInEventLogic(eventId, taskId, req.validated.body);
+  const updatedTask = await eventService.updateTaskInEventLogic(
+    eventId,
+    taskId,
+    req.validated.body
+  );
   res.status(200).json({ success: true, data: updatedTask, error: null });
 });
 
@@ -128,7 +132,10 @@ const getEventsByPhone = asyncHandler(async (req, res) => {
 });
 
 const addGuestToEvent = asyncHandler(async (req, res) => {
-  const newGuest = await eventService.addGuestToEventLogic(parseInt(req.validated.params.id), req.validated.body);
+  const newGuest = await eventService.addGuestToEventLogic(
+    parseInt(req.validated.params.id),
+    req.validated.body
+  );
   res.status(201).json({ success: true, data: newGuest, error: null });
 });
 
@@ -170,7 +177,9 @@ const getGuestRSVPData = asyncHandler(async (req, res) => {
 });
 
 const generateInvite = asyncHandler(async (req, res) => {
-  const inviteImage = await eventService.generatePhotoInviteLogic(parseInt(req.validated.params.id));
+  const inviteImage = await eventService.generatePhotoInviteLogic(
+    parseInt(req.validated.params.id)
+  );
   res.set('Content-Type', 'image/jpeg');
   res.status(200).send(inviteImage);
 });
@@ -223,7 +232,10 @@ const findStores = asyncHandler(async (req, res) => {
     lon: parseFloat(req.validated.query.lon),
   };
 
-  const storesList = await eventService.findRelevantStores(locationObj, parseInt(req.validated.params.id));
+  const storesList = await eventService.findRelevantStores(
+    locationObj,
+    parseInt(req.validated.params.id)
+  );
   res.status(200).json({ success: true, data: storesList, error: null });
 });
 
