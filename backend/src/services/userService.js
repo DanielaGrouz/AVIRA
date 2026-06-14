@@ -6,6 +6,12 @@ const fs = require('fs/promises');
 const path = require('path');
 const { sendMail } = require("../utils/emailClient");
 const { generateAvatar } = require("../utils/generateAvatarClient");
+const {
+    BadRequestError,
+    UnauthorizedError,
+    NotFoundError,
+    InternalServerError
+} = require('../utils/errors');
 
 const getAllUsersLogic = async (page = 1, limit = 5, sortBy = 'userId') => {
     const offset = (page - 1) * limit;
@@ -52,7 +58,7 @@ const generateAvatarPicture = async (firstName, lastName) => {
     const buffer = await generateAvatar(userProfile);
 
     if (!buffer) {
-        throw new Error("AVATAR_GENERATION_FAILED");
+        throw new InternalServerError("Failed to generate AI avatar", "AVATAR_GENERATION_FAILED");
     }
 
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -73,7 +79,7 @@ const createUserLogic = async (userData) => {
     // Security Check: Ensure email is unique
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
-        throw new Error("EMAIL_EXISTS");
+        throw new BadRequestError("A user with this email already exists.", "EMAIL_EXISTS");
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -118,11 +124,15 @@ const createUserLogic = async (userData) => {
 
 const updateUserLogic = async (id, updateData) => {
     const user = await User.findByPk(id);
-    if (!user) throw new Error("USER_NOT_FOUND");
+    if (!user) {
+        throw new NotFoundError(`User with id: ${id} not found.`, "USER_NOT_FOUND");
+    }
 
     if (updateData.email && updateData.email !== user.email) {
         const emailTaken = await User.findOne({ where: { email: updateData.email } });
-        if (emailTaken) throw new Error("EMAIL_EXISTS");
+        if (emailTaken) {
+            throw new BadRequestError("A user with this email already exists.", "EMAIL_EXISTS");
+        }
     }
 
     const oldPhone = user.phoneNumber;
@@ -150,7 +160,9 @@ const updateUserLogic = async (id, updateData) => {
 
 const deleteUserLogic = async (id) => {
     const deleted = await User.destroy({ where: { userId: id } });
-    if (!deleted) throw new Error("USER_NOT_FOUND");
+    if (!deleted) {
+        throw new NotFoundError(`User with id: ${id} not found.`, "USER_NOT_FOUND");
+    }
     return true;
 };
 
@@ -173,10 +185,14 @@ const checkVerificationCodeLogic = async (email, code) => {
 
 const completeEmailVerificationLogic = async (email, code) => {
     const isValid = await checkVerificationCodeLogic(email, code);
-    if (!isValid) throw new Error("INVALID_CODE");
+    if (!isValid) {
+        throw new BadRequestError("The verification code is incorrect or expired.", "INVALID_CODE");
+    }
 
     const user = await User.findOne({ where: { email } });
-    if (!user) throw new Error("USER_NOT_FOUND");
+    if (!user) {
+        throw new NotFoundError(`User with email ${email} was not found.`, "USER_NOT_FOUND");
+    }
 
     user.isEmailVerified = true;
     await user.save();
@@ -196,11 +212,18 @@ const createToken = async (user) => {
 
 const loginLogic = async (email, password) => {
     const user = await User.findOne({ where: { email } });
-    if (!user) throw new Error("EMAIL_NOT_FOUND");
-    if (!user.isEmailVerified) throw new Error("EMAIL_NOT_VERIFIED");
+    if (!user) {
+        throw new NotFoundError("Email does not exist.", "EMAIL_NOT_FOUND");
+    }
+
+    if (!user.isEmailVerified) {
+        throw new UnauthorizedError("Email is not verified.", "EMAIL_NOT_VERIFIED");
+    }
 
     const isMatch = await bcrypt.compare(password, user.password).catch(() => password === user.password);
-    if (!isMatch) throw new Error("INCORRECT_PASSWORD");
+    if (!isMatch) {
+        throw new UnauthorizedError("Incorrect password.", "INCORRECT_PASSWORD");
+    }
 
     const token = await createToken(user);
     return { user: user.get({ plain: true }), token };
@@ -208,7 +231,9 @@ const loginLogic = async (email, password) => {
 
 const sendVerificationCodeLogic = async (email) => {
     const user = await User.findOne({ where: { email } });
-    if (!user) throw new Error("USER_NOT_FOUND");
+    if (!user) {
+        throw new NotFoundError("User with this email not found.", "USER_NOT_FOUND");
+    }
 
     // Remove old codes for this email
     await VerificationCode.destroy({ where: { email } });
@@ -228,10 +253,14 @@ const sendVerificationCodeLogic = async (email) => {
 
 const resetPasswordLogic = async (email, newPassword, code) => {
     const user = await User.findOne({ where: { email } });
-    if (!user) throw new Error("USER_NOT_FOUND");
+    if (!user) {
+        throw new NotFoundError(`User with email: ${email} not found.`, "USER_NOT_FOUND");
+    }
 
     const isValid = await checkVerificationCodeLogic(email, code);
-    if (!isValid) throw new Error("INVALID_CODE");
+    if (!isValid) {
+        throw new BadRequestError("Invalid verification code.", "INVALID_CODE");
+    }
 
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(newPassword, salt);

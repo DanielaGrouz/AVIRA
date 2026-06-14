@@ -12,6 +12,7 @@ const { Server } = require('socket.io');
 
 const {uploadDir} = require("./middleware/fileUpload");
 const jwt = require("jsonwebtoken");
+const {errorHandler} = require("./middleware/errorHandler");
 const app = express();
 const port = 3000;
 
@@ -26,7 +27,7 @@ app.use('/users', userRoutes);
 app.use('/events', eventRoutes);
 app.use('/events', taskRoutes);
 app.use('/events', guestsRoutes);
-
+app.use(errorHandler);
 
 //default
 app.get('/', (req, res) => {

@@ -1,19 +1,22 @@
 const configClient = require("./configClient");
 const axios = require("axios");
-const Groq= require("groq-sdk")
+const Groq = require("groq-sdk");
 
-const groq = new Groq({ apiKey: configClient.getConfig("GROQ_API_KEY")});
+const {
+    NotFoundError,
+    InternalServerError,
+} = require("../utils/errors");
+
+const groq = new Groq({ apiKey: configClient.getConfig("GROQ_API_KEY") });
 
 async function getHumanInvite(event) {
     const chatCompletion = await groq.chat.completions.create({
         "messages": [
             {
-                // who are you as groq
                 "role": "system",
                 "content": "You are a friendly person writing a text message or casual email. NEVER use bullet points, formal headers (like 'Subject:'), or generic placeholders. Write in a natural, conversational flow."
             },
             {
-                // the prompt
                 "role": "user",
                 "content": `Hey, can you write an invite for ${event.title}? It's at ${event.location} on ${event.date}. Make it feel ${event.vibe}.`
             }
@@ -24,7 +27,6 @@ async function getHumanInvite(event) {
 
     return chatCompletion.choices[0].message.content;
 }
-
 
 async function getSupermarketList(event) {
     const { title, date, time, location, eventType, guestsCount } = event;
@@ -109,7 +111,6 @@ async function getEventTaskList(event) {
     }
 }
 
-
 // Helper to safely parse JSON from LLM responses
 const parseLLMJSON = (str) => {
     if (!str) return [];
@@ -144,7 +145,10 @@ async function getStoresForEvent(currLocation, tasksList) {
 
         if (!storeTypes || storeTypes.length === 0) {
             console.log("Stop: LLM returned no store types.");
-            throw new Error("We couldn't identify the types of stores needed for your tasks.");
+            throw new NotFoundError(
+                "We couldn't identify the types of stores needed for your tasks.",
+                "STORE_TYPES_UNIDENTIFIED"
+            );
         }
 
         let overpassQuery = `[out:json][timeout:25];\n(\n`;
@@ -187,7 +191,10 @@ async function getStoresForEvent(currLocation, tasksList) {
 
         if (!serverSuccess || !osmResponse) {
             console.error("All Overpass servers failed.");
-            throw new Error("Map services are temporarily unavailable. Please try again later.");
+            throw new InternalServerError(
+                "Map services are temporarily unavailable. Please try again later.",
+                "MAP_SERVICE_DOWN"
+            );
         }
 
         const rawElementsCount = osmResponse.data.elements?.length || 0;
@@ -208,7 +215,10 @@ async function getStoresForEvent(currLocation, tasksList) {
 
         if (candidatePlaces.length === 0) {
             console.log("Stop: No candidate places found in the radius with names.");
-            throw new Error("No relevant stores were found within a 2.5km radius of your location.");
+            throw new NotFoundError(
+                "No relevant stores were found within a 2.5km radius of your location.",
+                "NO_STORES_IN_RADIUS"
+            );
         }
 
         const filteringPrompt = `
@@ -231,7 +241,10 @@ async function getStoresForEvent(currLocation, tasksList) {
         console.log(`4. Final mapped tasks to stores: ${finalMapping ? finalMapping.length : 0}`);
 
         if (!finalMapping || finalMapping.length === 0) {
-            throw new Error("Stores were found nearby, but none matched your specific event tasks.");
+            throw new NotFoundError(
+                "Stores were found nearby, but none matched your specific event tasks.",
+                "NO_MATCHING_STORES"
+            );
         }
 
         return finalMapping;
