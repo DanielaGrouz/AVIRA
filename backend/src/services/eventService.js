@@ -11,7 +11,7 @@ const {
 } = require('../utils/errors');
 
 // Get all events with pagination and sorting
-const getAllEventsLogic = async (page, limit, sortBy, searchQuery, userData) => {
+const getAllEventsLogic = async (page, limit, sortBy, sortDirection, searchQuery, userData) => {
     const offset = (page - 1) * limit;
     let whereClause = {};
 
@@ -33,10 +33,12 @@ const getAllEventsLogic = async (page, limit, sortBy, searchQuery, userData) => 
             ]
         }));
     }
+    const validSortDirection = (sortDirection === '1') ? 'ASC' : 'DESC';
+
     // findAndCountAll is perfect for pagination; it returns { count, rows }
     const { count, rows } = await Event.findAndCountAll({
         where: whereClause,
-        order: [[sortBy, 'ASC']], // Defaulting to ASC, modify if you pass sortDirection
+        order: [[sortBy, validSortDirection]], // Defaulting to ASC, modify if you pass sortDirection
         limit: parseInt(limit),
         offset: parseInt(offset)
     });
@@ -285,8 +287,6 @@ const generatePhotoInviteLogic = async (eventId) => {
     if (!event) {
         throw new NotFoundError("Event not found.", "EVENT_NOT_FOUND");
     }
-
-    // Pass plain JSON object to the AI client, not the Sequelize instance
     return await generateEventInvite(event.get({ plain: true }));
 };
 

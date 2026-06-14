@@ -12,14 +12,34 @@ const {
     NotFoundError,
     InternalServerError
 } = require('../utils/errors');
+const {Op} = require("sequelize");
 
-const getAllUsersLogic = async (page = 1, limit = 5, sortBy = 'userId') => {
+const getAllUsersLogic = async (page, limit, sortBy, sortDirection, searchQuery) => {
     const offset = (page - 1) * limit;
+    let whereClause = {};
+
+    // Dynamic Search Query Logic
+    if (searchQuery && searchQuery.trim() !== "") {
+        // Split the search query into individual words
+        const queryTerms = searchQuery.trim().split(/\s+/);
+
+        // Ensure EVERY word typed matches AT LEAST ONE of the user fields
+        whereClause[Op.and] = queryTerms.map(term => ({
+            [Op.or]: [
+                { firstName: { [Op.like]: `%${term}%` } },
+                { lastName: { [Op.like]: `%${term}%` } },
+                { email: { [Op.like]: `%${term}%` } },
+                { phoneNumber: { [Op.like]: `%${term}%` } }
+            ]
+        }));
+    }
+    const validSortDirection = (sortDirection === '1') ? 'ASC' : 'DESC';
 
     const { count, rows } = await User.findAndCountAll({
-        order: [[sortBy, 'ASC']],
-        limit: parseInt(limit),
-        offset: parseInt(offset),
+        where: whereClause,
+        order: [[sortBy, validSortDirection]],
+        limit: limit,
+        offset: offset,
         attributes: { exclude: ['password'] } // Do not send passwords to the client
     });
 

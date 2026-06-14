@@ -1,4 +1,3 @@
-// models/taskController.js
 let tasks = [
     { taskId: 1, eventId: 101, title: "Order Catering", status: "pending", priority: "high" },
     { taskId: 2, eventId: 101, title: "Buy Pink Balloons", status: "completed", priority: "medium" },

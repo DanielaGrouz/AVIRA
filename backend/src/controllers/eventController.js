@@ -3,12 +3,8 @@ const jwt = require("jsonwebtoken");
 const {asyncHandler} = require('../middleware/errorHandler');
 
 const getAllEvents = asyncHandler(async (req, res) => {
-    const limit = req.query.limit || 5;
-    const page = parseInt(req.query.page) || 1;
-    const sortBy = req.query.sortBy || 'eventId';
-    const searchQuery = req.query.searchQuery || null;
-
-    const result = await eventService.getAllEventsLogic(page, limit, sortBy, searchQuery, req.user);
+    const { page, limit, sortBy, sortDirection, searchQuery } = req.query;
+    const result = await eventService.getAllEventsLogic(page, limit, sortBy, sortDirection, searchQuery, req.user);
 
     res.status(200).json({success: true, data: result, error: null});
 });
@@ -53,24 +49,16 @@ const updateEvent = asyncHandler(async (req, res) => {
 });
 
 const getAllGuestsByEvent = asyncHandler(async (req, res) => {
-    const eventId = parseInt(req.params.id);
-    const limit = req.query.limit || 5;
-    const page = parseInt(req.query.page) || 1;
-    const sortBy = req.query.sortBy || 'eventId';
-    const sortDirection = parseInt(req.query.sortDirection || '1');
-    const searchQuery = req.query.searchQuery || null;
+    const eventId = req.params.id;
+    const { page, limit, sortBy, sortDirection, searchQuery } = req.query;
 
     const result = await eventService.getAllGuestsByEventLogic(eventId, page, limit, sortBy, sortDirection, searchQuery);
     res.status(200).json({success: true, data: result, error: null});
 });
 
 const getTasksByEventId = asyncHandler(async (req, res) => {
-    const eventId = parseInt(req.params.id);
-    const limit = req.query.limit || 5;
-    const page = parseInt(req.query.page) || 1;
-    const sortBy = req.query.sortBy || 'eventId';
-    const sortDirection = parseInt(req.query.sortDirection || '1');
-    const searchQuery = req.query.searchQuery || null;
+    const eventId = req.params.id;
+    const { page, limit, sortBy, sortDirection, searchQuery } = req.query;
 
     const result = await eventService.getTasksByEventIdLogic(eventId, page, limit, sortBy, sortDirection, searchQuery);
     res.status(200).json({success: true, data: result, error: null});

@@ -1,13 +1,10 @@
 const userService = require('../services/userService');
-// Make sure to import asyncHandler properly depending on your file structure
 const { asyncHandler } = require('../middleware/errorHandler');
 
 const getAllUsers = asyncHandler(async (req, res) => {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 5;
-    const sortBy = req.query.sortBy || 'userId';
+    const { page, limit, sortBy, sortDirection, searchQuery } = req.query;
 
-    const result = await userService.getAllUsersLogic(page, limit, sortBy);
+    const result = await userService.getAllUsersLogic(page, limit, sortBy, sortDirection, searchQuery);
 
     res.status(200).json({ success: true, data: result, error: null });
 });
