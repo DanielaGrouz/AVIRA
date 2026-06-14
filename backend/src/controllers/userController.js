@@ -2,7 +2,7 @@ const userService = require('../services/userService');
 const { asyncHandler } = require('../middleware/errorHandler');
 
 const getAllUsers = asyncHandler(async (req, res) => {
-  const { page, limit, sortBy, sortDirection, searchQuery } = req.query;
+  const { page, limit, sortBy, sortDirection, searchQuery } = req.validated.query;
 
   const result = await userService.getAllUsersLogic(
     page,
@@ -16,7 +16,7 @@ const getAllUsers = asyncHandler(async (req, res) => {
 });
 
 const getUserById = asyncHandler(async (req, res) => {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.validated.params.id);
   const user = await userService.getUserByIdLogic(id);
 
   if (!user) {
@@ -46,7 +46,7 @@ const createUser = asyncHandler(async (req, res) => {
 });
 
 const updateUser = asyncHandler(async (req, res) => {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.validated.params.id);
 
   let picture = null;
   if (req.file) {
@@ -61,7 +61,7 @@ const updateUser = asyncHandler(async (req, res) => {
 });
 
 const deleteUser = asyncHandler(async (req, res) => {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.validated.params.id);
 
   // Block deleting self - throws to global handler for 403 Forbidden
   if (req.user && req.user.userId === id) {
@@ -73,7 +73,7 @@ const deleteUser = asyncHandler(async (req, res) => {
 });
 
 const completeEmailVerification = asyncHandler(async (req, res) => {
-  const { email, code } = req.body;
+  const { email, code } = req.validated.body;
   const { user, token } = await userService.completeEmailVerificationLogic(email, code);
 
   const { password, ...safeUserCopy } = user;
@@ -86,7 +86,7 @@ const completeEmailVerification = asyncHandler(async (req, res) => {
 });
 
 const login = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password } = req.validated.body;
   const { user, token } = await userService.loginLogic(email, password);
 
   const { password: _, ...safeUserCopy } = user;
@@ -99,7 +99,7 @@ const login = asyncHandler(async (req, res) => {
 });
 
 const sendVerificationCode = asyncHandler(async (req, res) => {
-  const { email } = req.body;
+  const { email } = req.validated.body;
   await userService.sendVerificationCodeLogic(email);
   res
     .status(200)
@@ -107,7 +107,7 @@ const sendVerificationCode = asyncHandler(async (req, res) => {
 });
 
 const resetPassword = asyncHandler(async (req, res) => {
-  const { email, newPassword, code } = req.body;
+  const { email, newPassword, code } = req.validated.body;
   await userService.resetPasswordLogic(email, newPassword, code);
   res
     .status(200)

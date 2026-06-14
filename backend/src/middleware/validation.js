@@ -4,10 +4,12 @@ const validate =
   (schema, source = 'body') =>
   (req, res, next) => {
     try {
-      // Parse throws an error if validation fails
-      // We can validate req.body, req.params, or req.query
-      req[source] = schema.parse(req[source]);
-      next();
+        const parsedData = schema.parse(req[source]);
+        if (!req.validated) {
+            req.validated = {};
+        }
+        req.validated[source] = parsedData;
+        next();
     } catch (error) {
       // Extract all the specific error messages from Zod
       const errors = error.errors.map((err) => err.message);

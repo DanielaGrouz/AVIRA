@@ -89,29 +89,32 @@ const taskSchema = z.object({
 
 const optionalTaskSchema = taskSchema.partial();
 
-// Event Schemas
-const eventSchema = z
-  .object({
-    title: z.string().min(2, 'title must be at least 2 chars'),
-    date: z.string().regex(dateRegex, 'date must be in YYYY-MM-DD format'),
-    time: z.string().regex(timeRegex, 'time must be in HH:MM format').optional(),
-    location: z.string().min(2, 'location must be at least 2 chars'),
-    eventType: z.string().min(2, 'eventType must be at least 2 chars'),
-    guestsCount: z.coerce.number().int().nonnegative().default(0),
-  })
-  .refine(
-    (data) => {
-      const timeString = data.time && data.time !== 'TBD' ? data.time : '00:00';
-      const eventDateTime = new Date(`${data.date}T${timeString}`);
-      return eventDateTime > new Date();
-    },
-    {
-      message: 'date and time must be in the future',
-      path: ['date'],
-    }
-  );
+// 1. Define the base object WITHOUT the refine
+const baseEventSchema = z.object({
+  title: z.string().min(2, 'title must be at least 2 chars'),
+  date: z.string().regex(dateRegex, 'date must be in YYYY-MM-DD format'),
+  time: z.string().regex(timeRegex, 'time must be in HH:MM format').optional(),
+  location: z.string().min(2, 'location must be at least 2 chars'),
+  eventType: z.string().min(2, 'eventType must be at least 2 chars'),
+  guestsCount: z.coerce.number().int().nonnegative().default(0),
+});
 
-const optionalEventSchema = eventSchema.partial();
+const futureDateCheck = (data) => {
+  if (!data.date) return true;
+
+  const timeString = data.time && data.time !== 'TBD' ? data.time : '00:00';
+  const eventDateTime = new Date(`${data.date}T${timeString}`);
+  return eventDateTime > new Date();
+};
+
+const refineOptions = {
+  message: 'date and time must be in the future',
+  path: ['date'],
+};
+
+const eventSchema = baseEventSchema.refine(futureDateCheck, refineOptions);
+
+const optionalEventSchema = baseEventSchema.partial().refine(futureDateCheck, refineOptions);
 
 const basePaginationSchema = z.object({
   page: z.coerce.number().int().positive().optional().default(1),
@@ -148,7 +151,7 @@ const userPaginationSchema = basePaginationSchema.extend({
 });
 
 const galleryPaginationSchema = basePaginationSchema.extend({
-  sortBy: z.string().optional().default('createDate'),
+  sortBy: z.string().trim().min(1).catch('createDate').optional().default('createDate')
 });
 
 module.exports = {
