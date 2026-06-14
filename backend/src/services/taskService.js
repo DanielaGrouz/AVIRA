@@ -1,37 +1,5 @@
 const { Task } = require('../../models');
-const { NotFoundError } = require('../utils/errors'); // Import custom errors
-
-/**
- * Handles the logic for retrieving a paginated and sorted list of tasks.
- */
-const getAllTasksLogic = async (page = 1, limit = 5, sortBy = 'taskId') => {
-  const offset = (page - 1) * limit;
-
-  const { count, rows } = await Task.findAndCountAll({
-    order: [[sortBy, 'ASC']],
-    limit: parseInt(limit),
-    offset: parseInt(offset),
-  });
-
-  return {
-    page: parseInt(page),
-    totalPages: Math.ceil(count / limit),
-    totalItems: count,
-    data: rows,
-  };
-};
-
-/**
- * Logic to find a specific task by its ID.
- * Throws a NotFoundError if the task doesn't exist.
- */
-const getTaskByIdLogic = async (id) => {
-  const task = await Task.findByPk(id);
-  if (!task) {
-    throw new NotFoundError(`Task with ID ${id} was not found.`, 'TASK_NOT_FOUND');
-  }
-  return task;
-};
+const { NotFoundError } = require('../utils/errors');
 
 /**
  * Handles the creation of a new task.
@@ -78,8 +46,6 @@ const deleteTaskLogic = async (id) => {
 };
 
 module.exports = {
-  getAllTasksLogic,
-  getTaskByIdLogic,
   createTaskLogic,
   updateTaskLogic,
   deleteTaskLogic,
