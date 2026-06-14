@@ -1,20 +1,19 @@
 const nodemailer = require('nodemailer');
-const configClient = require("./configClient");
+const configClient = require('./configClient');
 
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: 'appavira@gmail.com',
-        pass: configClient.getConfig("GMAIL_PASSWORD")
-    },
-    tls: {
-        rejectUnauthorized: false
-    }
+  service: 'gmail',
+  auth: {
+    user: 'appavira@gmail.com',
+    pass: configClient.getConfig('GMAIL_PASSWORD'),
+  },
+  tls: {
+    rejectUnauthorized: false,
+  },
 });
 
-
 const generateStyledHtml = (subject, verificationCode) => {
-    return `
+  return `
     <div style="font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f3f6f9; background-image: url('cid:logo2'); background-size: cover; background-position: center; background-repeat: no-repeat; padding: 60px 20px; direction: ltr; text-align: left;">
         
         <div style="max-width: 550px; margin: 0 auto; background-color: rgba(255, 255, 255, 0.96); border-radius: 30px; overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.15); border: 1px solid rgba(255, 255, 255, 0.8);">
@@ -58,36 +57,36 @@ const generateStyledHtml = (subject, verificationCode) => {
 };
 
 const sendMail = async (emailSubject, verificationCode, emailToSent) => {
-    const textFallback = `${emailSubject}\n\nHello,\n\nYour verification code is: ${verificationCode}\n\nBest regards,\nAVIRA Team`;
+  const textFallback = `${emailSubject}\n\nHello,\n\nYour verification code is: ${verificationCode}\n\nBest regards,\nAVIRA Team`;
 
-    const mailOptions = {
-        from: '"AVIRA system" <appavira@gmail.com>',
-        to: emailToSent,
-        subject: emailSubject,
-        text: textFallback,
-        html: generateStyledHtml(emailSubject, verificationCode),
-        attachments: [
-            {
-                filename: 'logo1.png',
-                path: './src/sources/logo.png',
-                cid: 'logo1'
-            },
-            {
-                filename: 'logo2.png',
-                path: './src/sources/background.png',
-                cid: 'logo2' // This CID is now feeding the CSS background-image
-            }
-        ]
-    };
+  const mailOptions = {
+    from: '"AVIRA system" <appavira@gmail.com>',
+    to: emailToSent,
+    subject: emailSubject,
+    text: textFallback,
+    html: generateStyledHtml(emailSubject, verificationCode),
+    attachments: [
+      {
+        filename: 'logo1.png',
+        path: './src/sources/logo.png',
+        cid: 'logo1',
+      },
+      {
+        filename: 'logo2.png',
+        path: './src/sources/background.png',
+        cid: 'logo2', // This CID is now feeding the CSS background-image
+      },
+    ],
+  };
 
-    try {
-        const info = await transporter.sendMail(mailOptions);
-        console.log('Auth email sent successfully!');
-        return info;
-    } catch (error) {
-        console.error('Error sending auth email:', error.message);
-        throw error;
-    }
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Auth email sent successfully!');
+    return info;
+  } catch (error) {
+    console.error('Error sending auth email:', error.message);
+    throw error;
+  }
 };
 
 // sendMail("verification code", "123456", "danielagrouz@gmail.com")

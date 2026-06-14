@@ -70,7 +70,7 @@ const EventHomePage = () => {
             const initialData = {
                 title: event.title || '',
                 date: event.date !== 'TBD' ? event.date : '',
-                time: event.time !== 'TBD' ? event.time : '',
+                time: event.time && event.time !== 'TBD' ? event.time.slice(0, 5) : '',
                 location: event.location || ''
             };
             setEditFormData(initialData);
@@ -147,7 +147,12 @@ const EventHomePage = () => {
             }
 
             try {
-                await EventService.update(selectedEvent.eventId, { ...editFormData });
+                const payload = { ...editFormData };
+                if (payload.time) {
+                    payload.time = payload.time.slice(0, 5);
+                }
+
+                await EventService.update(selectedEvent.eventId, payload);
                 setModalMessage({ type: 'success', text: 'Event updated successfully!' });
                 fetchEvents();
 
@@ -159,7 +164,6 @@ const EventHomePage = () => {
                 const errorMsg = error.response?.data?.error?.message || error.message || 'Failed to update event.';
                 setModalMessage({ type: 'error', text: errorMsg });
             }
-
         }
     };
 

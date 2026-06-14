@@ -1,20 +1,75 @@
 const express = require('express');
 const router = express.Router();
 const eventController = require('../controllers/eventController');
+const { authorize, validateEventId } = require('../middleware/auth');
+const { upload } = require('../middleware/fileUpload');
+const validate = require('../middleware/validation');
 const {
-    validateId, validateEventFields, validateOptionalEventFields, validateGuestFields
-} = require('../middleware/validation');
-const {authorize, validateEventId} = require("../middleware/auth");
-const {upload} = require("../middleware/fileUpload");
+  idSchema,
+  eventSchema,
+  optionalEventSchema,
+  tokenParamSchema,
+  eventPaginationSchema,
+  galleryPaginationSchema,
+} = require('../middleware/schemas');
+const { VALID_ROLES } = require('../../models/constants');
 
-router.get('/', authorize(['user', 'admin']), eventController.getAllEvents);
-router.get('/:id', authorize(['user', 'admin']), validateId, validateEventId, eventController.getEventById);
-router.post('/', authorize(['user', 'admin']), validateEventFields, eventController.createEvent);
-router.put('/:id', authorize(['user', 'admin']), validateId, validateEventId, validateOptionalEventFields, eventController.updateEvent);
-router.delete('/:id', authorize(['user', 'admin']), validateId, validateEventId, eventController.deleteEvent);
-router.get('/:id/gallery', authorize(['user', 'admin']), validateId, validateEventId, eventController.getEventGallery);
+router.get(
+  '/',
+  authorize(VALID_ROLES),
+  validate(eventPaginationSchema, 'query'),
+  eventController.getAllEvents
+);
+router.get(
+  '/:id',
+  authorize(VALID_ROLES),
+  validate(idSchema, 'params'),
+  validateEventId,
+  eventController.getEventById
+);
+router.post(
+  '/',
+  authorize(VALID_ROLES),
+  validate(eventSchema, 'body'),
+  eventController.createEvent
+);
+router.put(
+  '/:id',
+  authorize(VALID_ROLES),
+  validate(idSchema, 'params'),
+  validateEventId,
+  validate(optionalEventSchema, 'body'),
+  eventController.updateEvent
+);
+router.delete(
+  '/:id',
+  authorize(VALID_ROLES),
+  validate(idSchema, 'params'),
+  validateEventId,
+  eventController.deleteEvent
+);
+router.get(
+  '/:id/gallery',
+  authorize(VALID_ROLES),
+  validate(idSchema, 'params'),
+  validateEventId,
+  validate(galleryPaginationSchema, 'query'),
+  eventController.getEventGallery
+);
 
-router.post('/gallery/:token', upload.single('picture'), eventController.uploadToEventGallery);
-router.put('/:id/save-invitation', authorize(['user', 'admin']), upload.single('picture'), validateId, validateEventId, eventController.saveInvitation);
+router.post(
+  '/gallery/:token',
+  validate(tokenParamSchema, 'params'),
+  upload.single('picture'),
+  eventController.uploadToEventGallery
+);
+router.put(
+  '/:id/save-invitation',
+  authorize(VALID_ROLES),
+  validate(idSchema, 'params'),
+  validateEventId,
+  upload.single('picture'),
+  eventController.saveInvitation
+);
 
 module.exports = router;

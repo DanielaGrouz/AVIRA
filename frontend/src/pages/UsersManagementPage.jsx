@@ -38,7 +38,7 @@ const UsersManagementPage = () => {
     const fetchUsers = async () => {
         setIsLoading(true);
         try {
-            const response = await UserService.getAll(currentPage, 'id');
+            const response = await UserService.getAll(currentPage, 5);
             let fetchedUsers = response.data.data.data;
 
             // TEMPORARY SYNC: Sync logged-in user with Navbar data to bypass server resets ---
