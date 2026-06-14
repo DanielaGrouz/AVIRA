@@ -1,9 +1,29 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import EventService from '../../services/EventService';
 import GenericTableManager from './GenericTableManager';
 import GuestModal from './GuestModal';
+import {io} from "socket.io-client";
+import Config from "../../services/Config";
 
 const GuestManager = ({ eventId, eventDetails }) => {
+    const [liveUpdate, setLiveUpdate] = useState(null); // <--- NEW STATE
+    useEffect(() => {
+        // Connect to your backend URL
+        const socket = io(Config.BASE_URL);
+
+        socket.emit('joinEventRoom', eventId);
+
+        // Listen for RSVP updates from the backend
+        socket.on('rsvpUpdated', (updatedData) => {
+            console.log("Real-time RSVP received:", updatedData);
+            setLiveUpdate(updatedData); // Pass the new data to the table
+        });
+
+        // Cleanup the socket connection when the user leaves the page
+        return () => {
+            socket.disconnect();
+        };
+    }, [eventId]);
     const columns = [
         { accessorKey: 'name', header: 'Name' },
         { accessorKey: 'phone', header: 'Phone' },
@@ -28,14 +48,13 @@ const GuestManager = ({ eventId, eventDetails }) => {
         const response = await EventService.addGuest({ eventId, ...guestData });
 
         const savedGuest = response.data?.data;
-
         if (sendWhatsapp && savedGuest && savedGuest.phone) {
             let cleanPhone = savedGuest.phone.replace(/\D/g, '');
             if (cleanPhone.startsWith('0')) {
                 cleanPhone = '972' + cleanPhone.substring(1);
             }
 
-            const frontendUrl = 'http://localhost:5173';
+            const frontendUrl = Config.FRONTEND_URL;
 
             let formattedDate = eventDetails?.date;
             if (formattedDate && formattedDate !== 'TBD') {
@@ -54,14 +73,7 @@ const GuestManager = ({ eventId, eventDetails }) => {
             const eventDate = eventDetails?.date && eventDetails.date !== 'TBD' ? `\n Date: ${formattedDate}` : '';
             const eventTime = eventDetails?.time && eventDetails.time !== 'TBD' ? `\n Time: ${eventDetails.time}` : '';
             const eventLocation = eventDetails?.location && eventDetails.location !== 'TBD' ? `\n Location: ${eventDetails.location}` : '';
-
-            // 3. These are the encoded variables specifically for the react-router URL
-            const safeTitle = encodeURIComponent(eventDetails?.title || 'TBD');
-            const safeDate = encodeURIComponent(eventDetails?.date || 'TBD');
-            const safeTime = encodeURIComponent(eventDetails?.time || 'TBD');
-            const safeLocation = encodeURIComponent(eventDetails?.location || 'TBD');
-
-            const rsvpLink = `${frontendUrl}/rsvp/${eventId}/${safeTitle}/${safeDate}/${safeTime}/${safeLocation}/${savedGuest.guestId}`;
+            const rsvpLink = `${frontendUrl}/rsvp/${savedGuest.token}`;
 
             // 4. Combine the human-readable text with the safe link, then encode the entire message for WhatsApp
             const message = encodeURIComponent(
@@ -79,7 +91,7 @@ const GuestManager = ({ eventId, eventDetails }) => {
             title="Guest List"
             itemName="guest"
             idField="guestId"
-            initialFormState={{ name: '', phone: '', role: 'Guest', status: 'Pending' }}
+            initialFormState={{ name: '', phone: '', status: 'pending' }}
             baseColumns={columns}
             FormModal={GuestModal}
             canDelete={(row) => row.role?.toUpperCase() !== 'MANAGER'}
@@ -88,6 +100,7 @@ const GuestManager = ({ eventId, eventDetails }) => {
             addItem={handleAddGuest}
             updateItem={(id, payload) => EventService.updateGuest(id, { eventId, ...payload })}
             deleteItem={(id) => EventService.deleteGuest(eventId, id)}
+            updatedItem={liveUpdate}
         />
     );
 };

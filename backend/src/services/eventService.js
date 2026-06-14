@@ -1,12 +1,17 @@
-const { Event, User, Guest, Task } = require('../../models');
+const { Event, User, Guest, Task, EventGallery} = require('../../models');
 const { Op } = require('sequelize');
 const guestService = require('./guestService');
-const {getSupermarketList, getEventTaskList, getStoresForEvent} = require("../utils/generateTextClient");
-const {generateEventInvite} = require("../utils/generateImageClient");
+const { getSupermarketList, getEventTaskList, getStoresForEvent } = require("../utils/generateTextClient");
+const { generateEventInvite } = require("../utils/generateImageClient");
 const taskService = require('./taskService');
+const jwt = require("jsonwebtoken");
+const {
+    NotFoundError,
+    BadRequestError
+} = require('../utils/errors');
 
 // Get all events with pagination and sorting
-const getAllEventsLogic = async (page, limit,sortBy, searchQuery, userData) => {
+const getAllEventsLogic = async (page, limit, sortBy, searchQuery, userData) => {
     const offset = (page - 1) * limit;
     let whereClause = {};
 
@@ -43,10 +48,31 @@ const getAllEventsLogic = async (page, limit,sortBy, searchQuery, userData) => {
     };
 };
 
+
+const getEventGalleryLogic = async (eventId, page, limit) => {
+    const offset = (page - 1) * limit;
+    let whereClause = {
+        eventId
+    };
+    const { count, rows } = await EventGallery.findAndCountAll({
+        where: whereClause,
+        order: [['createDate', 'DESC']],
+        limit: parseInt(limit),
+        offset: parseInt(offset)
+    });
+    return {
+        page: parseInt(page),
+        totalPages: Math.ceil(count / limit),
+        totalItems: count,
+        data: rows
+    };
+}
+
 // Get a specific event using its unique ID
 const getEventByIdLogic = async (id) => {
     return await Event.findByPk(id);
 };
+
 const createEventLogic = async (creatorId, eventData) => {
     const { title, date, time, location, eventType } = eventData;
 
@@ -79,7 +105,9 @@ const createEventLogic = async (creatorId, eventData) => {
 const deleteEventLogic = async (id) => {
     // Because of 'CASCADE' in our model setup, deleting the event deletes its tasks & guests
     const deletedRows = await Event.destroy({ where: { eventId: id } });
-    if (deletedRows === 0) throw new Error("EVENT_NOT_FOUND");
+    if (deletedRows === 0) {
+        throw new NotFoundError("Event not found.", "EVENT_NOT_FOUND");
+    }
     return true;
 };
 
@@ -87,16 +115,19 @@ const updateEventLogic = async (id, updateData) => {
     const [updatedRows] = await Event.update(updateData, {
         where: { eventId: id }
     });
-    if (updatedRows === 0) throw new Error("EVENT_NOT_FOUND");
+    if (updatedRows === 0) {
+        throw new NotFoundError("Event not found.", "EVENT_NOT_FOUND");
+    }
 
     return await Event.findByPk(id);
 };
 
-
 // Replaces processListData by shifting the workload to the database
 const getAllGuestsByEventLogic = async (eventId, page , limit, sortBy, sortDirection, searchQuery) => {
     const event = await Event.findByPk(eventId);
-    if (!event) throw new Error("EVENT_NOT_FOUND");
+    if (!event) {
+        throw new NotFoundError("Event not found.", "EVENT_NOT_FOUND");
+    }
 
     const offset = (page - 1) * limit;
     let whereClause = { eventId };
@@ -121,7 +152,9 @@ const getAllGuestsByEventLogic = async (eventId, page , limit, sortBy, sortDirec
 
 const getTasksByEventIdLogic = async (eventId, page, limit, sortBy, sortDirection, searchQuery = "") => {
     const event = await Event.findByPk(eventId);
-    if (!event) throw new Error("EVENT_NOT_FOUND");
+    if (!event) {
+        throw new NotFoundError("Event not found.", "EVENT_NOT_FOUND");
+    }
 
     const offset = (page - 1) * limit;
     let whereClause = { eventId };
@@ -143,22 +176,27 @@ const getTasksByEventIdLogic = async (eventId, page, limit, sortBy, sortDirectio
 
 const addTaskToEventLogic = async (eventId, taskData) => {
     const event = await Event.findByPk(eventId);
-    if (!event) throw new Error("EVENT_NOT_FOUND");
+    if (!event) {
+        throw new NotFoundError("Event not found.", "EVENT_NOT_FOUND");
+    }
     return await taskService.createTaskLogic({ ...taskData, eventId });
 };
 
 const updateTaskInEventLogic = async (eventId, taskId, updateData) => {
     const task = await Task.findOne({ where: { taskId, eventId } });
-    if (!task) throw new Error("TASK_NOT_FOUND_IN_EVENT");
+    if (!task) {
+        throw new NotFoundError("Task not found in this event.", "TASK_NOT_FOUND_IN_EVENT");
+    }
     return await taskService.updateTaskLogic(taskId, updateData);
 };
 
 const removeTaskFromEventLogic = async (eventId, taskId) => {
     const task = await Task.findOne({ where: { taskId, eventId } });
-    if (!task) throw new Error("TASK_NOT_FOUND_IN_EVENT");
+    if (!task) {
+        throw new NotFoundError("Task not found in this event.", "TASK_NOT_FOUND_IN_EVENT");
+    }
     return taskService.deleteTaskLogic(taskId);
 };
-
 
 const getEventsByCreatorLogic = async (creatorId) => {
     return await Event.findAll({ where: { creatorId } });
@@ -187,19 +225,23 @@ const getEventsByPhoneLogic = async (phone) => {
 
 const addGuestToEventLogic = async (eventId, guestData) => {
     const event = await Event.findByPk(eventId);
-    if (!event) throw new Error("EVENT_NOT_FOUND");
+    if (!event) {
+        throw new NotFoundError("Event not found.", "EVENT_NOT_FOUND");
+    }
 
-    const newGuest = await guestService.createGuestLogic({ ...guestData, eventId });
-
-    // DB Native Increment
+    const guest = { ...guestData, eventId };
+    const newGuest = await guestService.createGuestLogic(guest);
     await event.increment('guestsCount');
 
-    return newGuest;
+    const token = jwt.sign({eventId: eventId, guestId: newGuest.guestId}, process.env.JWT_SECRET, { expiresIn: '24h' });
+    return {...guest, token};
 };
 
 const removeGuestFromEventLogic = async (eventId, guestId) => {
     const guest = await Guest.findOne({ where: { guestId, eventId } });
-    if (!guest) throw new Error("GUEST_NOT_FOUND_IN_EVENT");
+    if (!guest) {
+        throw new NotFoundError("Guest not found in this event.", "GUEST_NOT_FOUND_IN_EVENT");
+    }
 
     await guestService.deleteGuestLogic(guestId);
 
@@ -213,31 +255,54 @@ const removeGuestFromEventLogic = async (eventId, guestId) => {
 
 const updateGuestInEventLogic = async (eventId, guestId, updateData) => {
     const guest = await Guest.findOne({ where: { guestId, eventId } });
-    if (!guest) throw new Error("GUEST_NOT_FOUND_IN_EVENT");
+    if (!guest) {
+        throw new NotFoundError("Guest not found in this event.", "GUEST_NOT_FOUND_IN_EVENT");
+    }
     return await guestService.updateGuestLogic(guestId, updateData);
 };
 
+const getRsvpData = async (token) => {
+    const {guestId, eventId} = jwt.verify(token, process.env.JWT_SECRET);
+    const guest = await Guest.findOne({ where: { guestId, eventId } });
+    const event = await Event.findByPk(eventId);
+    return {guest, event};
+}
+
 const updateGuestRSVPLogic = async (eventId, guestId, rsvpStatus) => {
     const guest = await Guest.findOne({ where: { guestId, eventId } });
-    if (!guest) throw new Error("GUEST_NOT_FOUND_IN_EVENT");
+    if (!guest) {
+        throw new NotFoundError("Guest not found in this event.", "GUEST_NOT_FOUND_IN_EVENT");
+    }
 
     if (!['confirmed', 'cancelled', 'pending'].includes(rsvpStatus)) {
-        throw new Error("INVALID_STATUS");
+        throw new BadRequestError("Invalid RSVP status.", "INVALID_STATUS");
     }
     return await guestService.updateGuestLogic(guestId, { status: rsvpStatus });
 };
 
 const generatePhotoInviteLogic = async (eventId) => {
     const event = await Event.findByPk(eventId);
-    if (!event) throw new Error("EVENT_NOT_FOUND");
+    if (!event) {
+        throw new NotFoundError("Event not found.", "EVENT_NOT_FOUND");
+    }
 
     // Pass plain JSON object to the AI client, not the Sequelize instance
     return await generateEventInvite(event.get({ plain: true }));
 };
 
+const saveToGalleryLogic = async (eventId, guestId, imagePath) => {
+    console.log(`guest ${guestId} uploaded a new picture to gallery`);
+    return EventGallery.create({
+        path: imagePath,
+        eventId: eventId
+    })
+}
+
 const saveInvitationLogic = async (eventId, invitePath) => {
     const event = await Event.findByPk(eventId);
-    if (!event) throw new Error("EVENT_NOT_FOUND");
+    if (!event) {
+        throw new NotFoundError("Event not found.", "EVENT_NOT_FOUND");
+    }
 
     event.invitationPath = invitePath;
     await event.save();
@@ -246,24 +311,32 @@ const saveInvitationLogic = async (eventId, invitePath) => {
 
 const generateShoppingListLogic = async (eventId) => {
     const event = await Event.findByPk(eventId);
-    if (!event) throw new Error("EVENT_NOT_FOUND");
+    if (!event) {
+        throw new NotFoundError("Event not found.", "EVENT_NOT_FOUND");
+    }
 
     return getSupermarketList(event.get({plain: true}));
 };
 
 const generateTaskListLogic = async (eventId) => {
     const event = await Event.findByPk(eventId);
-    if (!event) throw new Error("EVENT_NOT_FOUND");
+    if (!event) {
+        throw new NotFoundError("Event not found.", "EVENT_NOT_FOUND");
+    }
 
     return getEventTaskList(event.get({plain: true}));
 };
 
 const findRelevantStores = async (currLocation, eventId) => {
     const event = await Event.findByPk(eventId);
-    if (!event) throw new Error("EVENT_NOT_FOUND");
+    if (!event) {
+        throw new NotFoundError("Event not found.", "EVENT_NOT_FOUND");
+    }
 
     const tasksList = await Task.findAll({ where: { eventId } });
-    if (!tasksList || tasksList.length === 0) throw new Error("TASKS_LIST_IS_EMPTY");
+    if (!tasksList || tasksList.length === 0) {
+        throw new BadRequestError("There are no tasks for this event.", "TASKS_LIST_IS_EMPTY");
+    }
 
     const taskTitles = tasksList.map(task => task.title);
     return getStoresForEvent(currLocation, taskTitles);
@@ -291,5 +364,8 @@ module.exports = {
     addGuestToEventLogic,
     removeGuestFromEventLogic,
     updateGuestInEventLogic,
-    updateGuestRSVPLogic
+    updateGuestRSVPLogic,
+    saveToGalleryLogic,
+    getEventGalleryLogic,
+    getRsvpData
 };

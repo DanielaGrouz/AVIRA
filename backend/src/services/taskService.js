@@ -1,4 +1,5 @@
 const { Task } = require('../../models');
+const { NotFoundError } = require('../utils/errors'); // Import custom errors
 
 /**
  * Handles the logic for retrieving a paginated and sorted list of tasks.
@@ -6,7 +7,6 @@ const { Task } = require('../../models');
 const getAllTasksLogic = async (page = 1, limit = 5, sortBy = 'taskId') => {
     const offset = (page - 1) * limit;
 
-    // findAndCountAll fetches the specific page data and the total count in one efficient query
     const { count, rows } = await Task.findAndCountAll({
         order: [[sortBy, 'ASC']],
         limit: parseInt(limit),
@@ -23,15 +23,18 @@ const getAllTasksLogic = async (page = 1, limit = 5, sortBy = 'taskId') => {
 
 /**
  * Logic to find a specific task by its ID.
- * Returns null if the task doesn't exist.
+ * Throws a NotFoundError if the task doesn't exist.
  */
 const getTaskByIdLogic = async (id) => {
-    return await Task.findByPk(id);
+    const task = await Task.findByPk(id);
+    if (!task) {
+        throw new NotFoundError(`Task with ID ${id} was not found.`, "TASK_NOT_FOUND");
+    }
+    return task;
 };
 
 /**
  * Handles the creation of a new task.
- * ID generation is now handled automatically by the MySQL autoIncrement configuration.
  */
 const createTaskLogic = async (taskData) => {
     const { eventId, title, status, priority } = taskData;
@@ -39,17 +42,15 @@ const createTaskLogic = async (taskData) => {
     return await Task.create({
         eventId,
         title,
-        status: status || "pending", // Default values if not provided
+        status: status || "pending",
         priority: priority || "medium"
     });
 };
 
 /**
  * Logic for updating an existing task.
- * Throws a specific Error "TASK_NOT_FOUND" for the controller to catch.
  */
 const updateTaskLogic = async (id, updateData) => {
-    // Destructure to ensure we only pass valid fields to the update method
     const { title, status, priority } = updateData;
 
     const [updatedRows] = await Task.update(
@@ -58,10 +59,9 @@ const updateTaskLogic = async (id, updateData) => {
     );
 
     if (updatedRows === 0) {
-        throw new Error("TASK_NOT_FOUND");
+        throw new NotFoundError(`Task with ID ${id} not found.`, "TASK_NOT_FOUND");
     }
 
-    // Fetch and return the updated record
     return await Task.findByPk(id);
 };
 
@@ -74,7 +74,7 @@ const deleteTaskLogic = async (id) => {
     });
 
     if (deletedRows === 0) {
-        throw new Error("TASK_NOT_FOUND");
+        throw new NotFoundError(`Task with ID ${id} not found.`, "TASK_NOT_FOUND");
     }
 
     return true;

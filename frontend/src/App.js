@@ -16,6 +16,7 @@ import ErrorPage from "./pages/ErrorPage";
 import GuestRSVP from "./pages/events/GuestRSVP";
 import Footer from "./components/Footer";
 import UsersManagementPage from "./pages/UsersManagementPage";
+import LiveEventGallery from "./pages/events/LiveEventGallery";
 
 function AppContent() {
     const {isAuthenticated, isAdmin} = useAuth();
@@ -41,6 +42,7 @@ function AppContent() {
                     <Route path={AppRoutes.HOME} element={makeProtected(<EventHomePage/>)}/>
                     <Route path={AppRoutes.EVENT_DETAILS} element={isAuthenticated ? <EventDetailsPage/> : <Navigate to={AppRoutes.LOGIN}/>}/>
                     <Route path={AppRoutes.CREATE_EVENT} element={isAuthenticated ? <CreateEventPage/> : <Navigate to={AppRoutes.LOGIN}/>}/>
+                    <Route path={AppRoutes.LIVE_GALLERY} element={isAuthenticated ? <LiveEventGallery/> : <Navigate to={AppRoutes.LOGIN}/>}/>
 
                     <Route path={AppRoutes.SETTINGS} element={isAuthenticated ? <Settings/> : <Navigate to={AppRoutes.LOGIN}/>}/>
                     <Route path={AppRoutes.ADMIN_MANAGE_USERS} element={isAdmin ? <UsersManagementPage/> : <ErrorPage code={403} />}/>

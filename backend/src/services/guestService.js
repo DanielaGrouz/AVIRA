@@ -1,9 +1,9 @@
 const { Guest } = require('../../models');
+const { NotFoundError } = require('../utils/errors'); // Import custom errors
 
 const getAllGuestsLogic = async (page = 1, limit = 5, sortBy = 'guestId') => {
     const offset = (page - 1) * limit;
 
-    // findAndCountAll handles both fetching the data and calculating the total for pagination
     const { count, rows } = await Guest.findAndCountAll({
         order: [[sortBy, 'ASC']],
         limit: parseInt(limit),
@@ -19,12 +19,15 @@ const getAllGuestsLogic = async (page = 1, limit = 5, sortBy = 'guestId') => {
 };
 
 const getGuestByIdLogic = async (id) => {
-    return await Guest.findByPk(id);
+    const guest = await Guest.findByPk(id);
+    if (!guest) {
+        throw new NotFoundError(`Guest with ID ${id} was not found.`, "GUEST_NOT_FOUND");
+    }
+    return guest;
 };
 
 const createGuestLogic = async (guestData) => {
-    // Optionally: You might want to verify the eventId exists here before creating
-    return await Guest.create(guestData);
+    return Guest.create(guestData);
 };
 
 const updateGuestLogic = async (id, updateData) => {
@@ -32,9 +35,10 @@ const updateGuestLogic = async (id, updateData) => {
         where: { guestId: id }
     });
 
-    if (updatedRows === 0) throw new Error("GUEST_NOT_FOUND");
+    if (updatedRows === 0) {
+        throw new NotFoundError(`Guest with ID ${id} not found.`, "GUEST_NOT_FOUND");
+    }
 
-    // Return the fresh data from the database
     return await Guest.findByPk(id);
 };
 
@@ -43,7 +47,10 @@ const deleteGuestLogic = async (id) => {
         where: { guestId: id }
     });
 
-    if (deletedRows === 0) throw new Error("GUEST_NOT_FOUND");
+    if (deletedRows === 0) {
+        throw new NotFoundError(`Guest with ID ${id} not found.`, "GUEST_NOT_FOUND");
+    }
+
     return true;
 };
 

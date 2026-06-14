@@ -1,211 +1,120 @@
 const userService = require('../services/userService');
+// Make sure to import asyncHandler properly depending on your file structure
+const { asyncHandler } = require('../middleware/errorHandler');
 
-const getAllUsers = async (req, res) => {
-    try {
-        const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 5;
-        const sortBy = req.query.sortBy || 'userId';
+const getAllUsers = asyncHandler(async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+    const sortBy = req.query.sortBy || 'userId';
 
-        const result = await userService.getAllUsersLogic(page, limit, sortBy);
+    const result = await userService.getAllUsersLogic(page, limit, sortBy);
 
-        res.status(200).json({ success: true, data: result, error: null });
-    } catch (error) {
-        res.status(500).json({
-            success: false, data: null,
-            error: { code: "SERVER_ERROR", message: "Internal Server Error", details: error.message }
-        });
-    }
-};
+    res.status(200).json({ success: true, data: result, error: null });
+});
 
-const getUserById = async (req, res) => {
+const getUserById = asyncHandler(async (req, res) => {
     const id = parseInt(req.params.id);
-    try {
-        const user = await userService.getUserByIdLogic(id);
-        if (!user) {
-            return res.status(404).json({
-                success: false, data: null,
-                error: { code: "NOT_FOUND", message: `User with ID ${id} was not found.`, details: {} }
-            });
-        }
-        res.status(200).json({ success: true, data: user, error: null });
-    } catch (error) {
-        res.status(500).json({
-            success: false, data: null,
-            error: { code: "SERVER_ERROR", message: "Internal Server Error", details: error.message }
-        });
+    const user = await userService.getUserByIdLogic(id);
+
+    if (!user) {
+        throw new Error("USER_NOT_FOUND");
     }
-};
 
-const createUser = async (req, res) => {
-    try {
-        let picturePath = null;
-        if (req.file) {
-            picturePath = `/uploads/${req.file.filename}`;
-        }
+    res.status(200).json({ success: true, data: user, error: null });
+});
 
-        const data = { ...req.body, picturePath };
-        const newUser = await userService.createUserLogic(data);
-
-        res.status(201).json({
-            success: true,
-            data: {
-                message: "User registered successfully. Please verify user's email.",
-                user: { userId: newUser.userId, email: newUser.email },
-            },
-            error: null
-        });
-    } catch (error) {
-        if (error.message === "EMAIL_EXISTS") {
-            return res.status(400).json({
-                success: false, data: null,
-                error: { code: "EMAIL_EXISTS", message: "A user with this email already exists", details: {} }
-            });
-        }
-        res.status(500).json({
-            success: false, data: null,
-            error: { code: "SERVER_ERROR", message: "Internal Server Error", details: error.message }
-        });
+const createUser = asyncHandler(async (req, res) => {
+    let picturePath = null;
+    if (req.file) {
+        picturePath = `/uploads/${req.file.filename}`;
     }
-};
 
-const updateUser = async (req, res) => {
-    const id = parseInt(req.params.id);
-    try {
-        let picture = null;
-        if (req.file) {
-            picture = `/uploads/${req.file.filename}`;
-        }
+    const data = { ...req.body, picturePath };
+    const newUser = await userService.createUserLogic(data);
 
-        const updateData = { ...req.body };
-        if (picture) updateData.picture = picture;
+    res.status(201).json({
+        success: true,
+        data: {
+            message: "User registered successfully. Please verify user's email.",
+            user: { userId: newUser.userId, email: newUser.email },
+        },
+        error: null
+    });
+});
 
-        const updatedUser = await userService.updateUserLogic(id, updateData);
-        res.status(200).json({ success: true, data: updatedUser, error: null });
-
-    } catch (error) {
-        if (error.message === "USER_NOT_FOUND") {
-            return res.status(404).json({ success: false, data: null, error: { code: "NOT_FOUND", message: `User with id: ${id} not found.`, details: {} } });
-        }
-        if (error.message === "EMAIL_EXISTS") {
-            return res.status(400).json({ success: false, data: null, error: { code: "EMAIL_EXISTS", message: "A user with this email already exists.", details: {} } });
-        }
-        res.status(500).json({
-            success: false, data: null,
-            error: { code: "SERVER_ERROR", message: "Internal Server Error", details: error.message }
-        });
-    }
-};
-
-const deleteUser = async (req, res) => {
+const updateUser = asyncHandler(async (req, res) => {
     const id = parseInt(req.params.id);
 
+    let picture = null;
+    if (req.file) {
+        picture = `/uploads/${req.file.filename}`;
+    }
+
+    const updateData = { ...req.body };
+    if (picture) updateData.picture = picture;
+
+    const updatedUser = await userService.updateUserLogic(id, updateData);
+    res.status(200).json({ success: true, data: updatedUser, error: null });
+});
+
+const deleteUser = asyncHandler(async (req, res) => {
+    const id = parseInt(req.params.id);
+
+    // Block deleting self - throws to global handler for 403 Forbidden
     if (req.user && req.user.userId === id) {
-        return res.status(403).json({
-            success: false, data: null,
-            error: { code: "FORBIDDEN", message: "You cannot delete your own account.", details: {} }
-        });
+        throw new Error("CANNOT_DELETE_OWN_ACCOUNT");
     }
 
-    try {
-        await userService.deleteUserLogic(id);
-        res.status(200).json({ success: true, data: { userId: id }, error: null });
-    } catch (error) {
-        if (error.message === "USER_NOT_FOUND") {
-            return res.status(404).json({ success: false, data: null, error: { code: "NOT_FOUND", message: `User with id: ${id} not found.`, details: {} } });
-        }
-        res.status(500).json({
-            success: false, data: null,
-            error: { code: "SERVER_ERROR", message: "Internal Server Error", details: error.message }
-        });
-    }
-};
+    await userService.deleteUserLogic(id);
+    res.status(200).json({ success: true, data: { userId: id }, error: null });
+});
 
-const completeEmailVerification = async (req, res) => {
-    try {
-        const { email, code } = req.body;
-        const { user, token } = await userService.completeEmailVerificationLogic(email, code);
-        const { password, ...safeUserCopy } = user;
+const completeEmailVerification = asyncHandler(async (req, res) => {
+    const { email, code } = req.body;
+    const { user, token } = await userService.completeEmailVerificationLogic(email, code);
 
-        res.status(200).json({
-            success: true,
-            data: { user: safeUserCopy, token: token, message: "users email has been verified." },
-            error: null
-        });
-    } catch (error) {
-        if (error.message === "INVALID_CODE") {
-            return res.status(400).json({ success: false, data: null, error: { code: "INVALID_CODE", message: "The verification code is incorrect or expired", details: {} } });
-        }
-        if (error.message === "USER_NOT_FOUND") {
-            return res.status(404).json({ success: false, data: null, error: { code: "NOT_FOUND", message: `User with email ${req.body.email} was not found.`, details: {} } });
-        }
-        res.status(500).json({
-            success: false, data: null,
-            error: { code: "SERVER_ERROR", message: "Internal Server Error", details: error.message }
-        });
-    }
-};
+    const { password, ...safeUserCopy } = user;
 
-const login = async (req, res) => {
-    try {
-        const { email, password } = req.body;
-        const { user, token } = await userService.loginLogic(email, password);
-        const { password: _, ...safeUserCopy } = user;
+    res.status(200).json({
+        success: true,
+        data: { user: safeUserCopy, token: token, message: "users email has been verified." },
+        error: null
+    });
+});
 
-        res.status(200).json({
-            success: true,
-            data: { user: safeUserCopy, token: token },
-            error: null
-        });
-    } catch (error) {
-        if (error.message === "EMAIL_NOT_FOUND") {
-            return res.status(404).json({ success: false, data: null, error: { code: "NOT_FOUND", message: "Email not exists", details: {} } });
-        }
-        if (error.message === "EMAIL_NOT_VERIFIED") {
-            return res.status(401).json({ success: false, data: null, error: { code: "EMAIL_NOT_VERIFIED", message: "Email is not verified", details: {} } });
-        }
-        if (error.message === "INCORRECT_PASSWORD") {
-            return res.status(401).json({ success: false, data: null, error: { code: "UNAUTHORIZED", message: "Incorrect password", details: {} } });
-        }
-        res.status(500).json({
-            success: false, data: null,
-            error: { code: "SERVER_ERROR", message: "Internal Server Error", details: error.message }
-        });
-    }
-};
+const login = asyncHandler(async (req, res) => {
+    const { email, password } = req.body;
+    const { user, token } = await userService.loginLogic(email, password);
 
-const sendVerificationCode = async (req, res) => {
-    try {
-        const { email } = req.body;
-        await userService.sendVerificationCodeLogic(email);
-        res.status(200).json({ success: true, data: { message: "Verification code sent to email" }, error: null });
-    } catch (error) {
-        if (error.message === "USER_NOT_FOUND") {
-            return res.status(404).json({ success: false, data: null, error: { code: "NOT_FOUND", message: "User with this email not found", details: {} } });
-        }
-        res.status(500).json({
-            success: false, data: null,
-            error: { code: "SERVER_ERROR", message: "Internal Server Error", details: error.message }
-        });
-    }
-};
+    const { password: _, ...safeUserCopy } = user;
 
-const resetPassword = async (req, res) => {
+    res.status(200).json({
+        success: true,
+        data: { user: safeUserCopy, token: token },
+        error: null
+    });
+});
+
+const sendVerificationCode = asyncHandler(async (req, res) => {
+    const { email } = req.body;
+    await userService.sendVerificationCodeLogic(email);
+    res.status(200).json({ success: true, data: { message: "Verification code sent to email" }, error: null });
+});
+
+const resetPassword = asyncHandler(async (req, res) => {
     const { email, newPassword, code } = req.body;
-    try {
-        await userService.resetPasswordLogic(email, newPassword, code);
-        res.status(200).json({ success: true, data: { message: "Password updated successfully" }, error: null });
-    } catch (error) {
-        if (error.message === "USER_NOT_FOUND") {
-            return res.status(404).json({ success: false, data: null, error: { code: "NOT_FOUND", message: `User with email: ${email} not found.`, details: {} } });
-        }
-        if (error.message === "INVALID_CODE") {
-            return res.status(400).json({ success: false, data: null, error: { code: "INVALID_CODE", message: "Invalid verification code", details: {} } });
-        }
-        res.status(500).json({
-            success: false, data: null,
-            error: { code: "SERVER_ERROR", message: "Internal Server Error", details: error.message }
-        });
-    }
-};
+    await userService.resetPasswordLogic(email, newPassword, code);
+    res.status(200).json({ success: true, data: { message: "Password updated successfully" }, error: null });
+});
 
-module.exports = { getAllUsers, getUserById, createUser, updateUser, deleteUser, login, sendVerificationCode, resetPassword, completeEmailVerification };
+module.exports = {
+    getAllUsers,
+    getUserById,
+    createUser,
+    updateUser,
+    deleteUser,
+    login,
+    sendVerificationCode,
+    resetPassword,
+    completeEmailVerification
+};

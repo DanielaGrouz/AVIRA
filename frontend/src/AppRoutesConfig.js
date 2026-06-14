@@ -13,13 +13,18 @@ export default class AppRoutes {
 
     // Dynamic Route Definitions (used in <Route path={...} />)
     static EVENT_DETAILS = '/events/:id';
-    static RSVP = '/rsvp/:eventId/:title/:date/:time/:location/:guestId';
+    static RSVP = '/rsvp/:token';
 
     // Route Generators (used for navigation, e.g., navigate(AppRoutes.getEventDetails(5)))
     static getEventDetails(id) {
         return `/events/${id}`;
     }
+
+    static getEventGallery(id){
+        return `/events/${id}/gallery`;
+    }
     static CREATE_EVENT = "/events/create";
+    static LIVE_GALLERY = "/events/:id/gallery";
     static NOT_FOUND = "/not-found";
     static UNAUTHORIZED = "/unauthorized";
     static SERVER_ERROR = "/server-error";

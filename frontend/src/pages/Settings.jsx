@@ -7,6 +7,7 @@ import InputField from '../components/InputField';
 import ProfileImageUploader from '../components/ProfileImageUploader';
 import AppRoutes from "../AppRoutesConfig";
 import {FiUsers} from "react-icons/fi";
+import Config from "../services/Config";
 
 const Settings = () => {
     const navigate = useNavigate();
@@ -199,7 +200,7 @@ const Settings = () => {
                         }}
                         initialImage={
                             avatarUrl
-                                ? (avatarUrl.startsWith('blob') || avatarUrl.startsWith('http') ? avatarUrl : `http://localhost:3000${avatarUrl}`)
+                                ? (avatarUrl.startsWith('blob') || avatarUrl.startsWith('http') ? avatarUrl : `${Config.BASE_URL}${avatarUrl}`)
                                 : null
                         }
                     />

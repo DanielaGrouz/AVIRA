@@ -11,7 +11,7 @@ const users = [
         phoneNumber: '0545368889',
         email: 'danielagrou11z@gmail.com',
         originalPassword: 'Aa12345!',
-        picturePath: '/uploads/avatar/avatar1.png',
+        picturePath: '/sources/avatar/avatar1.png',
         isEmailVerified: true
     },
     {
@@ -25,7 +25,7 @@ const users = [
         phoneNumber: '0501234567',
         email: 'yosef.cohen@example.com',
         originalPassword: 'Password123!',
-        picturePath: '/uploads/avatar/avatar2.png',
+        picturePath: '/sources/avatar/avatar2.png',
         isEmailVerified: true
     },
     {
@@ -39,7 +39,7 @@ const users = [
         phoneNumber: '0529876543',
         email: 'rinat.m@example.com',
         originalPassword: 'RinatPass4!',
-        picturePath: '/uploads/avatar/avatar3.png',
+        picturePath: '/sources/avatar/avatar3.png',
         isEmailVerified: true
     },
     {
@@ -53,7 +53,7 @@ const users = [
         phoneNumber: '0533344556',
         email: 'omer.peretz@example.com',
         originalPassword: 'OmerP2026!',
-        picturePath: '/uploads/avatar/avatar4.png',
+        picturePath: '/sources/avatar/avatar4.png',
         isEmailVerified: true
     },
     {
@@ -67,7 +67,7 @@ const users = [
         phoneNumber: '0587766554',
         email: 'noa.av@example.com',
         originalPassword: 'NoaSecure7!',
-        picturePath: '/uploads/avatar/avatar5.png',
+        picturePath: '/sources/avatar/avatar5.png',
         isEmailVerified: true
     },
     {
@@ -81,7 +81,7 @@ const users = [
         phoneNumber: '0541122334',
         email: 'itay.golan@example.com',
         originalPassword: 'ItayG123!',
-        picturePath: '/uploads/avatar/avatar6.png',
+        picturePath: '/sources/avatar/avatar6.png',
         isEmailVerified: true
     },
     {
@@ -95,7 +95,7 @@ const users = [
         phoneNumber: '0525544332',
         email: 'maya.f@example.com',
         originalPassword: 'MayaPass99!',
-        picturePath: '/uploads/avatar/avatar8.png',
+        picturePath: '/sources/avatar/avatar8.png',
         isEmailVerified: true
     },
     {
@@ -109,7 +109,7 @@ const users = [
         phoneNumber: '0509988776',
         email: 'guy.s@example.com',
         originalPassword: 'GuyShapira8!',
-        picturePath: '/uploads/avatar/avatar9.png',
+        picturePath: '/sources/avatar/avatar9.png',
         isEmailVerified: true
     },
     {
@@ -123,7 +123,7 @@ const users = [
         phoneNumber: '0531237890',
         email: 'shir.katz@example.com',
         originalPassword: 'ShirKatz1!',
-        picturePath: '/uploads/avatar/avatar7.png',
+        picturePath: '/sources/avatar/avatar7.png',
         isEmailVerified: true
     },
     {
@@ -137,7 +137,7 @@ const users = [
         phoneNumber: '0546655443',
         email: 'amit.bar@example.com',
         originalPassword: 'amitBar2026!',
-        picturePath: '/uploads/avatar/avatar10.png',
+        picturePath: '/sources/avatar/avatar10.png',
         isEmailVerified: true
     }
 ];

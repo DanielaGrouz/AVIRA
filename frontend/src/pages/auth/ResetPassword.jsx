@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import React, {useState} from 'react';
+import {Link, useNavigate, useSearchParams} from 'react-router-dom';
 import UserService from '../../services/UserService';
 import InputField from '../../components/InputField';
 import '../../styles/auth.css';
@@ -14,8 +14,6 @@ export default function ResetPassword() {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState(false);
     const [loading, setLoading] = useState(false);
-
-    const navigate = useNavigate();
 
     const isStrongPassword = (pass) => {
         const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
@@ -130,21 +128,34 @@ export default function ResetPassword() {
                             {loading ? 'Resetting...' : 'Reset Password'}
                         </button>
 
-                        <div style={{ textAlign: 'center', marginTop: '16px', fontSize: '14px', color: '#697386' }}>
-                            <Link to="/login" style={{ color: '#5469d4', textDecoration: 'none', fontWeight: '600' }}>
+                        <div style={{textAlign: 'center', marginTop: '16px', fontSize: '14px', color: '#697386'}}>
+                            <Link to="/login" style={{color: '#5469d4', textDecoration: 'none', fontWeight: '600'}}>
                                 Back to Login
                             </Link>
                         </div>
                     </form>
                 ) : (
-                    <div style={{ textAlign: 'center' }}>
-                        <div style={{ backgroundColor: '#f0fdf4', color: '#166534', padding: '16px', borderRadius: '8px', marginBottom: '24px', border: '1px solid #bbf7d0' }}>
+                    <div style={{textAlign: 'center'}}>
+                        <div style={{
+                            backgroundColor: '#f0fdf4',
+                            color: '#166534',
+                            padding: '16px',
+                            borderRadius: '8px',
+                            marginBottom: '24px',
+                            border: '1px solid #bbf7d0'
+                        }}>
                             <strong>Password Reset Successful!</strong>
-                            <p style={{ margin: '8px 0 0 0', fontSize: '14px' }}>
-                                Your password has been successfully updated. You can now use your new password to log in.
+                            <p style={{margin: '8px 0 0 0', fontSize: '14px'}}>
+                                Your password has been successfully updated. You can now use your new password to log
+                                in.
                             </p>
                         </div>
-                        <Link to="/login" className="login-button" style={{ display: 'inline-block', textDecoration: 'none', width: '100%', boxSizing: 'border-box' }}>
+                        <Link to="/login" className="login-button" style={{
+                            display: 'inline-block',
+                            textDecoration: 'none',
+                            width: '100%',
+                            boxSizing: 'border-box'
+                        }}>
                             Go to Login
                         </Link>
                     </div>

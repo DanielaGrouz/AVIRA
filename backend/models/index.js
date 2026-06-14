@@ -56,7 +56,13 @@ const VerificationCode = sequelize.define('VerificationCode', {
 }, { timestamps: false });
 // Export it along with User, Event, etc.
 
+const EventGallery = sequelize.define('eventGallery', {
+    path: DataTypes.STRING,
+}, { timestamps: true, createdAt: 'createDate' });
+
 // Define Relationships
+Event.hasMany(EventGallery, { foreignKey: 'eventId', onDelete: 'CASCADE' });
+
 User.hasMany(Event, { foreignKey: 'creatorId' });
 Event.belongsTo(User, { foreignKey: 'creatorId' });
 
@@ -66,4 +72,4 @@ Guest.belongsTo(Event, { foreignKey: 'eventId' });
 Event.hasMany(Task, { foreignKey: 'eventId', onDelete: 'CASCADE' });
 Task.belongsTo(Event, { foreignKey: 'eventId' });
 
-module.exports = { sequelize, User, Event, Guest, Task, VerificationCode };
+module.exports = { sequelize, User, Event, Guest, Task, VerificationCode, EventGallery };
