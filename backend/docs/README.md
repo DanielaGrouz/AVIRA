@@ -9,6 +9,7 @@
 ### Prerequisites
 - **Node.js** (v14.0.0 or higher)
 - **npm** (comes with Node.js)
+- **Docker Desktop** (Required for the MySQL database). You can download and install it from the [official Docker website](https://www.docker.com/products/docker-desktop/).
 
 ### Installation
 1. Clone the repository or extract the project files.
@@ -222,6 +223,34 @@ Normally, the `.env` file is excluded from version control (via `.gitignore`) fo
 ### Testing the Email Verification Flow
 Please note that the email verification endpoints (`/users/send-verification-code`) rely on a live email integration using `nodemailer`.
 Because the system sends a real, dynamically generated code to the provided address, **this flow cannot be tested using mock or fake email addresses**. To successfully test the verification process, you must use a real, accessible email address in the request body to receive the code and complete the verification.
+
+---
+### Docker Setup
+This project uses a MySQL database containerized with Docker. Before starting the Node.js server, you must spin up the database.
+1. Ensure Docker Desktop is open and running on your machine.
+2. In your terminal, from the root of the project (where the `docker-compose.yml` file is located), run the following command to download the MySQL image and start the container in the background:
+``
+docker-compose up -d
+``
+3. The database is now running locally and is exposed on port 3307.
+
+#### Viewing the Database in DataGrip
+
+To view your tables, relationships, and data visually using JetBrains DataGrip:
+
+Open DataGrip and click the `+` icon in the Database Explorer to add a new Data Source → MySQL.
+
+Configure the connection settings:
+```
+Host: localhost
+Port: 3307
+User: username
+Password: password
+```
+
+
+Click Test Connection. Once successful, click Apply and OK.
+Expand the connection instance in the sidebar to view all active tables and schemas.
 
 ---
 ## ✒️ Author
