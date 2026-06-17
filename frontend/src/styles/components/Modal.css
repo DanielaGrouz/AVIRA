@@ -5,296 +5,309 @@
 
 /* ── Design Tokens ──────────────────────────────────────── */
 :root {
-    --color-blush:        #f0dbd8;
-    --color-blush-deep:   #e8c8c4;
-    --color-blush-light:  #f7eeec;
-    --color-sage:         #b8cfc4;
-    --color-sage-deep:    #9cbfb0;
-    --color-sage-light:   #ddeee8;
-    --color-cream:        #faf8f5;
-    --color-gold:         #c9a96e;
+  --color-blush: #f0dbd8;
+  --color-blush-deep: #e8c8c4;
+  --color-blush-light: #f7eeec;
+  --color-sage: #b8cfc4;
+  --color-sage-deep: #9cbfb0;
+  --color-sage-light: #ddeee8;
+  --color-cream: #faf8f5;
+  --color-gold: #c9a96e;
 
-    --color-ink:          #3a3530;
-    --color-ink-light:    #5a534d;
-    --color-muted:        #8a8078;
-    --color-subtle:       #b0a89e;
-    --color-rule:         rgba(184, 207, 196, 0.35);
+  --color-ink: #3a3530;
+  --color-ink-light: #5a534d;
+  --color-muted: #8a8078;
+  --color-subtle: #b0a89e;
+  --color-rule: rgba(184, 207, 196, 0.35);
 
-    --color-card-bg:      rgba(250, 248, 245, 0.97);
-    --color-card-border:  rgba(255, 255, 255, 0.85);
+  --color-card-bg: rgba(250, 248, 245, 0.97);
+  --color-card-border: rgba(255, 255, 255, 0.85);
 
-    --radius-card:        20px;
-    --radius-sm:          10px;
-    --radius-btn:         10px;
+  --radius-card: 20px;
+  --radius-sm: 10px;
+  --radius-btn: 10px;
 
-    --shadow-modal:
-            0 8px 16px  rgba(58, 53, 48, 0.08),
-            0 24px 48px rgba(58, 53, 48, 0.14),
-            0 2px 4px   rgba(58, 53, 48, 0.05);
-    --shadow-primary:
-            0 2px 8px  rgba(156, 191, 176, 0.35),
-            0 1px 2px  rgba(58, 53, 48, 0.10);
+  --shadow-modal:
+    0 8px 16px rgba(58, 53, 48, 0.08), 0 24px 48px rgba(58, 53, 48, 0.14),
+    0 2px 4px rgba(58, 53, 48, 0.05);
+  --shadow-primary: 0 2px 8px rgba(156, 191, 176, 0.35), 0 1px 2px rgba(58, 53, 48, 0.1);
 
-    --font-display: 'Cormorant Garamond', Georgia, serif;
-    --font-body:    'Jost', 'Helvetica Neue', sans-serif;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Jost', 'Helvetica Neue', sans-serif;
 
-    --transition-base: 0.22s ease;
+  --transition-base: 0.22s ease;
 }
 
 /* =========================================
    Overlay
    ========================================= */
 .modal-overlay {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 1.25rem;
-    z-index: 99999;
-    background: rgba(58, 53, 48, 0.38);
-    backdrop-filter: blur(10px) saturate(1.2);
-    -webkit-backdrop-filter: blur(10px) saturate(1.2);
-    animation: fadeIn 0.2s ease-out both;
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1.25rem;
+  z-index: 99999;
+  background: rgba(58, 53, 48, 0.38);
+  backdrop-filter: blur(10px) saturate(1.2);
+  -webkit-backdrop-filter: blur(10px) saturate(1.2);
+  animation: fadeIn 0.2s ease-out both;
 }
 
 /* =========================================
    Modal Container
    ========================================= */
 .modal-container {
-    background: var(--color-card-bg);
-    backdrop-filter: blur(24px) saturate(1.4);
-    -webkit-backdrop-filter: blur(24px) saturate(1.4);
-    border: 1px solid var(--color-card-border);
-    border-radius: var(--radius-card);
-    box-shadow: var(--shadow-modal);
-    width: 100%;
-    max-width: 460px;
-    overflow: visible;
-    position: relative;
-    animation: slideUp 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+  background: var(--color-card-bg);
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  border: 1px solid var(--color-card-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-modal);
+  width: 100%;
+  max-width: 460px;
+  overflow: visible;
+  position: relative;
+  animation: slideUp 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /* Gold accent top bar */
 .modal-container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 52px;
-    height: 2px;
-    background: linear-gradient(
-            90deg,
-            var(--color-blush-deep),
-            var(--color-gold),
-            var(--color-blush-deep)
-    );
-    border-radius: 0 0 4px 4px;
-    z-index: 1;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 52px;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    var(--color-blush-deep),
+    var(--color-gold),
+    var(--color-blush-deep)
+  );
+  border-radius: 0 0 4px 4px;
+  z-index: 1;
 }
 
 /* =========================================
    Modal Header
    ========================================= */
 .modal-header {
-    padding: 1.4rem 1.5rem 1.2rem;
-    border-bottom: 1px solid var(--color-rule);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-top-left-radius:  var(--radius-card);
-    border-top-right-radius: var(--radius-card);
+  padding: 1.4rem 1.5rem 1.2rem;
+  border-bottom: 1px solid var(--color-rule);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top-left-radius: var(--radius-card);
+  border-top-right-radius: var(--radius-card);
 }
 
 .modal-header h3 {
-    margin: 0;
-    font-family: var(--font-display);
-    font-size: 1.35rem;
-    font-weight: 300;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--color-ink);
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-ink);
 }
 
 /* Close Button */
 .close-btn {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    color: var(--color-subtle);
-    font-size: 1.2rem;
-    line-height: 1;
-    flex-shrink: 0;
-    transition:
-            color      var(--transition-base),
-            background var(--transition-base);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  color: var(--color-subtle);
+  font-size: 1.2rem;
+  line-height: 1;
+  flex-shrink: 0;
+  transition:
+    color var(--transition-base),
+    background var(--transition-base);
 }
 
 .close-btn:hover {
-    color: var(--color-ink);
-    background: rgba(184, 207, 196, 0.2);
+  color: var(--color-ink);
+  background: rgba(184, 207, 196, 0.2);
 }
 
 /* =========================================
    Modal Body & Footer
    ========================================= */
 .modal-body {
-    padding: 1.5rem;
+  padding: 1.5rem;
 }
 
 .modal-footer {
-    padding: 1.1rem 1.5rem;
-    border-top: 1px solid var(--color-rule);
-    background: linear-gradient(
-            to bottom,
-            rgba(221, 238, 232, 0.25) 0%,
-            rgba(250, 248, 245, 0.6) 100%
-    );
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.65rem;
-    border-bottom-left-radius:  var(--radius-card);
-    border-bottom-right-radius: var(--radius-card);
+  padding: 1.1rem 1.5rem;
+  border-top: 1px solid var(--color-rule);
+  background: linear-gradient(
+    to bottom,
+    rgba(221, 238, 232, 0.25) 0%,
+    rgba(250, 248, 245, 0.6) 100%
+  );
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.65rem;
+  border-bottom-left-radius: var(--radius-card);
+  border-bottom-right-radius: var(--radius-card);
 }
 
 /* =========================================
    Form Elements inside Modal
    ========================================= */
 .form-group {
-    margin-bottom: 1.1rem;
+  margin-bottom: 1.1rem;
 }
 
 .form-label {
-    display: block;
-    font-family: var(--font-body);
-    font-size: 0.7rem;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--color-muted);
-    margin-bottom: 6px;
+  display: block;
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  margin-bottom: 6px;
 }
 
 .form-input,
 .form-select {
-    width: 100%;
-    padding: 11px 14px;
-    font-family: var(--font-body);
-    font-size: 13px;
-    font-weight: 400;
-    color: var(--color-ink);
-    background: rgba(255, 255, 255, 0.7);
-    border: 1px solid rgba(184, 207, 196, 0.5);
-    border-radius: var(--radius-sm);
-    outline: none;
-    box-sizing: border-box;
-    transition:
-            border-color var(--transition-base),
-            background   var(--transition-base),
-            box-shadow   var(--transition-base);
-    appearance: none;
-    -webkit-appearance: none;
+  width: 100%;
+  padding: 11px 14px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--color-ink);
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(184, 207, 196, 0.5);
+  border-radius: var(--radius-sm);
+  outline: none;
+  box-sizing: border-box;
+  transition:
+    border-color var(--transition-base),
+    background var(--transition-base),
+    box-shadow var(--transition-base);
+  appearance: none;
+  -webkit-appearance: none;
 }
 
 .form-select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%239cbfb0'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z' clip-rule='evenodd'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    background-size: 1.1rem;
-    padding-right: 2.25rem;
-    cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%239cbfb0'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z' clip-rule='evenodd'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 1.1rem;
+  padding-right: 2.25rem;
+  cursor: pointer;
 }
 
 .form-input::placeholder {
-    color: var(--color-subtle);
-    font-weight: 300;
+  color: var(--color-subtle);
+  font-weight: 300;
 }
 
 .form-input:focus,
 .form-select:focus {
-    border-color: var(--color-sage-deep);
-    background: rgba(255, 255, 255, 0.92);
-    box-shadow:
-            0 0 0 3px rgba(156, 191, 176, 0.2),
-            0 2px 8px rgba(58, 53, 48, 0.06);
+  border-color: var(--color-sage-deep);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow:
+    0 0 0 3px rgba(156, 191, 176, 0.2),
+    0 2px 8px rgba(58, 53, 48, 0.06);
 }
 
 /* ── Checkbox Styling ───────────────────────────────────── */
 .form-checkbox-group {
-    display: flex;
-    align-items: center; /* Ensures perfect vertical alignment */
-    gap: 0.6rem;
-    margin-bottom: 1.1rem;
-    cursor: pointer;
+  display: flex;
+  align-items: center; /* Ensures perfect vertical alignment */
+  gap: 0.6rem;
+  margin-bottom: 1.1rem;
+  cursor: pointer;
 }
 
 .form-checkbox-group .form-label {
-    margin-bottom: 0;
-    cursor: pointer;
-    font-size: 0.75rem;
-    color: var(--color-ink-light);
-    line-height: 1.2; /* Tighter line-height to center properly with the box */
+  margin-bottom: 0;
+  cursor: pointer;
+  font-size: 0.75rem;
+  color: var(--color-ink-light);
+  line-height: 1.2; /* Tighter line-height to center properly with the box */
 }
 
 .form-checkbox {
-    appearance: none;
-    -webkit-appearance: none;
-    width: 1.15rem;
-    height: 1.15rem;
-    flex-shrink: 0; /* Prevents the box from squishing into an oval */
-    background: rgba(255, 255, 255, 0.7);
-    border: 1px solid rgba(184, 207, 196, 0.6);
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all var(--transition-base);
-    margin: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  width: 1.15rem;
+  height: 1.15rem;
+  flex-shrink: 0; /* Prevents the box from squishing into an oval */
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(184, 207, 196, 0.6);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  margin: 0;
 }
 
 .form-checkbox:hover {
-    border-color: var(--color-sage-deep);
-    background: rgba(255, 255, 255, 0.95);
+  border-color: var(--color-sage-deep);
+  background: rgba(255, 255, 255, 0.95);
 }
 
 .form-checkbox:focus {
-    outline: none;
-    border-color: var(--color-sage-deep);
-    box-shadow:
-            0 0 0 3px rgba(156, 191, 176, 0.2),
-            0 2px 4px rgba(58, 53, 48, 0.04);
+  outline: none;
+  border-color: var(--color-sage-deep);
+  box-shadow:
+    0 0 0 3px rgba(156, 191, 176, 0.2),
+    0 2px 4px rgba(58, 53, 48, 0.04);
 }
 
 .form-checkbox:checked {
-    background-color: var(--color-sage-deep);
-    border-color: var(--color-sage-deep);
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
-    background-size: 70%;
-    background-position: center;
-    background-repeat: no-repeat;
-    animation: checkPop 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  background-color: var(--color-sage-deep);
+  border-color: var(--color-sage-deep);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+  background-size: 70%;
+  background-position: center;
+  background-repeat: no-repeat;
+  animation: checkPop 0.2s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* =========================================
    Animations
    ========================================= */
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideUp {
-    from { opacity: 0; transform: translateY(20px) scale(0.97); }
-    to   { opacity: 1; transform: translateY(0)    scale(1);    }
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 @keyframes checkPop {
-    0% { transform: scale(0.9); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
+  0% {
+    transform: scale(0.9);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
 }

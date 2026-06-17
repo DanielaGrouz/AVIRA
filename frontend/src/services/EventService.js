@@ -1,122 +1,121 @@
 import apiClient from './client';
 
 class EventService {
-    constructor() {
-        this.route = '/events';
-    }
+  constructor() {
+    this.route = '/events';
+  }
 
-    // --- Standard CRUD ---
-    getAll(page, sortBy, searchQuery, limit) {
-        return apiClient.get(this.route, { params: { page, sortBy, searchQuery, limit } });
-    }
+  getAll(page, sortBy, searchQuery, limit) {
+    return apiClient.get(this.route, { params: { page, sortBy, searchQuery, limit } });
+  }
 
-    getById(id) {
-        return apiClient.get(`${this.route}/${id}`);
-    }
+  getById(id) {
+    return apiClient.get(`${this.route}/${id}`);
+  }
 
-    create(title, date, time, location, eventType) {
-        // Construct the payload object expected by your backend
-        const eventData = {
-            title,
-            date,
-            time,
-            location,
-            eventType,
-        };
-        return apiClient.post(this.route, eventData);
-    }
+  create(title, date, time, location, eventType) {
+    const eventData = {
+      title,
+      date,
+      time,
+      location,
+      eventType,
+    };
+    return apiClient.post(this.route, eventData);
+  }
 
-    update(id, data) {
-        return apiClient.put(`${this.route}/${id}`, data);
-    }
+  update(id, data) {
+    return apiClient.put(`${this.route}/${id}`, data);
+  }
 
-    delete(id) {
-        return apiClient.delete(`${this.route}/${id}`);
-    }
+  delete(id) {
+    return apiClient.delete(`${this.route}/${id}`);
+  }
 
-    // --- Guest Sub-resources ---
-    getGuests(eventId, page, sortBy, searchQuery, limit, sortDirection) {
-        return apiClient.get(`${this.route}/${eventId}/guests`, { params: { page, sortBy, searchQuery, limit, sortDirection } });
-    }
+  getGuests(eventId, page, sortBy, searchQuery, limit, sortDirection) {
+    return apiClient.get(`${this.route}/${eventId}/guests`, {
+      params: { page, sortBy, searchQuery, limit, sortDirection },
+    });
+  }
 
-    addGuest(guestData) {
-        return apiClient.post(`${this.route}/${guestData.eventId}/guests`, guestData);
-    }
+  addGuest(guestData) {
+    return apiClient.post(`${this.route}/${guestData.eventId}/guests`, guestData);
+  }
 
-    getGuest(token) {
-        return apiClient.get(`${this.route}/guests/rsvp/${token}`);
-    }
+  getGuest(token) {
+    return apiClient.get(`${this.route}/guests/rsvp/${token}`);
+  }
 
-    uploadToGalleryEvent(token, file){
-        const formData = new FormData();
-        formData.append('picture', file);
-        return apiClient.post(`${this.route}/gallery/${token}`, formData, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-        });
-    }
+  uploadToGalleryEvent(token, file) {
+    const formData = new FormData();
+    formData.append('picture', file);
+    return apiClient.post(`${this.route}/gallery/${token}`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  }
 
-    getEventGallery(eventId, page, limit) {
-        return apiClient.get(`${this.route}/${eventId}/gallery`, { params: { page, limit } });
-    }
+  getEventGallery(eventId, page, limit) {
+    return apiClient.get(`${this.route}/${eventId}/gallery`, { params: { page, limit } });
+  }
 
-    updateGuest(guestId, guestData) {
-        return apiClient.put(`${this.route}/${guestData.eventId}/guests/${guestId}`, guestData);
-    }
+  updateGuest(guestId, guestData) {
+    return apiClient.put(`${this.route}/${guestData.eventId}/guests/${guestId}`, guestData);
+  }
 
-    deleteGuest(eventId, guestId) {
-        return apiClient.delete(`${this.route}/${eventId}/guests/${guestId}`);
-    }
+  deleteGuest(eventId, guestId) {
+    return apiClient.delete(`${this.route}/${eventId}/guests/${guestId}`);
+  }
 
-    updateGuestAttendance(token, status) {
-        return apiClient.patch(`${this.route}/guests/rsvp`, { status, token });
-    }
+  updateGuestAttendance(token, status) {
+    return apiClient.patch(`${this.route}/guests/rsvp`, { status, token });
+  }
 
-    // --- Task Sub-resources ---
-    getTasks(eventId, page, sortBy, searchQuery, limit, sortDirection) {
-        return apiClient.get(`${this.route}/${eventId}/tasks`, { params: { page, sortBy, searchQuery, limit, sortDirection } });
-    }
+  getTasks(eventId, page, sortBy, searchQuery, limit, sortDirection) {
+    return apiClient.get(`${this.route}/${eventId}/tasks`, {
+      params: { page, sortBy, searchQuery, limit, sortDirection },
+    });
+  }
 
-    addTask(taskData) {
-        return apiClient.post(`${this.route}/${taskData.eventId}/tasks`, taskData);
-    }
+  addTask(taskData) {
+    return apiClient.post(`${this.route}/${taskData.eventId}/tasks`, taskData);
+  }
 
-    updateTask(taskId, taskData) {
-        return apiClient.put(`${this.route}/${taskData.eventId}/tasks/${taskId}`, taskData);
-    }
+  updateTask(taskId, taskData) {
+    return apiClient.put(`${this.route}/${taskData.eventId}/tasks/${taskId}`, taskData);
+  }
 
-    deleteTask(eventId, taskId) {
-        return apiClient.delete(`${this.route}/${eventId}/tasks/${taskId}`);
-    }
+  deleteTask(eventId, taskId) {
+    return apiClient.delete(`${this.route}/${eventId}/tasks/${taskId}`);
+  }
 
-    // --- Utilities & Integrations ---
-    generateInvite(eventId) {
-        return apiClient.get(`${this.route}/${eventId}/generate-invite`, { responseType: 'blob' });
-    }
+  generateInvite(eventId) {
+    return apiClient.get(`${this.route}/${eventId}/generate-invite`, { responseType: 'blob' });
+  }
 
-    generateShoppingList(eventId) {
-        return apiClient.get(`${this.route}/${eventId}/shopping-list`);
-    }
+  generateShoppingList(eventId) {
+    return apiClient.get(`${this.route}/${eventId}/shopping-list`);
+  }
 
-    generateTaskList(eventId) {
-        return apiClient.get(`${this.route}/${eventId}/task-list`);
-    }
+  generateTaskList(eventId) {
+    return apiClient.get(`${this.route}/${eventId}/task-list`);
+  }
 
-    findStores(location, eventId) {
-        return apiClient.get(`${this.route}/${eventId}/find-stores`, {
-            params: {
-                lat: location.lat,
-                lon: location.lon
-            }
-        });
-    }
+  findStores(location, eventId) {
+    return apiClient.get(`${this.route}/${eventId}/find-stores`, {
+      params: {
+        lat: location.lat,
+        lon: location.lon,
+      },
+    });
+  }
 
-    saveInvitation(eventId, file) {
-        const formData = new FormData();
-        formData.append('picture', file);
-        return apiClient.put(`${this.route}/${eventId}/save-invitation`, formData, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-        });
-    }
+  saveInvitation(eventId, file) {
+    const formData = new FormData();
+    formData.append('picture', file);
+    return apiClient.put(`${this.route}/${eventId}/save-invitation`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  }
 }
 
 export default new EventService();

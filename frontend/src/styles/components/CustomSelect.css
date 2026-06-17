@@ -5,213 +5,215 @@
 
 /* ── Design Tokens (mirrors auth / home / create-event) ── */
 :root {
-    --color-blush:        #f0dbd8;
-    --color-blush-deep:   #e8c8c4;
-    --color-blush-light:  #f7eeec;
-    --color-sage:         #b8cfc4;
-    --color-sage-deep:    #9cbfb0;
-    --color-sage-light:   #ddeee8;
-    --color-cream:        #faf8f5;
-    --color-gold:         #c9a96e;
+  --color-blush: #f0dbd8;
+  --color-blush-deep: #e8c8c4;
+  --color-blush-light: #f7eeec;
+  --color-sage: #b8cfc4;
+  --color-sage-deep: #9cbfb0;
+  --color-sage-light: #ddeee8;
+  --color-cream: #faf8f5;
+  --color-gold: #c9a96e;
 
-    --color-ink:          #3a3530;
-    --color-ink-light:    #5a534d;
-    --color-muted:        #8a8078;
-    --color-subtle:       #b0a89e;
+  --color-ink: #3a3530;
+  --color-ink-light: #5a534d;
+  --color-muted: #8a8078;
+  --color-subtle: #b0a89e;
 
-    --radius-input:       10px;
-    --radius-menu:        14px;
-    --radius-option:       8px;
+  --radius-input: 10px;
+  --radius-menu: 14px;
+  --radius-option: 8px;
 
-    --shadow-menu:
-            0 8px 24px rgba(58, 53, 48, 0.09),
-            0 2px 6px  rgba(58, 53, 48, 0.05);
+  --shadow-menu: 0 8px 24px rgba(58, 53, 48, 0.09), 0 2px 6px rgba(58, 53, 48, 0.05);
 
-    --font-body: 'Jost', 'Helvetica Neue', sans-serif;
+  --font-body: 'Jost', 'Helvetica Neue', sans-serif;
 
-    --transition-base: 0.22s ease;
+  --transition-base: 0.22s ease;
 }
 
 /* =========================================
    Container
    ========================================= */
 .custom-select-container {
-    position: relative;
-    width: 100%;
-    font-family: var(--font-body);
+  position: relative;
+  width: 100%;
+  font-family: var(--font-body);
 }
 
 /* =========================================
    Trigger Button
    ========================================= */
 .custom-select-trigger {
-    width: 100%;
-    padding: 11px 14px;
-    background: rgba(255, 255, 255, 0.7);
-    border: 1px solid rgba(184, 207, 196, 0.5);
-    border-radius: var(--radius-input);
-    font-family: var(--font-body);
-    font-size: 13px;
-    font-weight: 400;
-    color: var(--color-ink);
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-sizing: border-box;
-    text-align: left;
-    transition:
-            border-color var(--transition-base),
-            background   var(--transition-base),
-            box-shadow   var(--transition-base);
+  width: 100%;
+  padding: 11px 14px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(184, 207, 196, 0.5);
+  border-radius: var(--radius-input);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--color-ink);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+  text-align: left;
+  transition:
+    border-color var(--transition-base),
+    background var(--transition-base),
+    box-shadow var(--transition-base);
 }
 
 .custom-select-trigger:hover {
-    background: rgba(255, 255, 255, 0.85);
-    border-color: rgba(156, 191, 176, 0.7);
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(156, 191, 176, 0.7);
 }
 
 .custom-select-trigger:focus,
 .custom-select-trigger.is-open {
-    outline: none;
-    border-color: var(--color-sage-deep);
-    background: rgba(255, 255, 255, 0.92);
-    box-shadow:
-            0 0 0 3px rgba(156, 191, 176, 0.2),
-            0 2px 8px rgba(58, 53, 48, 0.06);
+  outline: none;
+  border-color: var(--color-sage-deep);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow:
+    0 0 0 3px rgba(156, 191, 176, 0.2),
+    0 2px 8px rgba(58, 53, 48, 0.06);
 }
 
 /* ── Chevron Icon ───────────────────────────────────────── */
 .custom-select-icon {
-    color: var(--color-sage-deep);
-    font-size: 0.75rem;
-    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
-    flex-shrink: 0;
-    margin-left: 0.5rem;
+  color: var(--color-sage-deep);
+  font-size: 0.75rem;
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  flex-shrink: 0;
+  margin-left: 0.5rem;
 }
 
 .custom-select-trigger.is-open .custom-select-icon {
-    transform: rotate(180deg);
+  transform: rotate(180deg);
 }
 
 /* =========================================
    Dropdown Menu
    ========================================= */
 .custom-select-menu {
-    position: absolute;
-    left: 0;
-    width: 100%;
-    background: rgba(250, 248, 245, 0.96);
-    backdrop-filter: blur(20px) saturate(1.4);
-    -webkit-backdrop-filter: blur(20px) saturate(1.4);
-    border: 1px solid rgba(255, 255, 255, 0.8);
-    border-radius: var(--radius-menu);
-    box-shadow: var(--shadow-menu);
-    z-index: 9999;
-    max-height: 250px;
-    overflow-y: auto;
-    padding: 0.3rem;
+  position: absolute;
+  left: 0;
+  width: 100%;
+  background: rgba(250, 248, 245, 0.96);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: var(--radius-menu);
+  box-shadow: var(--shadow-menu);
+  z-index: 9999;
+  max-height: 250px;
+  overflow-y: auto;
+  padding: 0.3rem;
 
-    /* Thin gold top accent — same DNA as cards & modals */
-    background-image: linear-gradient(
-            to bottom,
-            rgba(201, 169, 110, 0.12) 0px,
-            transparent 3px
-    );
+  /* Thin gold top accent — same DNA as cards & modals */
+  background-image: linear-gradient(to bottom, rgba(201, 169, 110, 0.12) 0px, transparent 3px);
 }
 
 /* Scrollbar — soft and on-brand */
 .custom-select-menu::-webkit-scrollbar {
-    width: 4px;
+  width: 4px;
 }
 .custom-select-menu::-webkit-scrollbar-track {
-    background: transparent;
+  background: transparent;
 }
 .custom-select-menu::-webkit-scrollbar-thumb {
-    background: rgba(156, 191, 176, 0.45);
-    border-radius: 4px;
+  background: rgba(156, 191, 176, 0.45);
+  border-radius: 4px;
 }
 .custom-select-menu::-webkit-scrollbar-thumb:hover {
-    background: var(--color-sage-deep);
+  background: var(--color-sage-deep);
 }
 
 /* ── Placement Variants ─────────────────────────────────── */
 .custom-select-menu.placement-bottom {
-    top: calc(100% + 8px);
-    bottom: auto;
-    animation: dropdownFadeInDown 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  top: calc(100% + 8px);
+  bottom: auto;
+  animation: dropdownFadeInDown 0.2s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .custom-select-menu.placement-top {
-    top: auto;
-    bottom: calc(100% + 8px);
-    box-shadow:
-            0 -8px 24px rgba(58, 53, 48, 0.09),
-            0 -2px 6px  rgba(58, 53, 48, 0.05);
-    animation: dropdownFadeInUp 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  top: auto;
+  bottom: calc(100% + 8px);
+  box-shadow:
+    0 -8px 24px rgba(58, 53, 48, 0.09),
+    0 -2px 6px rgba(58, 53, 48, 0.05);
+  animation: dropdownFadeInUp 0.2s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* =========================================
    Options
    ========================================= */
 .custom-select-option {
-    padding: 9px 12px;
-    cursor: pointer;
-    border-radius: var(--radius-option);
-    font-family: var(--font-body);
-    font-size: 13px;
-    font-weight: 400;
-    color: var(--color-ink-light);
-    letter-spacing: 0.01em;
-    display: flex;
-    align-items: center;
-    margin-bottom: 2px;
-    transition:
-            background var(--transition-base),
-            color       var(--transition-base);
+  padding: 9px 12px;
+  cursor: pointer;
+  border-radius: var(--radius-option);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--color-ink-light);
+  letter-spacing: 0.01em;
+  display: flex;
+  align-items: center;
+  margin-bottom: 2px;
+  transition:
+    background var(--transition-base),
+    color var(--transition-base);
 }
 
 .custom-select-option:last-child {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 .custom-select-option:hover {
-    background: var(--color-sage-light);
-    color: var(--color-ink);
+  background: var(--color-sage-light);
+  color: var(--color-ink);
 }
 
 .custom-select-option.is-selected {
-    background: linear-gradient(
-            135deg,
-            rgba(184, 207, 196, 0.35) 0%,
-            rgba(240, 219, 216, 0.25) 100%
-    );
-    color: var(--color-sage-deep);
-    font-weight: 500;
-    position: relative;
+  background: linear-gradient(135deg, rgba(184, 207, 196, 0.35) 0%, rgba(240, 219, 216, 0.25) 100%);
+  color: var(--color-sage-deep);
+  font-weight: 500;
+  position: relative;
 }
 
 /* Sage left-bar on selected option */
 .custom-select-option.is-selected::before {
-    content: '';
-    position: absolute;
-    left: 3px;
-    top: 25%;
-    height: 50%;
-    width: 2px;
-    background: var(--color-gold);
-    border-radius: 2px;
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 25%;
+  height: 50%;
+  width: 2px;
+  background: var(--color-gold);
+  border-radius: 2px;
 }
 
 /* =========================================
    Animations
    ========================================= */
 @keyframes dropdownFadeInDown {
-    from { opacity: 0; transform: translateY(-8px) scale(0.99); }
-    to   { opacity: 1; transform: translateY(0)    scale(1);    }
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 @keyframes dropdownFadeInUp {
-    from { opacity: 0; transform: translateY(8px)  scale(0.99); }
-    to   { opacity: 1; transform: translateY(0)    scale(1);    }
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
