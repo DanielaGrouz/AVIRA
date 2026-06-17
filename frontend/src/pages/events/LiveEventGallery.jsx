@@ -1,14 +1,16 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { io } from 'socket.io-client';
-import { useParams } from 'react-router-dom';
+import {useNavigate, useParams} from 'react-router-dom';
 import eventService from '../../services/EventService';
 import '../../styles/LiveEventGallery.css';
 import Config from "../../services/Config";
+import Button from "../../components/Button";
 
 const API_BASE = Config.BASE_URL;
 
 const LiveEventGallery = () => {
     const { id: eventId } = useParams();
+    const navigate = useNavigate();
 
     const [images, setImages]       = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -104,9 +106,11 @@ const LiveEventGallery = () => {
 
     // ── Render ────────────────────────────────────────────────
     return (
-        <>
+        <div style={{margin: "0px 10px"}}>
             <section className="live-gallery-section" aria-label="Live event photo gallery">
-
+                <Button variant="text" className="back-btn" onClick={() => navigate(-1)}>
+                    &larr; Back to Event
+                </Button>
                 {/* Header */}
                 <div className="gallery-section-header">
                     <div className="gallery-section-header-left">
@@ -225,7 +229,7 @@ const LiveEventGallery = () => {
                     </div>
                 </div>
             )}
-        </>
+        </div>
     );
 };
 

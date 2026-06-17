@@ -55,7 +55,7 @@
 .live-gallery-section {
     position: relative;
     z-index: 1;
-    margin-top: 2.5rem;
+    margin-top: 0.5rem;
     animation: section-appear 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
