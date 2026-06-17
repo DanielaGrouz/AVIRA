@@ -29,7 +29,6 @@ router.get(
   eventController.generateTaskList
 );
 
-// Add query validation to ensure lat and lon are provided correctly before hitting the controller
 router.get(
   '/:id/find-stores',
   authorize(VALID_ROLES),

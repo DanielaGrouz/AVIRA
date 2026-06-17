@@ -4,295 +4,327 @@
 
 /* --- Page Wrapper --- */
 .rsvp-page-wrapper {
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 2rem;
-    box-sizing: border-box;
-    font-family: var(--font-body);
-    position: relative;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  box-sizing: border-box;
+  font-family: var(--font-body);
+  position: relative;
 
-    /* Diagonal two-tone mesh — consistent with the AVIRA ecosystem */
-    background:
-            radial-gradient(ellipse at 0% 0%,   rgba(240, 219, 216, 0.55) 0px, transparent 55%),
-            radial-gradient(ellipse at 100% 0%,  rgba(184, 207, 196, 0.45) 0px, transparent 50%),
-            radial-gradient(ellipse at 100% 100%, rgba(201, 169, 110, 0.18) 0px, transparent 50%),
-            radial-gradient(ellipse at 0% 100%,  rgba(232, 224, 214, 0.5)  0px, transparent 50%),
-            var(--color-cream);
-    background-attachment: fixed;
-    background-size: cover;
+  /* Diagonal two-tone mesh — consistent with the AVIRA ecosystem */
+  background:
+    radial-gradient(ellipse at 0% 0%, rgba(240, 219, 216, 0.55) 0px, transparent 55%),
+    radial-gradient(ellipse at 100% 0%, rgba(184, 207, 196, 0.45) 0px, transparent 50%),
+    radial-gradient(ellipse at 100% 100%, rgba(201, 169, 110, 0.18) 0px, transparent 50%),
+    radial-gradient(ellipse at 0% 100%, rgba(232, 224, 214, 0.5) 0px, transparent 50%),
+    var(--color-cream);
+  background-attachment: fixed;
+  background-size: cover;
 }
 
 /* Ambient decorative ring */
 .rsvp-page-wrapper::before {
-    content: '';
-    position: fixed;
-    top: -100px;
-    left: -100px;
-    width: 350px;
-    height: 350px;
-    border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    box-shadow:
-            0 0 0 20px rgba(255, 255, 255, 0.05),
-            0 0 0 40px rgba(255, 255, 255, 0.02);
-    pointer-events: none;
-    z-index: 0;
-    animation: orbit-rotate 40s linear infinite reverse;
+  content: '';
+  position: fixed;
+  top: -100px;
+  left: -100px;
+  width: 350px;
+  height: 350px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow:
+    0 0 0 20px rgba(255, 255, 255, 0.05),
+    0 0 0 40px rgba(255, 255, 255, 0.02);
+  pointer-events: none;
+  z-index: 0;
+  animation: orbit-rotate 40s linear infinite reverse;
 }
 
 /* --- Main Card --- */
 .rsvp-card {
-    background: var(--color-card-bg);
-    backdrop-filter: blur(20px) saturate(1.2);
-    -webkit-backdrop-filter: blur(20px) saturate(1.2);
-    border: 1px solid var(--color-card-border);
-    box-shadow: var(--shadow-card-hover);
-    border-radius: var(--radius-card);
-    padding: 3.5rem 2.5rem;
-    text-align: center;
-    max-width: 440px;
-    width: 100%;
-    position: relative;
-    z-index: 1;
-    animation: scaleUpFade 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  background: var(--color-card-bg);
+  backdrop-filter: blur(20px) saturate(1.2);
+  -webkit-backdrop-filter: blur(20px) saturate(1.2);
+  border: 1px solid var(--color-card-border);
+  box-shadow: var(--shadow-card-hover);
+  border-radius: var(--radius-card);
+  padding: 3.5rem 2.5rem;
+  text-align: center;
+  max-width: 440px;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+  animation: scaleUpFade 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 /* Gold top-accent bar */
 .rsvp-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 55px;
-    height: 2px;
-    background: linear-gradient(90deg, var(--color-blush-deep), var(--color-gold), var(--color-blush-deep));
-    border-radius: 0 0 4px 4px;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 55px;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    var(--color-blush-deep),
+    var(--color-gold),
+    var(--color-blush-deep)
+  );
+  border-radius: 0 0 4px 4px;
 }
 
 /* --- Typography --- */
 .rsvp-card h1 {
-    color: var(--color-ink);
-    font-family: var(--font-display);
-    font-size: 2.4rem;
-    font-weight: 300;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    margin-top: 0;
-    margin-bottom: 0.75rem;
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  font-weight: 300;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-top: 0;
+  margin-bottom: 0.75rem;
 }
 
 .rsvp-card p {
-    color: var(--color-muted);
-    font-family: var(--font-body);
-    font-size: 0.95rem;
-    font-weight: 300;
-    letter-spacing: 0.02em;
-    margin-bottom: 2.5rem;
-    line-height: 1.6;
+  color: var(--color-muted);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
 }
 
 /* --- Event Details Box --- */
 .rsvp-event-details {
-    background: rgba(255, 255, 255, 0.6);
-    border-radius: var(--radius-sm);
-    padding: 1.5rem;
-    margin-bottom: 2.25rem;
-    text-align: left;
-    border: 1px solid var(--color-rule);
-    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: var(--radius-sm);
+  padding: 1.5rem;
+  margin-bottom: 2.25rem;
+  text-align: left;
+  border: 1px solid var(--color-rule);
+  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.5);
 }
 
 .rsvp-event-details h3 {
-    margin-top: 0;
-    margin-bottom: 1.25rem;
-    font-family: var(--font-display);
-    font-size: 1.35rem;
-    color: var(--color-ink);
-    text-align: center;
-    font-weight: 400;
-    letter-spacing: 0.04em;
-    border-bottom: 1px solid var(--color-rule);
-    padding-bottom: 0.75rem;
+  margin-top: 0;
+  margin-bottom: 1.25rem;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  color: var(--color-ink);
+  text-align: center;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--color-rule);
+  padding-bottom: 0.75rem;
 }
 
 .detail-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.75rem;
-    margin-bottom: 0.85rem;
-    color: var(--color-ink-light);
-    font-family: var(--font-body);
-    font-size: 0.9rem;
-    line-height: 1.5;
-    font-weight: 400;
-    letter-spacing: 0.01em;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
+  color: var(--color-ink-light);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  font-weight: 400;
+  letter-spacing: 0.01em;
 }
 
 .detail-item:last-child {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 .detail-icon {
-    font-size: 1.05rem;
-    color: var(--color-gold);
-    margin-top: 0.1rem;
+  font-size: 1.05rem;
+  color: var(--color-gold);
+  margin-top: 0.1rem;
 }
 
 /* --- Button Layout --- */
 .rsvp-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
 }
 
 /* Base Button Styling */
 .rsvp-btn {
-    width: 100%;
-    padding: 1rem 1.5rem;
-    border: none;
-    border-radius: var(--radius-sm);
-    font-family: var(--font-body);
-    font-size: 0.85rem;
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all var(--transition-base);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.5rem;
+  width: 100%;
+  padding: 1rem 1.5rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 /* Confirm Button (Primary Gradient) */
 .rsvp-btn.confirm {
-    background: linear-gradient(
-            135deg,
-            var(--color-sage)      0%,
-            var(--color-sage-deep) 55%,
-            var(--color-blush-deep) 100%
-    );
-    color: #ffffff;
-    box-shadow: var(--shadow-btn);
+  background: linear-gradient(
+    135deg,
+    var(--color-sage) 0%,
+    var(--color-sage-deep) 55%,
+    var(--color-blush-deep) 100%
+  );
+  color: #ffffff;
+  box-shadow: var(--shadow-btn);
 }
 
 .rsvp-btn.confirm:hover {
-    opacity: 0.92;
-    transform: translateY(-2px);
-    box-shadow:
-            0 6px 16px rgba(156, 191, 176, 0.45),
-            0 2px 4px rgba(58, 53, 48, 0.12);
+  opacity: 0.92;
+  transform: translateY(-2px);
+  box-shadow:
+    0 6px 16px rgba(156, 191, 176, 0.45),
+    0 2px 4px rgba(58, 53, 48, 0.12);
 }
 
 .rsvp-btn.confirm:active {
-    transform: scale(0.985) translateY(0);
+  transform: scale(0.985) translateY(0);
 }
 
 /* Decline Button (Secondary Outline) */
 .rsvp-btn.decline {
-    background: transparent;
-    color: var(--color-muted);
-    border: 1px solid rgba(184, 207, 196, 0.5);
+  background: transparent;
+  color: var(--color-muted);
+  border: 1px solid rgba(184, 207, 196, 0.5);
 }
 
 .rsvp-btn.decline:hover {
-    background: var(--color-blush-light);
-    border-color: var(--color-blush-deep);
-    color: var(--color-ink-light);
+  background: var(--color-blush-light);
+  border-color: var(--color-blush-deep);
+  color: var(--color-ink-light);
 }
 
 /* --- States --- */
 .rsvp-loading {
-    color: var(--color-subtle);
-    font-family: var(--font-display);
-    font-style: italic;
-    font-size: 1.4rem;
-    letter-spacing: 0.05em;
-    animation: pulse 1.5s infinite;
-    padding: 2rem 0;
+  color: var(--color-subtle);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.4rem;
+  letter-spacing: 0.05em;
+  animation: pulse 1.5s infinite;
+  padding: 2rem 0;
 }
 
 /* Success State */
 .rsvp-success-content {
-    animation: fadeIn 0.6s ease forwards;
-    padding: 1.5rem 0;
+  animation: fadeIn 0.6s ease forwards;
+  padding: 1.5rem 0;
 }
 
 .rsvp-success-content h2 {
-    color: var(--color-sage-deep);
-    font-family: var(--font-display);
-    font-size: 2.8rem;
-    font-weight: 300;
-    margin-bottom: 1rem;
-    margin-top: 0;
+  color: var(--color-sage-deep);
+  font-family: var(--font-display);
+  font-size: 2.8rem;
+  font-weight: 300;
+  margin-bottom: 1rem;
+  margin-top: 0;
 }
 
 /* Add subtle sparkle to success */
 .rsvp-success-content h2::after {
-    content: ' ✦';
-    font-size: 0.4em;
-    vertical-align: super;
-    color: var(--color-gold);
-    opacity: 0.8;
+  content: ' ✦';
+  font-size: 0.4em;
+  vertical-align: super;
+  color: var(--color-gold);
+  opacity: 0.8;
 }
 
 .rsvp-success-content p {
-    margin-bottom: 0;
-    font-size: 1.05rem;
-    color: var(--color-ink-light);
+  margin-bottom: 0;
+  font-size: 1.05rem;
+  color: var(--color-ink-light);
 }
 
 /* Error State */
 .rsvp-error-msg {
-    color: var(--color-error-text);
-    background-color: var(--color-error-bg);
-    padding: 1rem 1.25rem;
-    border-radius: var(--radius-sm);
-    margin-top: 1.5rem;
-    font-family: var(--font-body);
-    font-size: 0.85rem;
-    font-weight: 400;
-    border: 1px solid var(--color-error-line);
-    line-height: 1.5;
-    letter-spacing: 0.02em;
+  color: var(--color-error-text);
+  background-color: var(--color-error-bg);
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-sm);
+  margin-top: 1.5rem;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 400;
+  border: 1px solid var(--color-error-line);
+  line-height: 1.5;
+  letter-spacing: 0.02em;
 }
 
 /* --- Animations --- */
 @keyframes scaleUpFade {
-    from { opacity: 0; transform: translateY(16px) scale(0.97); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes pulse {
-    0% { opacity: 0.5; }
-    50% { opacity: 1; }
-    100% { opacity: 0.5; }
+  0% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.5;
+  }
 }
-
 
 .drop-zone {
-    border: 1.5px dashed rgba(184, 207, 196, 0.8);
-    border-radius: 12px;
-    background: rgba(255,255,255,0.55);
-    padding: 2rem 1.5rem;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.25s ease;
+  border: 1.5px dashed rgba(184, 207, 196, 0.8);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.55);
+  padding: 2rem 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
 }
 .drop-zone.drag-over {
-    border-color: #9cbfb0;
-    background: rgba(184, 207, 196, 0.15);
-    transform: scale(1.01);
+  border-color: #9cbfb0;
+  background: rgba(184, 207, 196, 0.15);
+  transform: scale(1.01);
 }
-.drop-zone.has-file { border-style: solid; }
+.drop-zone.has-file {
+  border-style: solid;
+}
 
-.progress-bar-wrap { height: 3px; background: rgba(184,207,196,0.25); border-radius: 99px; margin-top: 0.75rem; }
-.progress-bar { height: 100%; background: linear-gradient(90deg, var(--color-sage), var(--color-gold)); border-radius: 99px; transition: width 0.3s ease; }
+.progress-bar-wrap {
+  height: 3px;
+  background: rgba(184, 207, 196, 0.25);
+  border-radius: 99px;
+  margin-top: 0.75rem;
+}
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-sage), var(--color-gold));
+  border-radius: 99px;
+  transition: width 0.3s ease;
+}

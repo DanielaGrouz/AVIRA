@@ -1,9 +1,6 @@
 const { Task } = require('../../models');
 const { NotFoundError } = require('../utils/errors');
 
-/**
- * Handles the creation of a new task.
- */
 const createTaskLogic = async (taskData) => {
   const { eventId, title, status, priority } = taskData;
 
@@ -15,9 +12,6 @@ const createTaskLogic = async (taskData) => {
   });
 };
 
-/**
- * Logic for updating an existing task.
- */
 const updateTaskLogic = async (id, updateData) => {
   const { title, status, priority } = updateData;
 
@@ -30,9 +24,6 @@ const updateTaskLogic = async (id, updateData) => {
   return await Task.findByPk(id);
 };
 
-/**
- * Removes a task from the system based on ID.
- */
 const deleteTaskLogic = async (id) => {
   const deletedRows = await Task.destroy({
     where: { taskId: id },

@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { Event } = require('../../models'); // Import the Sequelize Event model
+const { Event } = require('../../models');
 
 const authorize = (allowedRoles) => {
   return (req, res, next) => {
@@ -61,7 +61,6 @@ const authorize = (allowedRoles) => {
   };
 };
 
-// UPDATED FOR ORM: Now async to fetch from the database
 const validateEventId = async (req, res, next) => {
   if (!req.user) {
     return res.status(401).json({
@@ -78,7 +77,6 @@ const validateEventId = async (req, res, next) => {
   const eventId = parseInt(req.params.id);
 
   try {
-    // Query the database for the event
     const event = await Event.findByPk(eventId);
 
     if (!event) {
@@ -93,7 +91,6 @@ const validateEventId = async (req, res, next) => {
       });
     }
 
-    // Authorization check: Is the user an admin, or did they create this event?
     if (req.user.userRole !== 'admin') {
       if (event.creatorId !== req.user.userId) {
         return res.status(403).json({
@@ -108,8 +105,6 @@ const validateEventId = async (req, res, next) => {
       }
     }
 
-    // Optional: Attach the event to the request object so downstream controllers
-    // don't have to query the database again for the same event
     req.event = event;
 
     next();

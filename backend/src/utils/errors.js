@@ -1,11 +1,8 @@
-// utils/errors.js
-
 class AppError extends Error {
   constructor(message, statusCode, code) {
     super(message);
     this.statusCode = statusCode;
     this.code = code;
-    // Captures the stack trace, keeping the reference to the original error location
     Error.captureStackTrace(this, this.constructor);
   }
 }
@@ -40,6 +37,12 @@ class InternalServerError extends AppError {
   }
 }
 
+class ConflictError extends AppError {
+  constructor(message = 'Conflict Error', code = 'ConflictError') {
+    super(message, 409, code);
+  }
+}
+
 module.exports = {
   AppError,
   BadRequestError,
@@ -47,4 +50,5 @@ module.exports = {
   ForbiddenError,
   NotFoundError,
   InternalServerError,
+  ConflictError,
 };

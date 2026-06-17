@@ -1,4 +1,3 @@
-// models/index.js
 const { Sequelize, DataTypes } = require('sequelize');
 const sequelize = new Sequelize('avira_db', 'username', 'password', {
   host: 'localhost',
@@ -6,7 +5,6 @@ const sequelize = new Sequelize('avira_db', 'username', 'password', {
   port: 3307,
 });
 
-// 1. User Model
 const User = sequelize.define(
   'User',
   {
@@ -23,7 +21,6 @@ const User = sequelize.define(
   { timestamps: true, createdAt: 'createDate', updatedAt: 'updateDate' }
 );
 
-// 2. Event Model
 const Event = sequelize.define('Event', {
   eventId: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   title: DataTypes.STRING,
@@ -35,16 +32,12 @@ const Event = sequelize.define('Event', {
   invitationPath: DataTypes.STRING,
 });
 
-// 3. Guest Model
 const Guest = sequelize.define('Guest', {
   guestId: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   name: DataTypes.STRING,
   phone: DataTypes.STRING,
-  status: DataTypes.STRING,
-  role: DataTypes.STRING,
 });
 
-// 4. Task Model
 const Task = sequelize.define('Task', {
   taskId: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   title: DataTypes.STRING,
@@ -52,7 +45,6 @@ const Task = sequelize.define('Task', {
   priority: DataTypes.STRING,
 });
 
-// Add this to models/index.js
 const VerificationCode = sequelize.define(
   'VerificationCode',
   {
@@ -62,7 +54,6 @@ const VerificationCode = sequelize.define(
   },
   { timestamps: false }
 );
-// Export it along with User, Event, etc.
 
 const EventGallery = sequelize.define(
   'eventGallery',
@@ -72,16 +63,57 @@ const EventGallery = sequelize.define(
   { timestamps: true, createdAt: 'createDate' }
 );
 
-// Define Relationships
-Event.hasMany(EventGallery, { foreignKey: 'eventId', onDelete: 'CASCADE' });
+const Admin = sequelize.define(
+  'Admin',
+  {
+    adminId: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    roleDescription: DataTypes.STRING,
+  },
+  { timestamps: true }
+);
 
+const EventGuestList = sequelize.define(
+  'EventGuestList',
+  {
+    status: {
+      type: DataTypes.STRING,
+      defaultValue: 'pending',
+    },
+    role: {
+      type: DataTypes.STRING,
+      defaultValue: 'guest',
+    },
+  },
+  { timestamps: true }
+);
+
+User.hasOne(Admin, { foreignKey: 'userId', onDelete: 'CASCADE' });
+Admin.belongsTo(User, { foreignKey: 'userId' });
+Event.hasMany(EventGallery, { foreignKey: 'eventId', onDelete: 'CASCADE' });
 User.hasMany(Event, { foreignKey: 'creatorId' });
 Event.belongsTo(User, { foreignKey: 'creatorId' });
-
-Event.hasMany(Guest, { foreignKey: 'eventId', onDelete: 'CASCADE' });
-Guest.belongsTo(Event, { foreignKey: 'eventId' });
-
 Event.hasMany(Task, { foreignKey: 'eventId', onDelete: 'CASCADE' });
 Task.belongsTo(Event, { foreignKey: 'eventId' });
+User.hasMany(Guest, { foreignKey: 'creatorId' });
+Guest.belongsTo(User, { foreignKey: 'creatorId' });
+Event.belongsToMany(Guest, {
+  through: EventGuestList,
+  foreignKey: 'eventId',
+});
 
-module.exports = { sequelize, User, Event, Guest, Task, VerificationCode, EventGallery };
+Guest.belongsToMany(Event, {
+  through: EventGuestList,
+  foreignKey: 'guestId',
+});
+
+module.exports = {
+  sequelize,
+  User,
+  Event,
+  Guest,
+  Task,
+  VerificationCode,
+  EventGallery,
+  Admin,
+  EventGuestList,
+};

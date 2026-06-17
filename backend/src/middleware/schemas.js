@@ -1,12 +1,10 @@
 const { z } = require('zod');
 const { VALID_ROLES } = require('../../models/constants');
 
-// --- Reusable Regex Patterns ---
 const phoneRegex = /^05\d-?\d{7}$/;
 const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
 const timeRegex = /^([0-1]\d|2[0-3]):([0-5]\d)$/;
 
-// --- Parameter Schemas (req.params) ---
 const idSchema = z.object({
   id: z.coerce.number().int().positive('ID must be a positive number'),
 });
@@ -25,15 +23,11 @@ const tokenParamSchema = z.object({
   token: z.string().min(1, 'Token is required'),
 });
 
-// --- Query String Schemas (req.query) ---
 const locationQuerySchema = z.object({
   lat: z.coerce.number({ invalid_type_error: 'Latitude must be a number' }),
   lon: z.coerce.number({ invalid_type_error: 'Longitude must be a number' }),
 });
 
-// --- Body Schemas (req.body) ---
-
-// User Schemas
 const userSchema = z.object({
   firstName: z.string().min(2, 'firstName must be at least 2 chars'),
   lastName: z.string().min(2, 'lastName must be at least 2 chars'),
@@ -47,7 +41,6 @@ const optionalUserSchema = userSchema.partial().extend({
   picture: z.string().optional(),
 });
 
-// Auth & Verification Schemas
 const loginSchema = z.object({
   email: z.string().email('A valid email address is required'),
   password: z.string().min(1, 'Password is required'),
@@ -65,7 +58,6 @@ const resetPasswordSchema = verifyEmailSchema.extend({
   newPassword: z.string().min(6, 'New password must be at least 6 characters'),
 });
 
-// Guest Schemas
 const guestSchema = z.object({
   name: z.string().min(2, 'name must be at least 2 chars'),
   phone: z.string().regex(phoneRegex, 'A valid Israeli phone number is required'),
@@ -77,7 +69,6 @@ const rsvpBodySchema = z.object({
   status: z.enum(['confirmed', 'pending', 'cancelled']),
 });
 
-// Task Schemas
 const taskSchema = z.object({
   title: z.string().min(2, 'title must be at least 2 chars'),
   status: z
@@ -89,7 +80,6 @@ const taskSchema = z.object({
 
 const optionalTaskSchema = taskSchema.partial();
 
-// 1. Define the base object WITHOUT the refine
 const baseEventSchema = z.object({
   title: z.string().min(2, 'title must be at least 2 chars'),
   date: z.string().regex(dateRegex, 'date must be in YYYY-MM-DD format'),
@@ -134,7 +124,6 @@ const eventPaginationSchema = basePaginationSchema.extend({
   searchQuery: z.string().optional().nullable(),
 });
 
-// 3. Extend it for Tasks specifically (Defaults sortBy to 'taskId')
 const taskPaginationSchema = basePaginationSchema.extend({
   sortBy: z.string().optional().default('taskId'),
   searchQuery: z.string().optional().nullable(),

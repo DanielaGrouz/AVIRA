@@ -1,6 +1,6 @@
 const express = require('express');
 const logger = require('./middleware/logger');
-const cors = require('cors'); // 1. Import cors
+const cors = require('cors');
 const userRoutes = require('./routes/userRoutes');
 const guestsRoutes = require('./routes/guestsRoutes');
 const eventRoutes = require('./routes/eventRoutes');

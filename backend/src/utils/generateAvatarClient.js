@@ -7,7 +7,6 @@ const hf = new HfInference(configClient.getConfig('HF_TOKEN'));
  * [Subject/Role] + [Key Traits] + [Aesthetic/Vibe] + [Lighting/Background]
  */
 async function generateAvatar(userData) {
-  // Adapted prompt focusing on clean lines and a modern digital look
   const prompt = `A professional 3D profile picture avatar of a ${userData.role}. 
     The character features ${userData.traits}. 
     Minimalist and clean aesthetic, smooth 3D digital art style, clean lines. 
