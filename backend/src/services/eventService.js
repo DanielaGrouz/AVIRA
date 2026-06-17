@@ -1,4 +1,4 @@
-const { Event, User, Guest, Task, EventGallery } = require('../../models');
+const { Event, User, Guest, Task, EventGallery, EventGuestList} = require('../../models');
 const { Op } = require('sequelize');
 const guestService = require('./guestService');
 const {
@@ -9,23 +9,18 @@ const {
 const { generateEventInvite } = require('../utils/generateImageClient');
 const taskService = require('./taskService');
 const jwt = require('jsonwebtoken');
-const { NotFoundError, BadRequestError } = require('../utils/errors');
+const { NotFoundError, BadRequestError, ConflictError} = require('../utils/errors');
 
-// Get all events with pagination and sorting
 const getAllEventsLogic = async (page, limit, sortBy, sortDirection, searchQuery, userData) => {
   const offset = (page - 1) * limit;
   let whereClause = {};
 
-  // Filter by creator if not admin
   if (userData.userRole !== 'admin') {
     whereClause.creatorId = userData.userId;
   }
 
-  // Dynamic Search Query
   if (searchQuery && searchQuery.trim() !== '') {
     const queryTerms = searchQuery.toLowerCase().trim().split(/\s+/);
-
-    // Sequelize Op.and ensures EVERY word typed matches AT LEAST ONE of the fields
     whereClause[Op.and] = queryTerms.map((term) => ({
       [Op.or]: [
         { title: { [Op.like]: `%${term}%` } },
@@ -36,10 +31,9 @@ const getAllEventsLogic = async (page, limit, sortBy, sortDirection, searchQuery
   }
   const validSortDirection = sortDirection === '1' ? 'ASC' : 'DESC';
 
-  // findAndCountAll is perfect for pagination; it returns { count, rows }
   const { count, rows } = await Event.findAndCountAll({
     where: whereClause,
-    order: [[sortBy, validSortDirection]], // Defaulting to ASC, modify if you pass sortDirection
+    order: [[sortBy, validSortDirection]],
     limit: parseInt(limit),
     offset: parseInt(offset),
   });
@@ -53,9 +47,7 @@ const getAllEventsLogic = async (page, limit, sortBy, sortDirection, searchQuery
 
 const getEventGalleryLogic = async (eventId, page, limit, sortBy, sortDirection) => {
   const offset = (page - 1) * limit;
-  let whereClause = {
-    eventId,
-  };
+  let whereClause = { eventId };
   const validSortDirection = sortDirection === '1' ? 'ASC' : 'DESC';
 
   const { count, rows } = await EventGallery.findAndCountAll({
@@ -72,7 +64,6 @@ const getEventGalleryLogic = async (eventId, page, limit, sortBy, sortDirection)
   };
 };
 
-// Get a specific event using its unique ID
 const getEventByIdLogic = async (id) => {
   return await Event.findByPk(id);
 };
@@ -80,26 +71,25 @@ const getEventByIdLogic = async (id) => {
 const createEventLogic = async (creatorId, eventData) => {
   const { title, date, time, location, eventType } = eventData;
 
-  // 1. Create the event
   const newEvent = await Event.create({
-    creatorId,
-    title,
-    date,
-    time,
-    location,
-    eventType,
-    guestsCount: 1, // Default to 1 because the creator is a manager
+    creatorId, title, date, time, location, eventType, guestsCount: 1,
   });
 
-  // 2. Auto-add the creator as a manager to the guest list
   const creator = await User.findByPk(creatorId);
   if (creator) {
-    await guestService.createGuestLogic({
-      eventId: newEvent.eventId,
-      name: `${creator.firstName} ${creator.lastName}`,
-      phone: creator.phoneNumber,
-      role: 'manager',
-      status: 'confirmed',
+    let guest = await Guest.findOne({ where: { phone: creator.phoneNumber, creatorId } });
+
+    if (!guest) {
+      guest = await Guest.create({
+        name: `${creator.firstName} ${creator.lastName}`,
+        phone: creator.phoneNumber,
+        creatorId: creatorId // Removed status/role from here
+      });
+    }
+
+    // Pass the status and role into the junction table!
+    await newEvent.addGuest(guest, {
+      through: { status: 'confirmed', role: 'manager' }
     });
   }
 
@@ -107,7 +97,6 @@ const createEventLogic = async (creatorId, eventData) => {
 };
 
 const deleteEventLogic = async (id) => {
-  // Because of 'CASCADE' in our model setup, deleting the event deletes its tasks & guests
   const deletedRows = await Event.destroy({ where: { eventId: id } });
   if (deletedRows === 0) {
     throw new NotFoundError('Event not found.', 'EVENT_NOT_FOUND');
@@ -122,18 +111,16 @@ const updateEventLogic = async (id, updateData) => {
   if (updatedRows === 0) {
     throw new NotFoundError('Event not found.', 'EVENT_NOT_FOUND');
   }
-
   return await Event.findByPk(id);
 };
 
-// Replaces processListData by shifting the workload to the database
 const getAllGuestsByEventLogic = async (
-  eventId,
-  page,
-  limit,
-  sortBy,
-  sortDirection,
-  searchQuery
+    eventId,
+    page,
+    limit,
+    sortBy,
+    sortDirection,
+    searchQuery
 ) => {
   const event = await Event.findByPk(eventId);
   if (!event) {
@@ -141,7 +128,7 @@ const getAllGuestsByEventLogic = async (
   }
 
   const offset = (page - 1) * limit;
-  let whereClause = { eventId };
+  let whereClause = {};
 
   if (searchQuery && searchQuery.trim() !== '') {
     whereClause[Op.or] = [
@@ -149,16 +136,56 @@ const getAllGuestsByEventLogic = async (
       { phone: { [Op.like]: `%${searchQuery}%` } },
     ];
   }
+
   const validSortDirection = sortDirection === '1' ? 'ASC' : 'DESC';
+
+  let orderClause = [];
+  if (sortBy === 'status' || sortBy === 'role') {
+    // Tell Sequelize to order by the junction table columns
+    orderClause = [[Event, EventGuestList, sortBy, validSortDirection]];
+  } else if (sortBy) {
+    // Order by standard Guest table columns
+    orderClause = [[sortBy, validSortDirection]];
+  }
 
   const { count, rows } = await Guest.findAndCountAll({
     where: whereClause,
-    order: [[sortBy, validSortDirection]],
+    include: [
+      {
+        model: Event,
+        where: { eventId: eventId },
+        // 🚨 THE FIX: Request at least one attribute so Sequelize doesn't delete the array
+        attributes: ['eventId'],
+        through: { attributes: ['status', 'role'] },
+      },
+    ],
+    order: orderClause,
     limit: parseInt(limit),
     offset: parseInt(offset),
+    distinct: true,
   });
 
-  return { page: parseInt(page), totalPages: Math.ceil(count / limit), data: rows };
+  const formattedData = rows.map((guest) => {
+    const plainGuest = guest.get({ plain: true });
+
+    // Safely extract the junction data now that we guaranteed the Events array exists
+    let junctionData = {};
+    if (plainGuest.Events && plainGuest.Events.length > 0) {
+      junctionData = plainGuest.Events[0].EventGuestList || {};
+    }
+
+    // Clean up the messy Sequelize nesting
+    delete plainGuest.Events;
+
+    return {
+      ...plainGuest,
+      // Re-add your fallbacks to guarantee the frontend never gets 'undefined'
+      status: junctionData.status || 'pending',
+      role: junctionData.role || 'guest',
+    };
+  });
+
+  return { page: parseInt(page), totalPages: Math.ceil(count / limit), data: formattedData };
 };
 
 const getTasksByEventIdLogic = async (
@@ -170,9 +197,7 @@ const getTasksByEventIdLogic = async (
   searchQuery = ''
 ) => {
   const event = await Event.findByPk(eventId);
-  if (!event) {
-    throw new NotFoundError('Event not found.', 'EVENT_NOT_FOUND');
-  }
+  if (!event) throw new NotFoundError('Event not found.', 'EVENT_NOT_FOUND');
 
   const offset = (page - 1) * limit;
   let whereClause = { eventId };
@@ -194,25 +219,19 @@ const getTasksByEventIdLogic = async (
 
 const addTaskToEventLogic = async (eventId, taskData) => {
   const event = await Event.findByPk(eventId);
-  if (!event) {
-    throw new NotFoundError('Event not found.', 'EVENT_NOT_FOUND');
-  }
+  if (!event) throw new NotFoundError('Event not found.', 'EVENT_NOT_FOUND');
   return await taskService.createTaskLogic({ ...taskData, eventId });
 };
 
 const updateTaskInEventLogic = async (eventId, taskId, updateData) => {
   const task = await Task.findOne({ where: { taskId, eventId } });
-  if (!task) {
-    throw new NotFoundError('Task not found in this event.', 'TASK_NOT_FOUND_IN_EVENT');
-  }
+  if (!task) throw new NotFoundError('Task not found in this event.', 'TASK_NOT_FOUND_IN_EVENT');
   return await taskService.updateTaskLogic(taskId, updateData);
 };
 
 const removeTaskFromEventLogic = async (eventId, taskId) => {
   const task = await Task.findOne({ where: { taskId, eventId } });
-  if (!task) {
-    throw new NotFoundError('Task not found in this event.', 'TASK_NOT_FOUND_IN_EVENT');
-  }
+  if (!task) throw new NotFoundError('Task not found in this event.', 'TASK_NOT_FOUND_IN_EVENT');
   return taskService.deleteTaskLogic(taskId);
 };
 
@@ -220,14 +239,14 @@ const getEventsByCreatorLogic = async (creatorId) => {
   return await Event.findAll({ where: { creatorId } });
 };
 
-// Find events where a guest with a specific name is attending
 const getEventsByGuestNameLogic = async (name) => {
   return await Event.findAll({
     include: [
       {
         model: Guest,
         where: { name: { [Op.like]: `%${name}%` } },
-        attributes: [], // We only want the Event data, not the nested guest array here
+        attributes: [],
+        through: { attributes: [] },
       },
     ],
   });
@@ -240,75 +259,71 @@ const getEventsByPhoneLogic = async (phone) => {
         model: Guest,
         where: { phone },
         attributes: [],
+        through: { attributes: [] },
       },
     ],
   });
 };
 
-const addGuestToEventLogic = async (eventId, guestData) => {
-  const event = await Event.findByPk(eventId);
-  if (!event) {
-    throw new NotFoundError('Event not found.', 'EVENT_NOT_FOUND');
-  }
-
-  const guest = { ...guestData, eventId };
-  const newGuest = await guestService.createGuestLogic(guest);
-  await event.increment('guestsCount');
-
-  const token = jwt.sign({ eventId: eventId, guestId: newGuest.guestId }, process.env.JWT_SECRET, {
-    expiresIn: '24h',
-  });
-  return { ...guest, token };
-};
-
 const removeGuestFromEventLogic = async (eventId, guestId) => {
-  const guest = await Guest.findOne({ where: { guestId, eventId } });
-  if (!guest) {
-    throw new NotFoundError('Guest not found in this event.', 'GUEST_NOT_FOUND_IN_EVENT');
-  }
-
-  await guestService.deleteGuestLogic(guestId);
-
   const event = await Event.findByPk(eventId);
-  if (event && event.guestsCount > 0) {
+  if (!event) throw new NotFoundError('Event not found.', 'EVENT_NOT_FOUND');
+
+  const guest = await Guest.findByPk(guestId);
+  if (!guest) throw new NotFoundError('Guest not found.', 'GUEST_NOT_FOUND');
+
+  // Only removes the link in the junction table. The Guest stays in the address book.
+  const hasGuest = await event.hasGuest(guest);
+  if (!hasGuest)
+    throw new NotFoundError('Guest not found in this event.', 'GUEST_NOT_FOUND_IN_EVENT');
+
+  await event.removeGuest(guest);
+
+  if (event.guestsCount > 0) {
     await event.decrement('guestsCount');
   }
 
   return true;
 };
 
-const updateGuestInEventLogic = async (eventId, guestId, updateData) => {
-  const guest = await Guest.findOne({ where: { guestId, eventId } });
-  if (!guest) {
-    throw new NotFoundError('Guest not found in this event.', 'GUEST_NOT_FOUND_IN_EVENT');
-  }
-  return await guestService.updateGuestLogic(guestId, updateData);
-};
 
-const getRsvpData = async (token) => {
-  const { guestId, eventId } = jwt.verify(token, process.env.JWT_SECRET);
-  const guest = await Guest.findOne({ where: { guestId, eventId } });
-  const event = await Event.findByPk(eventId);
-  return { guest, event };
-};
+
 
 const updateGuestRSVPLogic = async (eventId, guestId, rsvpStatus) => {
-  const guest = await Guest.findOne({ where: { guestId, eventId } });
-  if (!guest) {
+  const event = await Event.findByPk(eventId);
+  if (!event) throw new NotFoundError('Event not found.', 'EVENT_NOT_FOUND');
+  const hasGuest = await event.hasGuest(guestId);
+  if (!hasGuest) {
     throw new NotFoundError('Guest not found in this event.', 'GUEST_NOT_FOUND_IN_EVENT');
   }
+  await EventGuestList.update(
+      { status: rsvpStatus },
+      { where: { eventId: eventId, guestId: guestId } }
+  );
 
-  if (!['confirmed', 'cancelled', 'pending'].includes(rsvpStatus)) {
-    throw new BadRequestError('Invalid RSVP status.', 'INVALID_STATUS');
+  return { message: 'RSVP updated successfully' };
+};
+
+const getGuestsByCreatorIdLogic = async (creatorId, searchQuery, limit = 5) => {
+  let whereClause = { creatorId: creatorId };
+
+  if (searchQuery && searchQuery.trim() !== '') {
+    const term = searchQuery.trim();
+    whereClause[Op.or] = [
+      { name: { [Op.like]: `%${term}%` } },
+      { phone: { [Op.like]: `%${term}%` } },
+    ];
   }
-  return await guestService.updateGuestLogic(guestId, { status: rsvpStatus });
+
+  return await Guest.findAll({
+    where: whereClause,
+    limit: parseInt(limit),
+  });
 };
 
 const generatePhotoInviteLogic = async (eventId) => {
   const event = await Event.findByPk(eventId);
-  if (!event) {
-    throw new NotFoundError('Event not found.', 'EVENT_NOT_FOUND');
-  }
+  if (!event) throw new NotFoundError('Event not found.', 'EVENT_NOT_FOUND');
   return await generateEventInvite(event.get({ plain: true }));
 };
 
@@ -322,10 +337,7 @@ const saveToGalleryLogic = async (eventId, guestId, imagePath) => {
 
 const saveInvitationLogic = async (eventId, invitePath) => {
   const event = await Event.findByPk(eventId);
-  if (!event) {
-    throw new NotFoundError('Event not found.', 'EVENT_NOT_FOUND');
-  }
-
+  if (!event) throw new NotFoundError('Event not found.', 'EVENT_NOT_FOUND');
   event.invitationPath = invitePath;
   await event.save();
   return event;
@@ -333,27 +345,19 @@ const saveInvitationLogic = async (eventId, invitePath) => {
 
 const generateShoppingListLogic = async (eventId) => {
   const event = await Event.findByPk(eventId);
-  if (!event) {
-    throw new NotFoundError('Event not found.', 'EVENT_NOT_FOUND');
-  }
-
+  if (!event) throw new NotFoundError('Event not found.', 'EVENT_NOT_FOUND');
   return getSupermarketList(event.get({ plain: true }));
 };
 
 const generateTaskListLogic = async (eventId) => {
   const event = await Event.findByPk(eventId);
-  if (!event) {
-    throw new NotFoundError('Event not found.', 'EVENT_NOT_FOUND');
-  }
-
+  if (!event) throw new NotFoundError('Event not found.', 'EVENT_NOT_FOUND');
   return getEventTaskList(event.get({ plain: true }));
 };
 
 const findRelevantStores = async (currLocation, eventId) => {
   const event = await Event.findByPk(eventId);
-  if (!event) {
-    throw new NotFoundError('Event not found.', 'EVENT_NOT_FOUND');
-  }
+  if (!event) throw new NotFoundError('Event not found.', 'EVENT_NOT_FOUND');
 
   const tasksList = await Task.findAll({ where: { eventId } });
   if (!tasksList || tasksList.length === 0) {
@@ -364,7 +368,109 @@ const findRelevantStores = async (currLocation, eventId) => {
   return getStoresForEvent(currLocation, taskTitles);
 };
 
-const getGuestsByCreatorIdLogic = async (userId, searchQuery, limit) => {};
+
+const addGuestToEventLogic = async (eventId, guestData) => {
+  const event = await Event.findByPk(eventId);
+  if (!event) throw new NotFoundError('Event not found.', 'EVENT_NOT_FOUND');
+
+  let guest = await Guest.findOne({
+    where: { phone: guestData.phone, creatorId: event.creatorId }
+  });
+
+  if (!guest) {
+    guest = await guestService.createGuestLogic({
+      name: guestData.name,
+      phone: guestData.phone,
+      creatorId: event.creatorId
+    });
+  }
+
+  const isAlreadyGuest = await event.hasGuest(guest);
+  if (!isAlreadyGuest) {
+    await event.addGuest(guest, {
+      through: {
+        status: guestData.status || 'pending',
+        role: guestData.role || 'guest'
+      }
+    });
+    await event.increment('guestsCount');
+  }else{
+      throw new ConflictError('Guest has already been added');
+  }
+
+  const token = jwt.sign({ eventId: eventId, guestId: guest.guestId }, process.env.JWT_SECRET, {
+    expiresIn: '24h',
+  });
+
+  return {
+    ...guest.get({ plain: true }),
+    status: guestData.status || 'pending',
+    role: guestData.role || 'guest',
+    token
+  };
+};
+
+
+const updateGuestInEventLogic = async (eventId, guestId, updateData) => {
+  const event = await Event.findByPk(eventId);
+  if (!event) throw new NotFoundError('Event not found.', 'EVENT_NOT_FOUND');
+
+  const hasGuest = await event.hasGuest(guestId);
+  if (!hasGuest) {
+    throw new NotFoundError('Guest not found in this event.', 'GUEST_NOT_FOUND_IN_EVENT');
+  }
+
+  const { status, role, ...baseGuestData } = updateData;
+
+  if (status || role) {
+    const junctionUpdate = {};
+    if (status) junctionUpdate.status = status;
+    if (role) junctionUpdate.role = role;
+
+    await EventGuestList.update(junctionUpdate, {
+      where: { eventId: eventId, guestId: guestId }
+    });
+  }
+
+  let updatedGuest;
+  if (Object.keys(baseGuestData).length > 0) {
+    updatedGuest = await guestService.updateGuestLogic(guestId, baseGuestData);
+  } else {
+    updatedGuest = await Guest.findByPk(guestId);
+  }
+
+  const guests = await event.getGuests({ where: { guestId } });
+  const junctionData = guests[0].EventGuestList;
+
+  return {
+    ...updatedGuest.get({ plain: true }),
+    status: junctionData.status,
+    role: junctionData.role,
+  };
+};
+
+const getRsvpData = async (token) => {
+  const { guestId, eventId } = jwt.verify(token, process.env.JWT_SECRET);
+  const event = await Event.findByPk(eventId);
+
+  const guests = await event.getGuests({ where: { guestId } });
+  let guest = guests.length > 0 ? guests[0] : null;
+
+  if (guest) {
+    const plainGuest = guest.get({ plain: true });
+    const junctionData = plainGuest.EventGuestList || {};
+
+    delete plainGuest.EventGuestList;
+
+    guest = {
+      ...plainGuest,
+      status: junctionData.status || 'pending',
+      role: junctionData.role || 'guest',
+    };
+  }
+
+  return { guest, event };
+};
 
 module.exports = {
   getGuestsByCreatorIdLogic,

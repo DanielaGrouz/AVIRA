@@ -35,13 +35,10 @@ const Event = sequelize.define('Event', {
   invitationPath: DataTypes.STRING,
 });
 
-// 3. Guest Model
 const Guest = sequelize.define('Guest', {
-  guestId: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  name: DataTypes.STRING,
-  phone: DataTypes.STRING,
-  status: DataTypes.STRING,
-  role: DataTypes.STRING,
+    guestId: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    name: DataTypes.STRING,
+    phone: DataTypes.STRING,
 });
 
 // 4. Task Model
@@ -80,7 +77,16 @@ const Admin = sequelize.define(
   { timestamps: true }
 );
 
-const EventGuestList = sequelize.define('EventGuestList', {}, { timestamps: true });
+const EventGuestList = sequelize.define('EventGuestList', {
+    status: {
+        type: DataTypes.STRING,
+        defaultValue: 'pending',
+    },
+    role: {
+        type: DataTypes.STRING,
+        defaultValue: 'guest',
+    }
+}, { timestamps: true });
 
 User.hasOne(Admin, { foreignKey: 'userId', onDelete: 'CASCADE' });
 Admin.belongsTo(User, { foreignKey: 'userId' });
@@ -101,4 +107,14 @@ Guest.belongsToMany(Event, {
   foreignKey: 'guestId',
 });
 
-module.exports = { sequelize, User, Event, Guest, Task, VerificationCode, EventGallery, Admin, EventGuestList };
+module.exports = {
+  sequelize,
+  User,
+  Event,
+  Guest,
+  Task,
+  VerificationCode,
+  EventGallery,
+  Admin,
+  EventGuestList,
+};

@@ -18,12 +18,9 @@ const getAllUsersLogic = async (page, limit, sortBy, sortDirection, searchQuery)
   const offset = (page - 1) * limit;
   let whereClause = {};
 
-  // Dynamic Search Query Logic
   if (searchQuery && searchQuery.trim() !== '') {
-    // Split the search query into individual words
     const queryTerms = searchQuery.trim().split(/\s+/);
 
-    // Ensure EVERY word typed matches AT LEAST ONE of the user fields
     whereClause[Op.and] = queryTerms.map((term) => ({
       [Op.or]: [
         { firstName: { [Op.like]: `%${term}%` } },
@@ -40,7 +37,7 @@ const getAllUsersLogic = async (page, limit, sortBy, sortDirection, searchQuery)
     order: [[sortBy, validSortDirection]],
     limit: limit,
     offset: offset,
-    attributes: { exclude: ['password'] }, // Do not send passwords to the client
+    attributes: { exclude: ['password'] },
   });
 
   return {
@@ -112,9 +109,8 @@ const generateAvatarPicture = async (firstName, lastName) => {
 };
 
 const createUserLogic = async (userData) => {
-  const { firstName, lastName, userRole, password, phoneNumber, email, picturePath } = userData;
+  const { firstName, lastName, password, phoneNumber, email, picturePath } = userData;
 
-  // Security Check: Ensure email is unique
   const existingUser = await User.findOne({ where: { email } });
   if (existingUser) {
     throw new BadRequestError('A user with this email already exists.', 'EMAIL_EXISTS');
@@ -152,12 +148,12 @@ const createUserLogic = async (userData) => {
     email,
     password: hashedPassword,
     phoneNumber,
-    userRole: userRole || 'user',
+    userRole: 'user',
     picturePath: finalPicture,
     isEmailVerified: false,
   });
 
-  return newUser.get({ plain: true }); // Return plain object
+  return newUser.get({ plain: true });
 };
 
 const updateUserLogic = async (id, updateData) => {
@@ -215,7 +211,6 @@ const checkVerificationCodeLogic = async (email, code) => {
   const codeTime = new Date(record.timeStamp);
   const diffInMinutes = (now - codeTime) / (1000 * 60);
 
-  // Clear code after use (prevent replay attacks)
   await record.destroy();
 
   return diffInMinutes <= 15;

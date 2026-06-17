@@ -40,6 +40,12 @@ class InternalServerError extends AppError {
   }
 }
 
+class ConflictError extends AppError {
+    constructor(message = 'Conflict Error', code = 'ConflictError') {
+        super(message, 409, code);
+    }
+}
+
 module.exports = {
   AppError,
   BadRequestError,
@@ -47,4 +53,5 @@ module.exports = {
   ForbiddenError,
   NotFoundError,
   InternalServerError,
+    ConflictError
 };

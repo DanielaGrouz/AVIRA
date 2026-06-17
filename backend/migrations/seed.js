@@ -21,6 +21,7 @@ const runSeeder = async () => {
 
     const now = new Date();
 
+    // 1. Prepare and Insert Users
     const usersToInsert = usersMock.map((user) => {
       const { originalPassword, ...dbUser } = user;
       return {
@@ -33,15 +34,14 @@ const runSeeder = async () => {
     await User.bulkCreate(usersToInsert);
 
     // 2. Prepare and Insert Admins
-    // Dynamically grab any user marked as 'admin' and create an Admin record
     const adminsToInsert = usersMock
-      .filter((user) => user.userRole === 'admin')
-      .map((user) => ({
-        userId: user.userId,
-        roleDescription: 'System Administrator', // You can customize this
-        createdAt: now,
-        updatedAt: now,
-      }));
+        .filter((user) => user.userRole === 'admin')
+        .map((user) => ({
+          userId: user.userId,
+          roleDescription: 'System Administrator',
+          createdAt: now,
+          updatedAt: now,
+        }));
 
     await Admin.bulkCreate(adminsToInsert);
 
@@ -55,22 +55,48 @@ const runSeeder = async () => {
     await Event.bulkCreate(eventsToInsert);
 
     // 4. Prepare and Insert Guests
-    const guestsToInsert = guestsMock.map((guest) => ({
-      ...guest,
-      createdAt: now,
-      updatedAt: now,
-    }));
+    const uniqueGuestsMap = new Map();
 
+    guestsMock.forEach((guest) => {
+      const relatedEvent = eventsMock.find((e) => e.eventId === guest.eventId);
+      const creatorId = relatedEvent ? relatedEvent.creatorId : 1;
+
+      const uniqueKey = `${guest.phone}-${creatorId}`;
+
+      if (!uniqueGuestsMap.has(uniqueKey)) {
+        uniqueGuestsMap.set(uniqueKey, {
+          guestId: guest.guestId, // Store the primary ID for this unique person
+          name: guest.name,
+          phone: guest.phone,
+          creatorId: creatorId,
+          createdAt: now,
+          updatedAt: now,
+        });
+      }
+    });
+
+    const guestsToInsert = Array.from(uniqueGuestsMap.values());
     await Guest.bulkCreate(guestsToInsert);
 
     // 5. Populate the Many-to-Many Junction Table
-    // Assuming your guestData.js objects contain 'eventId' and 'guestId' properties
-    const eventGuestLinks = guestsMock.map((guest) => ({
-      eventId: guest.eventId,
-      guestId: guest.guestId,
-      createdAt: now,
-      updatedAt: now,
-    }));
+    const eventGuestLinks = guestsMock.map((guest) => {
+      // Find who the creator is so we can generate the unique key again
+      const relatedEvent = eventsMock.find((e) => e.eventId === guest.eventId);
+      const creatorId = relatedEvent ? relatedEvent.creatorId : 1;
+      const uniqueKey = `${guest.phone}-${creatorId}`;
+
+      // Grab the ACTUAL guest record that was inserted into the database
+      const actualDatabaseGuest = uniqueGuestsMap.get(uniqueKey);
+
+      return {
+        eventId: guest.eventId,
+        guestId: actualDatabaseGuest.guestId, // Use the resolved ID, safely linking to an existing row!
+        status: guest.status || 'pending',
+        role: guest.role || 'guest',
+        createdAt: now,
+        updatedAt: now,
+      };
+    });
 
     await EventGuestList.bulkCreate(eventGuestLinks);
 

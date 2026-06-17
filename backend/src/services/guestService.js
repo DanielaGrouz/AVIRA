@@ -1,5 +1,5 @@
 const { Guest } = require('../../models');
-const { NotFoundError } = require('../utils/errors'); // Import custom errors
+const { NotFoundError } = require('../utils/errors');
 
 const createGuestLogic = async (guestData) => {
   return Guest.create(guestData);
