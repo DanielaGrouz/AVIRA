@@ -239,7 +239,14 @@ const findStores = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, data: storesList, error: null });
 });
 
+const getGuestsByCreatorId = asyncHandler(async (req, res) => {
+  const { searchQuery, limit } = req.validated.body;
+  const guests = await eventService.getGuestsByCreatorIdLogic(req.user.userId, searchQuery, limit);
+  res.status(200).json({ success: true, data: guests, error: null });
+});
+
 module.exports = {
+  getGuestsByCreatorId,
   saveInvitation,
   findStores,
   generateInvite,

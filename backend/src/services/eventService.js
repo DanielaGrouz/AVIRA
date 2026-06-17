@@ -364,7 +364,10 @@ const findRelevantStores = async (currLocation, eventId) => {
   return getStoresForEvent(currLocation, taskTitles);
 };
 
+const getGuestsByCreatorIdLogic = async (userId, searchQuery, limit) => {};
+
 module.exports = {
+  getGuestsByCreatorIdLogic,
   saveInvitationLogic,
   generateShoppingListLogic,
   findRelevantStores,

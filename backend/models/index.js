@@ -62,7 +62,6 @@ const VerificationCode = sequelize.define(
   },
   { timestamps: false }
 );
-// Export it along with User, Event, etc.
 
 const EventGallery = sequelize.define(
   'eventGallery',
@@ -72,16 +71,34 @@ const EventGallery = sequelize.define(
   { timestamps: true, createdAt: 'createDate' }
 );
 
-// Define Relationships
-Event.hasMany(EventGallery, { foreignKey: 'eventId', onDelete: 'CASCADE' });
+const Admin = sequelize.define(
+  'Admin',
+  {
+    adminId: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    roleDescription: DataTypes.STRING, // e.g., 'programmer', 'CEO'
+  },
+  { timestamps: true }
+);
 
+const EventGuestList = sequelize.define('EventGuestList', {}, { timestamps: true });
+
+User.hasOne(Admin, { foreignKey: 'userId', onDelete: 'CASCADE' });
+Admin.belongsTo(User, { foreignKey: 'userId' });
+Event.hasMany(EventGallery, { foreignKey: 'eventId', onDelete: 'CASCADE' });
 User.hasMany(Event, { foreignKey: 'creatorId' });
 Event.belongsTo(User, { foreignKey: 'creatorId' });
-
-Event.hasMany(Guest, { foreignKey: 'eventId', onDelete: 'CASCADE' });
-Guest.belongsTo(Event, { foreignKey: 'eventId' });
-
 Event.hasMany(Task, { foreignKey: 'eventId', onDelete: 'CASCADE' });
 Task.belongsTo(Event, { foreignKey: 'eventId' });
+User.hasMany(Guest, { foreignKey: 'creatorId' });
+Guest.belongsTo(User, { foreignKey: 'creatorId' });
+Event.belongsToMany(Guest, {
+  through: EventGuestList,
+  foreignKey: 'eventId',
+});
 
-module.exports = { sequelize, User, Event, Guest, Task, VerificationCode, EventGallery };
+Guest.belongsToMany(Event, {
+  through: EventGuestList,
+  foreignKey: 'guestId',
+});
+
+module.exports = { sequelize, User, Event, Guest, Task, VerificationCode, EventGallery, Admin, EventGuestList };
