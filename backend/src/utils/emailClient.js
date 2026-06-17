@@ -74,7 +74,7 @@ const sendMail = async (emailSubject, verificationCode, emailToSent) => {
       {
         filename: 'logo2.png',
         path: './src/sources/background.png',
-        cid: 'logo2', // This CID is now feeding the CSS background-image
+        cid: 'logo2',
       },
     ],
   };
@@ -89,5 +89,4 @@ const sendMail = async (emailSubject, verificationCode, emailToSent) => {
   }
 };
 
-// sendMail("verification code", "123456", "danielagrouz@gmail.com")
 module.exports = { sendMail };

@@ -1,4 +1,3 @@
-// models/index.js
 const { Sequelize, DataTypes } = require('sequelize');
 const sequelize = new Sequelize('avira_db', 'username', 'password', {
   host: 'localhost',
@@ -6,7 +5,6 @@ const sequelize = new Sequelize('avira_db', 'username', 'password', {
   port: 3307,
 });
 
-// 1. User Model
 const User = sequelize.define(
   'User',
   {
@@ -23,7 +21,6 @@ const User = sequelize.define(
   { timestamps: true, createdAt: 'createDate', updatedAt: 'updateDate' }
 );
 
-// 2. Event Model
 const Event = sequelize.define('Event', {
   eventId: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   title: DataTypes.STRING,
@@ -36,12 +33,11 @@ const Event = sequelize.define('Event', {
 });
 
 const Guest = sequelize.define('Guest', {
-    guestId: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    name: DataTypes.STRING,
-    phone: DataTypes.STRING,
+  guestId: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  name: DataTypes.STRING,
+  phone: DataTypes.STRING,
 });
 
-// 4. Task Model
 const Task = sequelize.define('Task', {
   taskId: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   title: DataTypes.STRING,
@@ -49,7 +45,6 @@ const Task = sequelize.define('Task', {
   priority: DataTypes.STRING,
 });
 
-// Add this to models/index.js
 const VerificationCode = sequelize.define(
   'VerificationCode',
   {
@@ -72,21 +67,25 @@ const Admin = sequelize.define(
   'Admin',
   {
     adminId: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    roleDescription: DataTypes.STRING, // e.g., 'programmer', 'CEO'
+    roleDescription: DataTypes.STRING,
   },
   { timestamps: true }
 );
 
-const EventGuestList = sequelize.define('EventGuestList', {
+const EventGuestList = sequelize.define(
+  'EventGuestList',
+  {
     status: {
-        type: DataTypes.STRING,
-        defaultValue: 'pending',
+      type: DataTypes.STRING,
+      defaultValue: 'pending',
     },
     role: {
-        type: DataTypes.STRING,
-        defaultValue: 'guest',
-    }
-}, { timestamps: true });
+      type: DataTypes.STRING,
+      defaultValue: 'guest',
+    },
+  },
+  { timestamps: true }
+);
 
 User.hasOne(Admin, { foreignKey: 'userId', onDelete: 'CASCADE' });
 Admin.belongsTo(User, { foreignKey: 'userId' });

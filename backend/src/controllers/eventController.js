@@ -36,7 +36,6 @@ const getEventById = asyncHandler(async (req, res) => {
   const event = await eventService.getEventByIdLogic(id);
 
   if (!event) {
-    // Instead of returning res.status(404), throw an error. The middleware will catch it.
     throw new Error('EVENT_NOT_FOUND');
   }
 
@@ -224,7 +223,7 @@ const findStores = asyncHandler(async (req, res) => {
   if (!req.validated.query.lat || !req.validated.query.lon) {
     const err = new Error('Location (lat and lon) is required');
     err.name = 'ValidationError';
-    throw err; // The global handler will catch this as a 400 Bad Request
+    throw err;
   }
 
   const locationObj = {

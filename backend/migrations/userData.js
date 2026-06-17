@@ -1,4 +1,3 @@
-//const bcrypt = require("bcrypt");
 const users = [
   {
     userId: 1,
@@ -141,18 +140,5 @@ const users = [
     isEmailVerified: true,
   },
 ];
-
-// const calcHash = async () => {
-//     const salt = await bcrypt.genSalt(10);
-//     return await Promise.all(users.map(async (user) => {
-//         const hashedPassword = await bcrypt.hash(user.originalPassword, salt);
-//         return {
-//             ...user,
-//             password: hashedPassword
-//         };
-//     }));
-// }
-//
-// calcHash().then(console.log);
 
 module.exports = users;

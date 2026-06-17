@@ -1,5 +1,4 @@
 let guests = [
-  // --- Event 101 (3 People) ---
   {
     guestId: 1,
     eventId: 101,
@@ -25,7 +24,6 @@ let guests = [
     role: 'guest',
   },
 
-  // --- Event 102 (2 People) ---
   {
     guestId: 2,
     eventId: 102,
@@ -43,7 +41,6 @@ let guests = [
     role: 'guest',
   },
 
-  // --- Event 103 (2 People) ---
   {
     guestId: 3,
     eventId: 103,
@@ -61,7 +58,6 @@ let guests = [
     role: 'guest',
   },
 
-  // --- Event 104 (1 Person - Manager Only) ---
   {
     guestId: 4,
     eventId: 104,
@@ -71,7 +67,6 @@ let guests = [
     role: 'manager',
   },
 
-  // --- Event 105 (1 Person - Manager Only) ---
   {
     guestId: 5,
     eventId: 105,
@@ -81,7 +76,6 @@ let guests = [
     role: 'manager',
   },
 
-  // --- Event 106 (1 Person - Manager Only) ---
   {
     guestId: 6,
     eventId: 106,
@@ -91,7 +85,6 @@ let guests = [
     role: 'manager',
   },
 
-  // --- Event 107 (2 People) ---
   {
     guestId: 7,
     eventId: 107,
@@ -109,7 +102,6 @@ let guests = [
     role: 'guest',
   },
 
-  // --- Event 108 (1 Person - Manager Only) ---
   {
     guestId: 8,
     eventId: 108,
@@ -119,7 +111,6 @@ let guests = [
     role: 'manager',
   },
 
-  // --- Event 109 (1 Person - Manager Only) ---
   {
     guestId: 9,
     eventId: 109,
@@ -129,7 +120,6 @@ let guests = [
     role: 'manager',
   },
 
-  // --- Event 110 (1 Person - Manager Only) ---
   {
     guestId: 10,
     eventId: 110,

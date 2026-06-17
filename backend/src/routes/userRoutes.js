@@ -31,7 +31,6 @@ router.get(
   userController.getUserById
 );
 
-// Multer runs first to populate req.body, then Zod validates it
 router.post('/', upload.single('picture'), validate(userSchema, 'body'), userController.createUser);
 router.put(
   '/:id',

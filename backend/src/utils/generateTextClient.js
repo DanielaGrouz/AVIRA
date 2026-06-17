@@ -19,8 +19,8 @@ async function getHumanInvite(event) {
         content: `Hey, can you write an invite for ${event.title}? It's at ${event.location} on ${event.date}. Make it feel ${event.vibe}.`,
       },
     ],
-    model: 'llama-3.1-8b-instant', // Best for free tier stability
-    temperature: 0.85, // Higher temp = more "human" variance
+    model: 'llama-3.1-8b-instant',
+    temperature: 0.85,
   });
 
   return chatCompletion.choices[0].message.content;
@@ -109,7 +109,6 @@ async function getEventTaskList(event) {
   }
 }
 
-// Helper to safely parse JSON from LLM responses
 const parseLLMJSON = (str) => {
   if (!str) return [];
   const cleaned = str
@@ -197,7 +196,6 @@ async function getStoresForEvent(currLocation, tasksList) {
     const rawElementsCount = osmResponse.data.elements?.length || 0;
     console.log(`2. Overpass API found ${rawElementsCount} raw elements.`);
 
-    // Clean up the OSM data (Improved name checking)
     const candidatePlaces = osmResponse.data.elements
       .filter((el) => el.tags && (el.tags.name || el.tags['name:he'] || el.tags['name:en']))
       .map((el) => ({

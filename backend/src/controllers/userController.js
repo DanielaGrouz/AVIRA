@@ -1,5 +1,6 @@
 const userService = require('../services/userService');
 const { asyncHandler } = require('../middleware/errorHandler');
+const { ForbiddenError } = require('../utils/errors');
 
 const getAllUsers = asyncHandler(async (req, res) => {
   const { page, limit, sortBy, sortDirection, searchQuery } = req.validated.query;
@@ -63,9 +64,8 @@ const updateUser = asyncHandler(async (req, res) => {
 const deleteUser = asyncHandler(async (req, res) => {
   const id = parseInt(req.validated.params.id);
 
-  // Block deleting self - throws to global handler for 403 Forbidden
   if (req.user && req.user.userId === id) {
-    throw new Error('CANNOT_DELETE_OWN_ACCOUNT');
+    throw new ForbiddenError('CANNOT_DELETE_OWN_ACCOUNT');
   }
 
   await userService.deleteUserLogic(id);
