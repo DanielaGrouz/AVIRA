@@ -54,7 +54,6 @@ export default function Signup() {
 
     try {
       await UserService.create(email, password, firstName, lastName, cleanPhone, picture, 'user');
-      await UserService.sendVerificationCode(email);
       // TODO: add toast
       navigate(`/verify-email?email=${encodeURIComponent(email)}`);
     } catch (err) {

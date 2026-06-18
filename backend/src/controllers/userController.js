@@ -35,6 +35,7 @@ const createUser = asyncHandler(async (req, res) => {
 
   const data = { ...req.body, picturePath };
   const newUser = await userService.createUserLogic(data);
+  await userService.sendVerificationCodeLogic(newUser.email, true);
 
   res.status(201).json({
     success: true,

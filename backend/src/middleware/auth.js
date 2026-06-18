@@ -99,7 +99,7 @@ const validateEventId = async (req, res, next) => {
           error: {
             code: 'FORBIDDEN',
             message: 'You do not have permission to perform this action.',
-            details: 'this event is not listed for this user',
+            details: {},
           },
         });
       }
@@ -115,7 +115,7 @@ const validateEventId = async (req, res, next) => {
       error: {
         code: 'SERVER_ERROR',
         message: 'Database error while validating event',
-        details: error.message,
+        details: {},
       },
     });
   }
@@ -142,7 +142,7 @@ const validateOwnUserId = (req, res, next) => {
         error: {
           code: 'FORBIDDEN',
           message: 'You do not have permission to perform this action.',
-          details: 'this user is not you',
+          details: {},
         },
       });
     }
