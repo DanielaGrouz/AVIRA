@@ -172,6 +172,20 @@ export default function VerifyEmail() {
               {resendLoading ? 'Sending...' : 'Resend Code'}
             </button>
           </div>
+
+          <div style={{ textAlign: 'center', marginTop: '16px' }}>
+            <Link
+                to="/signup"
+                style={{
+                  color: '#5469d4',
+                  fontWeight: '600',
+                  fontSize: '14px',
+                  textDecoration: 'none',
+                }}
+            >
+              Back to Sign Up
+            </Link>
+          </div>
         </form>
       </div>
     </div>

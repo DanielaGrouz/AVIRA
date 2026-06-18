@@ -113,7 +113,15 @@ const createUserLogic = async (userData) => {
 
   const existingUser = await User.findOne({ where: { email } });
   if (existingUser) {
-    throw new BadRequestError('A user with this email already exists.', 'EMAIL_EXISTS');
+    // If the user exists but is not verified, delete them so they can register again
+    if (!existingUser.isEmailVerified) {
+      console.log(`[Registration] Deleting unverified user ${email} to allow re-registration.`);
+      await existingUser.destroy();
+      await VerificationCode.destroy({ where: { email } });
+    } else {
+      // If the user verified, block the registration
+      throw new BadRequestError('A user with this email already exists.', 'EMAIL_EXISTS');
+    }
   }
 
   const salt = await bcrypt.genSalt(10);

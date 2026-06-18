@@ -14,6 +14,27 @@ export default function ResetPassword() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [message, setMessage] = useState('');
+
+  const handleResendCode = async () => {
+    setResendLoading(true);
+    clearError();
+
+    try {
+      await UserService.sendVerificationCode(email);
+      setMessage('A new verification code has been sent to your email.');
+    } catch (err) {
+      console.log(err);
+      setError(
+          err.data?.message ||
+          err.message ||
+          'Failed to resend the verification code. Please try again later.'
+      );
+    } finally {
+      setResendLoading(false);
+    }
+  };
 
   const isStrongPassword = (pass) => {
     const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
@@ -53,7 +74,7 @@ export default function ResetPassword() {
     }
 
     setLoading(true);
-    setError('');
+    clearError();
 
     try {
       await UserService.resetPassword(email, newPassword, code);
@@ -72,6 +93,7 @@ export default function ResetPassword() {
 
   const clearError = () => {
     if (error) setError('');
+    if (message) setMessage('');
   };
 
   return (
@@ -79,13 +101,27 @@ export default function ResetPassword() {
       <div className="login-card">
         <div className="login-header">
           <h2>Create New Password</h2>
-          <p>Enter the verification code sent to your email and choose a new password.</p>
+          <p>Enter the verification code sent to <strong>{email}</strong> and choose a new password.</p>
         </div>
 
         {!success ? (
           <form onSubmit={handlePasswordReset} className="login-form">
             {error && <div className="login-error-message">{error}</div>}
-
+            {message && (
+                <div
+                    style={{
+                      backgroundColor: '#f0fdf4',
+                      color: '#166534',
+                      padding: '12px 16px',
+                      borderRadius: '4px',
+                      fontSize: '14px',
+                      border: '1px solid #bbf7d0',
+                      marginBottom: '16px',
+                    }}
+                >
+                  {message}
+                </div>
+            )}
             <InputField
               id="code"
               type="text"
@@ -129,6 +165,29 @@ export default function ResetPassword() {
             >
               {loading ? 'Resetting...' : 'Reset Password'}
             </button>
+
+            <div
+                style={{ textAlign: 'center', marginTop: '16px', fontSize: '14px', color: '#697386' }}
+            >
+              Didn't receive the code?{' '}
+              <button
+                  type="button"
+                  onClick={handleResendCode}
+                  disabled={resendLoading || loading}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#5469d4',
+                    fontWeight: '600',
+                    cursor: resendLoading || loading ? 'not-allowed' : 'pointer',
+                    padding: 0,
+                    fontSize: '14px',
+                    textDecoration: 'none',
+                  }}
+              >
+                {resendLoading ? 'Sending...' : 'Resend Code'}
+              </button>
+            </div>
 
             <div
               style={{ textAlign: 'center', marginTop: '16px', fontSize: '14px', color: '#697386' }}
