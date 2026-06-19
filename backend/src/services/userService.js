@@ -177,7 +177,6 @@ const updateUserLogic = async (id, updateData) => {
     }
   }
 
-  const oldPhone = user.phoneNumber;
   const { firstName, lastName, userRole, phoneNumber, email, picture } = updateData;
 
   await user.update({
@@ -188,14 +187,6 @@ const updateUserLogic = async (id, updateData) => {
     email: email || user.email,
     picturePath: picture || user.picturePath,
   });
-
-  await Guest.update(
-    {
-      name: `${user.firstName} ${user.lastName}`,
-      phone: user.phoneNumber,
-    },
-    { where: { phone: oldPhone } }
-  );
 
   return await User.findByPk(id, { attributes: { exclude: ['password'] } });
 };

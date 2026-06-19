@@ -4,9 +4,11 @@ import GenericTableManager from './GenericTableManager';
 import GuestModal from './GuestModal';
 import { io } from 'socket.io-client';
 import Config from '../../services/Config';
+import { useAuth } from '../../hooks/useAuth';
 
 const GuestManager = ({ eventId, eventDetails }) => {
-  const [liveUpdate, setLiveUpdate] = useState(null); // <--- NEW STATE
+  const { updateUserContext } = useAuth();
+  const [liveUpdate, setLiveUpdate] = useState(null);
   useEffect(() => {
     const socket = io(Config.BASE_URL);
 
@@ -86,6 +88,27 @@ const GuestManager = ({ eventId, eventDetails }) => {
     return response;
   };
 
+  const handleUpdateGuest = async (id, payload) => {
+    const response = await EventService.updateGuest(id, { eventId, ...payload });
+
+    if (payload.role?.toLowerCase() === 'manager') {
+      const nameParts = payload.name.trim().split(/\s+/);
+      const firstName = nameParts[0];
+      const lastName = nameParts.slice(1).join(' ');
+
+      const newContextData = {
+        firstName,
+        phoneNumber: payload.phone.replace(/\D/g, '')
+      };
+      if (lastName) {
+        newContextData.lastName = lastName;
+      }
+      updateUserContext(newContextData);
+    }
+
+    return response;
+  };
+
   return (
     <GenericTableManager
       title="Guest List"
@@ -99,7 +122,7 @@ const GuestManager = ({ eventId, eventDetails }) => {
         EventService.getGuests(eventId, page, sort, search, size, sortDirection)
       }
       addItem={handleAddGuest}
-      updateItem={(id, payload) => EventService.updateGuest(id, { eventId, ...payload })}
+      updateItem={handleUpdateGuest}
       deleteItem={(id) => EventService.deleteGuest(eventId, id)}
       updatedItem={liveUpdate}
     />

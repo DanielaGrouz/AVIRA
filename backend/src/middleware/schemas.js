@@ -1,7 +1,7 @@
 const { z } = require('zod');
 const { VALID_ROLES } = require('../../models/constants');
 
-const phoneRegex = /^05\d-?\d{7}$/;
+const phoneRegex = /^05\d{8}$/;
 const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
 const timeRegex = /^([0-1]\d|2[0-3]):([0-5]\d)$/;
 
