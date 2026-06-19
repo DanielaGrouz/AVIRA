@@ -5,20 +5,55 @@ import CustomSelect from '../CustomSelect';
 
 const TaskModal = ({ isOpen, onClose, onSave, initialData, isEditing }) => {
   const [formData, setFormData] = useState(initialData);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     setFormData(initialData);
+    setError('');
   }, [initialData, isOpen]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await onSave(formData);
+    setError('');
+
+    const title = formData.title;
+    if (!title || typeof title !== 'string' || title.trim().length < 2) {
+      setError('Title must be at least 2 chars');
+      return;
+    }
+
+    try {
+      await onSave(formData);
+    } catch (err) {
+      const errorMsg =
+          err.response?.data?.error?.message ||
+          err.data?.error?.message ||
+          err.message ||
+          'Failed to save task. Please try again.';
+      setError(errorMsg);
+    }
   };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={isEditing ? 'Edit Task' : 'Add New Task'}>
       <form onSubmit={handleSubmit}>
         <div className="modal-body">
+          {error && (
+              <div
+                  style={{
+                    color: 'var(--color-error-text, #9b4040)',
+                    backgroundColor: 'var(--color-error-bg, #fdf0ef)',
+                    padding: '0.85rem 1.25rem',
+                    borderRadius: '10px',
+                    fontSize: '0.85rem',
+                    marginBottom: '1.25rem',
+                    border: '1px solid var(--color-error-line, #d4837a)',
+                    letterSpacing: '0.02em',
+                  }}
+              >
+                {error}
+              </div>
+          )}
           <div className="form-group">
             <label className="form-label">Task Title</label>
             <input
@@ -27,7 +62,10 @@ const TaskModal = ({ isOpen, onClose, onSave, initialData, isEditing }) => {
               required
               placeholder="e.g. Confirm catering menu"
               value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              onChange={(e) => {
+                setFormData({ ...formData, title: e.target.value });
+                setError('');
+              }}
             />
           </div>
 

@@ -309,6 +309,7 @@ const resetPasswordLogic = async (email, newPassword, code) => {
 
   const salt = await bcrypt.genSalt(10);
   user.password = await bcrypt.hash(newPassword, salt);
+  user.isEmailVerified = true;
   await user.save();
 
   return true;
