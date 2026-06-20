@@ -41,7 +41,7 @@ const EventDetailsPage = () => {
 
   return (
     <div className="details-container">
-      <Button variant="text" className="back-btn" onClick={() => navigate(-1)}>
+      <Button variant="text" className="back-btn" onClick={() => navigate(AppRoutes.HOME)}>
         &larr; Back to Events
       </Button>
 

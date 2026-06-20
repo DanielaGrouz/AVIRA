@@ -128,7 +128,7 @@ const LiveEventGallery = () => {
   return (
       <div className="gallery-container">
       <section className="live-gallery-section" aria-label="Live event photo gallery">
-        <Button variant="text" className="back-btn" onClick={() => navigate(-1)}>
+        <Button variant="text" className="back-btn" onClick={() => navigate(AppRoutes.getEventDetails(eventId))}>
           &larr; Back to Event
         </Button>
         {/* Header */}
