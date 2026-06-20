@@ -99,7 +99,13 @@ const PhotoUpload = ({
       setProgress(100);
       await new Promise((r) => setTimeout(r, 350));
       setUploadStatus('success');
-      clearFile();
+      setSelectedFile(null);
+      setPreviewUrl(null);
+      setProgress(0);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      setTimeout(() => {
+        setUploadStatus('idle');
+      }, 4000);
     } catch (err) {
       clearInterval(ticker);
       console.error('PhotoUpload error:', err);
@@ -130,13 +136,14 @@ const PhotoUpload = ({
       {/* Drop zone */}
       <div
         className={dropZoneClass}
+        style={{ cursor: 'pointer' }}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        onClick={() => !selectedFile && fileInputRef.current?.click()}
+        onClick={() => fileInputRef.current?.click()}
         role="button"
         tabIndex={0}
-        onKeyDown={(e) => e.key === 'Enter' && !selectedFile && fileInputRef.current?.click()}
+        onKeyDown={(e) => e.key === 'Enter' && fileInputRef.current?.click()}
         aria-label="Drop an image here or click to browse"
       >
         <div className="pu-drop-icon">
