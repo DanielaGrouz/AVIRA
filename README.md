@@ -161,6 +161,22 @@ The project follows a modular structure to ensure maintainability and a seamless
 
 ---
 
+## 📦 Submission Artifacts Index
+
+* **Frontend Source Code:** Located in the `/frontend` directory.
+* **Backend Source Code:** Located in the `/backend/src` directory.
+* **ORM Models:** Defined within `/backend/src/models/index.js`.
+* **Migrations Files:** Database initialization and seeding scripts are located in the `/backend/migrations/` folder (run via `seed.js`).
+* **README.md:** You are currently reading it (Root directory).
+* **.env.example:** A template environment file is provided in the ZIP archive. To run the application, configure your credentials and save it as `.env` inside the `/backend/src/` folder.
+* **Postman Collection:** The complete API documentation and test requests are located at `/backend/docs/AVIRA_API_Collection.json`.
+* **System Screenshots:** A comprehensive PDF document named `Assignment 4 - System Screenshots.pdf` is included in the ZIP archive.
+* **Demo Video:** A full system walkthrough video named `AVIRA_Demo_Video.mp4` is included directly in the ZIP archive.
+
+---
+
+---
+
 ## ✒️ Author
 
 **Daniela Grouz & Rinat Hadad**
