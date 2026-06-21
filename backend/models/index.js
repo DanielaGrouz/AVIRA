@@ -3,7 +3,6 @@ const sequelize = new Sequelize('avira_db', 'username', 'password', {
   host: 'localhost',
   dialect: 'mysql',
   port: 3307,
-  logging: false,
 });
 
 const User = sequelize.define(
