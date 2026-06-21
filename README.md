@@ -13,12 +13,12 @@
 
 ### Environment Variables
 - PORT=3000
-- JWT_SECRET=your_secret_key
 - DB_HOST=localhost
 - DB_USER=username
 - DB_PASS=password
 - DB_NAME=avira_db
 - DB_PORT=3307
+- JWT_SECRET=**your_secret_key**
 - GROQ_API_KEY=**your_groq_key**
 - HF_TOKEN=**your_huggingface_token**
 - GMAIL_PASSWORD=**your_gmail_app_password**
