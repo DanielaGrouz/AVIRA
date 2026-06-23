@@ -113,7 +113,15 @@ const createUserLogic = async (userData) => {
 
   const existingUser = await User.findOne({ where: { email } });
   if (existingUser) {
-    throw new BadRequestError('A user with this email already exists.', 'EMAIL_EXISTS');
+    // If the user exists but is not verified, delete them so they can register again
+    if (!existingUser.isEmailVerified) {
+      console.log(`[Registration] Deleting unverified user ${email} to allow re-registration.`);
+      await existingUser.destroy();
+      await VerificationCode.destroy({ where: { email } });
+    } else {
+      // If the user verified, block the registration
+      throw new BadRequestError('A user with this email already exists.', 'EMAIL_EXISTS');
+    }
   }
 
   const salt = await bcrypt.genSalt(10);
@@ -131,7 +139,7 @@ const createUserLogic = async (userData) => {
 
         if (imageFiles.length > 0) {
           const randomFile = imageFiles[Math.floor(Math.random() * imageFiles.length)];
-          finalPicture = `/sources/src/avatar/${randomFile}`;
+          finalPicture = `/sources/avatar/${randomFile}`;
         } else {
           finalPicture = `/sources/avatar/avatar1.png`;
         }
@@ -169,7 +177,6 @@ const updateUserLogic = async (id, updateData) => {
     }
   }
 
-  const oldPhone = user.phoneNumber;
   const { firstName, lastName, userRole, phoneNumber, email, picture } = updateData;
 
   await user.update({
@@ -180,14 +187,6 @@ const updateUserLogic = async (id, updateData) => {
     email: email || user.email,
     picturePath: picture || user.picturePath,
   });
-
-  await Guest.update(
-    {
-      name: `${user.firstName} ${user.lastName}`,
-      phone: user.phoneNumber,
-    },
-    { where: { phone: oldPhone } }
-  );
 
   return await User.findByPk(id, { attributes: { exclude: ['password'] } });
 };
@@ -266,7 +265,7 @@ const loginLogic = async (email, password) => {
   return { user: user.get({ plain: true }), token };
 };
 
-const sendVerificationCodeLogic = async (email) => {
+const sendVerificationCodeLogic = async (email, isNewUser = false) => {
   const user = await User.findOne({ where: { email } });
   if (!user) {
     throw new NotFoundError('User with this email not found.', 'USER_NOT_FOUND');
@@ -282,8 +281,19 @@ const sendVerificationCodeLogic = async (email) => {
     timeStamp: new Date(),
   });
 
-  await sendMail(`your code is: ${code}`, 'verify your email', email);
-  return true;
+  try {
+    await sendMail(`your code is: ${code}`, 'verify your email', email);
+    return true;
+  } catch (error) {
+    // If sending fails and this was a new registration, delete the orphaned user
+    if (isNewUser) {
+      await VerificationCode.destroy({ where: { email } });
+      await User.destroy({ where: { email } });
+      console.log(`[Cleanup] Deleted orphaned user ${email} due to email failure.`);
+    }
+
+    throw new InternalServerError('Failed to send verification email. Please try again.', 'EMAIL_SEND_FAILED');
+  }
 };
 
 const resetPasswordLogic = async (email, newPassword, code) => {
@@ -299,6 +309,7 @@ const resetPasswordLogic = async (email, newPassword, code) => {
 
   const salt = await bcrypt.genSalt(10);
   user.password = await bcrypt.hash(newPassword, salt);
+  user.isEmailVerified = true;
   await user.save();
 
   return true;

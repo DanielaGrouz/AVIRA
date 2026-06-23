@@ -22,7 +22,7 @@ const errorHandler = (err, req, res, next) => {
     error: {
       code: responseCode,
       message: message,
-      details: err.details || {},
+      details: {},
     },
   });
 };

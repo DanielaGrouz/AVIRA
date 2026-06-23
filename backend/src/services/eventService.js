@@ -30,10 +30,19 @@ const getAllEventsLogic = async (page, limit, sortBy, sortDirection, searchQuery
     }));
   }
   const validSortDirection = sortDirection === '1' ? 'ASC' : 'DESC';
+  let orderClause = [];
+
+  if (sortBy === 'date') {
+    orderClause = [['date', 'ASC'], ['time', 'ASC']];
+  } else if (sortBy === 'title' || sortBy === 'location') {
+    orderClause = [[sortBy, 'ASC']];
+  } else {
+    orderClause = [['eventId', 'DESC']];
+  }
 
   const { count, rows } = await Event.findAndCountAll({
     where: whereClause,
-    order: [[sortBy, validSortDirection]],
+    order: orderClause,
     limit: parseInt(limit),
     offset: parseInt(offset),
   });

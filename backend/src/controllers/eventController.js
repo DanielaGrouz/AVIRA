@@ -148,11 +148,42 @@ const removeGuestFromEvent = asyncHandler(async (req, res) => {
 });
 
 const updateGuestInEvent = asyncHandler(async (req, res) => {
+  const eventId = parseInt(req.validated.params.id);
+  const guestId = parseInt(req.validated.params.guestId);
+
+  const { Guest } = require('../../models');
+
+  const oldGuest = await Guest.findByPk(guestId);
+
   const updatedGuest = await eventService.updateGuestInEventLogic(
-    parseInt(req.validated.params.id),
-    parseInt(req.validated.params.guestId),
+      eventId,
+      guestId,
     req.validated.body
   );
+
+  if (updatedGuest.role === 'manager' && req.user && req.user.userId) {
+    const userService = require('../services/userService');
+    const currentUser = await userService.getUserByIdLogic(req.user.userId);
+    if (currentUser) {
+      const cleanCurrentUserPhone = currentUser.phoneNumber;
+      const cleanOldGuestPhone = oldGuest.phone;
+      if (cleanOldGuestPhone === cleanCurrentUserPhone) {
+        const cleanNewGuestPhone = updatedGuest.phone.replace(/\D/g, '');
+        const nameParts = updatedGuest.name.trim().split(/\s+/);
+        const firstName = nameParts[0];
+        const lastName = nameParts.slice(1).join(' ');
+        const syncData = {
+          firstName,
+          phoneNumber: cleanNewGuestPhone,
+        };
+        if (lastName) {
+          syncData.lastName = lastName;
+        }
+        await userService.updateUserLogic(req.user.userId, syncData);
+      }
+    }
+  }
+
   res.status(200).json({ success: true, data: updatedGuest, error: null });
 });
 

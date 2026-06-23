@@ -28,8 +28,10 @@ const UsersManagementPage = () => {
   });
 
   useEffect(() => {
-    fetchUsers();
-  }, [currentPage]);
+    if (currentUser && currentUser.userRole === 'admin') {
+      fetchUsers();
+    }
+  }, [currentPage, currentUser]);
 
   const fetchUsers = async () => {
     setIsLoading(true);

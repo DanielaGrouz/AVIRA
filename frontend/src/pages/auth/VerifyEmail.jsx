@@ -13,6 +13,7 @@ export default function VerifyEmail() {
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
   const { saveUser } = useAuth();
 
@@ -59,8 +60,11 @@ export default function VerifyEmail() {
     try {
       const response = await UserService.completeEmailVerification(email, code);
       const userData = response.data.data;
-      saveUser({ token: userData.token, user: userData.user });
-      navigate('/');
+      setSuccess(true);
+      setTimeout(() => {
+        saveUser({ token: userData.token, user: userData.user });
+        navigate('/');
+      }, 4000);
     } catch (err) {
       console.log(err);
       setError(
@@ -98,81 +102,142 @@ export default function VerifyEmail() {
       <div className="login-card">
         <div className="login-header">
           <h2>Verify Your Email</h2>
-          <p>
-            We sent a verification code to <strong>{email}</strong>.
-          </p>
+          {!success && (
+              <p>
+                We sent a verification code to <strong>{email}</strong>.
+              </p>
+          )}
         </div>
 
-        <form onSubmit={handleVerify} className="login-form">
-          {/* Display Errors */}
-          {error && <div className="login-error-message">{error}</div>}
+        {!success ? (
+            <form onSubmit={handleVerify} className="login-form">
+              {/* Display Errors */}
+              {error && <div className="login-error-message">{error}</div>}
 
-          {/* Display Success Messages (Resend / Verification Success) */}
-          {message && (
-            <div
-              style={{
-                backgroundColor: '#f0fdf4',
-                color: '#166534',
-                padding: '12px 16px',
-                borderRadius: '4px',
-                fontSize: '14px',
-                border: '1px solid #bbf7d0',
-                marginBottom: '8px',
-              }}
-            >
-              {message}
+              {/* Display Messages */}
+              {message && (
+                  <div
+                      style={{
+                        backgroundColor: '#f0fdf4',
+                        color: '#166534',
+                        padding: '12px 16px',
+                        borderRadius: '4px',
+                        fontSize: '14px',
+                        border: '1px solid #bbf7d0',
+                        marginBottom: '8px',
+                      }}
+                  >
+                    {message}
+                  </div>
+              )}
+
+              <div className="input-group">
+                <label htmlFor="code">Verification Code</label>
+                <input
+                    id="code"
+                    type="text"
+                    placeholder="Enter the code here"
+                    className="login-input"
+                    value={code}
+                    onChange={(e) => setCode(e.target.value)}
+                    style={{
+                      textAlign: 'center',
+                      letterSpacing: '4px',
+                      fontSize: '18px',
+                      fontWeight: 'bold',
+                    }}
+                />
+              </div>
+
+              <button
+                  type="submit"
+                  disabled={loading || resendLoading}
+                  className={`login-button ${loading ? 'loading' : ''}`}
+              >
+                {loading ? 'Verifying...' : 'Verify Email'}
+              </button>
+
+              <div
+                  style={{ textAlign: 'center', marginTop: '16px', fontSize: '14px', color: '#697386' }}
+              >
+                Didn't receive the code?{' '}
+                <button
+                    type="button"
+                    onClick={handleResendCode}
+                    disabled={resendLoading || loading}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#5469d4',
+                      fontWeight: '600',
+                      cursor: resendLoading || loading ? 'not-allowed' : 'pointer',
+                      padding: 0,
+                      fontSize: '14px',
+                      textDecoration: 'none',
+                    }}
+                >
+                  {resendLoading ? 'Sending...' : 'Resend Code'}
+                </button>
+              </div>
+
+              <div style={{ textAlign: 'center', marginTop: '16px' }}>
+                <Link
+                    to="/signup"
+                    style={{
+                      color: '#5469d4',
+                      fontWeight: '600',
+                      fontSize: '14px',
+                      textDecoration: 'none',
+                    }}
+                >
+                  Back to Sign Up
+                </Link>
+              </div>
+            </form>
+        ) : (
+            <div style={{ textAlign: 'center' }}>
+              <div
+                  style={{
+                    backgroundColor: '#f0fdf4',
+                    color: '#166534',
+                    padding: '16px',
+                    borderRadius: '8px',
+                    marginBottom: '24px',
+                    border: '1px solid #bbf7d0',
+                  }}
+              >
+                <strong>Verification Successful!</strong>
+              </div>
+
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '12px',
+                color: '#697386',
+                fontSize: '15px',
+                fontWeight: '500'
+              }}>
+                <div style={{
+                  width: '24px',
+                  height: '24px',
+                  border: '3px solid rgba(84, 105, 212, 0.2)',
+                  borderTopColor: '#5469d4',
+                  borderRadius: '50%',
+                  animation: 'spin 1s linear infinite'
+                }} />
+                Redirecting to your dashboard...
+              </div>
+
+              <style jsx>{`
+                @keyframes spin {
+                  to {
+                    transform: rotate(360deg);
+                  }
+                }
+              `}</style>
             </div>
-          )}
-
-          <div className="input-group">
-            <label htmlFor="code">Verification Code</label>
-            <input
-              id="code"
-              type="text"
-              placeholder="Enter the code here"
-              className="login-input"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              style={{
-                textAlign: 'center',
-                letterSpacing: '4px',
-                fontSize: '18px',
-                fontWeight: 'bold',
-              }}
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading || resendLoading}
-            className={`login-button ${loading ? 'loading' : ''}`}
-          >
-            {loading ? 'Verifying...' : 'Verify Email'}
-          </button>
-
-          <div
-            style={{ textAlign: 'center', marginTop: '16px', fontSize: '14px', color: '#697386' }}
-          >
-            Didn't receive the code?{' '}
-            <button
-              type="button"
-              onClick={handleResendCode}
-              disabled={resendLoading || loading}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: '#5469d4',
-                fontWeight: '600',
-                cursor: resendLoading || loading ? 'not-allowed' : 'pointer',
-                padding: 0,
-                fontSize: '14px',
-                textDecoration: 'none',
-              }}
-            >
-              {resendLoading ? 'Sending...' : 'Resend Code'}
-            </button>
-          </div>
-        </form>
+        )}
       </div>
     </div>
   );

@@ -11,7 +11,8 @@ const validate =
       req.validated[source] = parsedData;
       next();
     } catch (error) {
-      next(new BadRequestError(`Invalid input data ${error.message}`, 'VALIDATION_ERROR'));
+        const cleanMessages = error.errors ? error.errors.map(err => err.message).join(', ') : 'Validation error';
+        next(new BadRequestError(cleanMessages, 'VALIDATION_ERROR'));
     }
   };
 
