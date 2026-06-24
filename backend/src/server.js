@@ -14,7 +14,6 @@ const { uploadDir } = require('./middleware/fileUpload');
 const jwt = require('jsonwebtoken');
 const { errorHandler } = require('./middleware/errorHandler');
 const app = express();
-const port = 3000;
 
 app.use(cors());
 app.use('/sources', express.static(path.join(__dirname, './sources')));
@@ -42,7 +41,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: 'http://localhost:5173',
+    origin: '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
   },
 });
