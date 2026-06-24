@@ -3,7 +3,9 @@ const configClient = require('./configClient');
 const path = require('path');
 
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
   auth: {
     user: 'appavira@gmail.com',
     pass: configClient.getConfig('GMAIL_PASSWORD'),
