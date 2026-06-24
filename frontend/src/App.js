@@ -59,7 +59,7 @@ function AppContent() {
           />
           <Route
             path={AppRoutes.ADMIN_MANAGE_USERS}
-            element={isAdmin ? <UsersManagementPage /> : <ErrorPage code={403} />}
+            element={!isAuthenticated ? (<Navigate to={AppRoutes.LOGIN} />) : isAdmin ? (<UsersManagementPage />) : (<ErrorPage code={403} />)}
           />
 
           <Route path={AppRoutes.NOT_FOUND} element={<ErrorPage code={404} />} />

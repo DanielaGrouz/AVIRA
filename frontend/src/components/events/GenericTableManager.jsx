@@ -81,7 +81,7 @@ const GenericTableManager = ({
       loadData();
     } catch (error) {
       console.error(`Failed to save ${itemName}`, error);
-      throw error; // Let the FormModal catch this if needed
+      throw error;
     }
   };
 

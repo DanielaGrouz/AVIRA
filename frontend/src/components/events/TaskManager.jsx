@@ -26,13 +26,13 @@ const TaskManager = ({ eventId }) => {
       title="Event Tasks"
       itemName="task"
       idField="taskId"
-      initialFormState={{ title: '', status: 'Pending', priority: 'Medium' }}
+      initialFormState={{ title: '', status: 'pending', priority: 'medium' }}
       baseColumns={columns}
       FormModal={TaskModal}
       mapRowToForm={(row) => ({
         title: row.title || row.description,
         status: row.status,
-        priority: row.priority || 'Medium',
+        priority: row.priority || 'medium',
       })}
       fetchItems={(page, sort, search, size, sortDirection) =>
         EventService.getTasks(eventId, page, sort, search, size, sortDirection)

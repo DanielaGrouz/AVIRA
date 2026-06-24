@@ -35,6 +35,7 @@ const createUser = asyncHandler(async (req, res) => {
 
   const data = { ...req.body, picturePath };
   const newUser = await userService.createUserLogic(data);
+  await userService.sendVerificationCodeLogic(newUser.email, true);
 
   res.status(201).json({
     success: true,
@@ -57,7 +58,19 @@ const updateUser = asyncHandler(async (req, res) => {
   const updateData = { ...req.body };
   if (picture) updateData.picture = picture;
 
+  const oldUser = await userService.getUserByIdLogic(id);
+  const oldPhone = oldUser.phoneNumber.replace(/-/g, '');
+
   const updatedUser = await userService.updateUserLogic(id, updateData);
+
+  const { Guest } = require('../../models');
+  const cleanNewPhone = updatedUser.phoneNumber ? updatedUser.phoneNumber.replace(/-/g, '') : '';
+  const newName = `${updatedUser.firstName} ${updatedUser.lastName}`.trim();
+  await Guest.update(
+    { name: newName, phone: cleanNewPhone },
+    { where: { phone: oldPhone, creatorId: id } }
+  );
+
   res.status(200).json({ success: true, data: updatedUser, error: null });
 });
 

@@ -1,5 +1,6 @@
 const nodemailer = require('nodemailer');
 const configClient = require('./configClient');
+const path = require('path');
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -68,12 +69,12 @@ const sendMail = async (emailSubject, verificationCode, emailToSent) => {
     attachments: [
       {
         filename: 'logo1.png',
-        path: './src/sources/logo.png',
+        path: path.join(__dirname, '../sources/logo.png'),
         cid: 'logo1',
       },
       {
         filename: 'logo2.png',
-        path: './src/sources/background.png',
+        path: path.join(__dirname, '../sources/background.png'),
         cid: 'logo2',
       },
     ],
