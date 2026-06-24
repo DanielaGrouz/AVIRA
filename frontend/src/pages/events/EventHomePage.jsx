@@ -10,6 +10,7 @@ import { FiPlus, FiCalendar, FiEdit, FiTrash2, FiMapPin, FiClock, FiUsers } from
 import CustomSelect from '../../components/CustomSelect';
 
 const EventHomePage = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const [events, setEvents] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('eventId');
@@ -34,6 +35,7 @@ const EventHomePage = () => {
   const PAGE_SIZE = 6;
 
   const fetchEvents = async () => {
+    setIsLoading(true);
     try {
       const response = await EventService.getAll(currentPage, sortBy, searchQuery, PAGE_SIZE);
       setTotalPageCount(response.data.data.totalPages || 0);
@@ -41,6 +43,7 @@ const EventHomePage = () => {
     } catch (error) {
       console.error('Failed to fetch events:', error);
     }
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -254,7 +257,7 @@ const EventHomePage = () => {
       </header>
 
       <div className="events-grid">
-        {events.length > 0 ? (
+        {isLoading ? <div className="empty-state">Loading...</div> : (events.length > 0 ? (
           events.map((event) => {
             const { month, day, year } = getBadgeDate(event.date);
 
@@ -347,7 +350,7 @@ const EventHomePage = () => {
           })
         ) : (
           <div className="empty-state">No events found.</div>
-        )}
+        ))}
       </div>
 
       <Pagination
