@@ -76,7 +76,9 @@ const sendMail = async (emailSubject, verificationCode, emailToSent) => {
       text: textFallback,
       html: generateStyledHtml(emailSubject, verificationCode),
     });
-
+    if(data.error){
+      throw new Error(JSON.stringify(data.error));
+    }
     console.log('Auth email sent successfully!', data);
     return data;
   } catch (error) {
