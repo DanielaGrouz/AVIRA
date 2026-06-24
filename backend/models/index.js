@@ -1,8 +1,25 @@
 const { Sequelize, DataTypes } = require('sequelize');
-const sequelize = new Sequelize('avira_db', 'username', 'password', {
-  host: 'localhost',
+const fs = require('fs');
+const path = require('path');
+const {getConfig} = require("../src/utils/configClient");
+
+const sequelize = new Sequelize('avira_db', 'admin', getConfig('MY_SQL_PASSWORD'), {
+  host: 'database-1.cd206s4mgt9h.eu-north-1.rds.amazonaws.com',
   dialect: 'mysql',
-  port: 3307,
+  port: 3306,
+    dialectOptions: {
+        ssl: {
+            require: true, // Forces the connection to use SSL
+
+            // Read the PEM file from your directory
+            ca: fs.readFileSync(path.join(__dirname, '../global-bundle.pem')),
+
+            // rejectUnauthorized: true is the most secure.
+            // If you get SSL errors during local development with AWS RDS,
+            // you might temporarily need to set this to false.
+            rejectUnauthorized: true
+        }
+        }
 });
 
 const User = sequelize.define(
