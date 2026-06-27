@@ -5,30 +5,17 @@ const fs = require('fs');
 
 const resend = new Resend(configClient.getConfig('RESEND_API_KEY'));
 
-const getBase64Image = (fileName) => {
-  try {
-    const filePath = path.join(__dirname, `../sources/${fileName}`);
-    const imageBuffer = fs.readFileSync(filePath);
-    return `data:image/png;base64,${imageBuffer.toString('base64')}`;
-  } catch (error) {
-    console.warn(`Could not load image ${fileName}:`, error.message);
-    return '';
-  }
-};
-
+// We no longer need the getBase64Image function.
+// Instead, we reference the Content-ID (cid) we will define in the attachments.
 const generateStyledHtml = (subject, verificationCode) => {
-  // Read the images directly into memory as Base64 strings
-  const logo1 = getBase64Image('logo.png');
-  const logo2 = getBase64Image('background.png');
-
-  // Injected the Base64 variables directly into the src and background-image URLs
   return `
-    <div style="font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f3f6f9; background-image: url('${logo2}'); background-size: cover; background-position: center; background-repeat: no-repeat; padding: 60px 20px; direction: ltr; text-align: left;">
+    <div style="font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f3f6f9; background-image: url('cid:background.png'); background-size: cover; background-position: center; background-repeat: no-repeat; padding: 60px 20px; direction: ltr; text-align: left;">
         
         <div style="max-width: 550px; margin: 0 auto; background-color: rgba(255, 255, 255, 0.96); border-radius: 30px; overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.15); border: 1px solid rgba(255, 255, 255, 0.8);">
             
             <div style="padding: 40px 40px 10px; text-align: center;">
-                <img src="${logo1}" alt="Appavira Logo" style="width: 80px; height: 80px; object-fit: cover; object-position: center; border-radius: 50%; margin: 0 auto 20px; display: block; background-color: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+                <!-- Replaced Base64 string with cid reference -->
+                <img src="cid:logo.png" alt="Appavira Logo" style="width: 80px; height: 80px; object-fit: cover; object-position: center; border-radius: 50%; margin: 0 auto 20px; display: block; background-color: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
                 
                 <h1 style="margin: 0; color: #1e293b; font-size: 24px; font-weight: 700; letter-spacing: -0.5px;">${subject}</h1>
             </div>
@@ -69,16 +56,34 @@ const sendMail = async (emailSubject, verificationCode, emailToSent) => {
   const textFallback = `${emailSubject}\n\nHello,\n\nYour verification code is: ${verificationCode}\n\nBest regards,\nAVIRA Team`;
 
   try {
+    // Read files dynamically into buffers at send time
+    const logoBuffer = fs.readFileSync(path.join(__dirname, '../sources/logo.png'));
+    const backgroundBuffer = fs.readFileSync(path.join(__dirname, '../sources/background.png'));
+
     const data = await resend.emails.send({
       from: 'AVIRA System <onboarding@resend.dev>',
       to: emailToSent,
       subject: emailSubject,
       text: textFallback,
       html: generateStyledHtml(emailSubject, verificationCode),
+      attachments: [
+        {
+          filename: 'logo.png',
+          content: logoBuffer,
+          content_id: 'logo.png', // This links to src="cid:logo.png"
+        },
+        {
+          filename: 'background.png',
+          content: backgroundBuffer,
+          content_id: 'background.png', // This links to url('cid:background.png')
+        },
+      ],
     });
-    if(data.error){
+
+    if (data.error) {
       throw new Error(JSON.stringify(data.error));
     }
+
     console.log('Auth email sent successfully!', data);
     return data;
   } catch (error) {
