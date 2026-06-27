@@ -31,15 +31,16 @@ export default function Login() {
 
     try {
       const response = await UserService.login(email, password);
-      if (response.data.success) {
+      if (response && response.data && response.data.success) {
         const userData = response.data.data;
         saveUser(userData);
         navigate('/');
+      } else {
+        setError('Login failed. Please check your credentials.');
       }
     } catch (err) {
-      console.log(err);
       setError(
-        err.response?.data?.error?.message || 'Login failed. Please check your credentials.'
+        'Login failed. Please check your credentials.'
       );
     } finally {
       setLoading(false);

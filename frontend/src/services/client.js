@@ -27,8 +27,6 @@ apiClient.interceptors.response.use(
 
       if (error.response.status === 401) {
         localStorage.removeItem('avira_user');
-
-        window.location.href = '/login';
         return;
       }
 
